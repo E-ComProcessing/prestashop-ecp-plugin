@@ -8,7 +8,7 @@ Requirements
 
 * Prestashop 1.5.x - 1.6.x
 * GenesisPHP 1.2
-* PCI-certified server in order to use ```E-ComProcessing Direct```
+* PCI-certified server (in order to use ```E-ComProcessing Direct```)
 
 GenesisPHP Requirements
 ------------
