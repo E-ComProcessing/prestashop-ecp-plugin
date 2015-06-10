@@ -273,10 +273,6 @@
         padding: 0;
     }
 
-    #payment-method-{$ecomprocessing['name']['module']}-direct .payment-method-container .payment-method-header h3 {
-        margin-bottom: 18px;
-    }
-
     #payment-method-{$ecomprocessing['name']['module']}-direct .payment-method-container .payment-method-status .row-spacer {
         margin-bottom: 16px;
     }
@@ -290,6 +286,7 @@
 
     #payment-method-{$ecomprocessing['name']['module']}-direct .payment-method-container .payment-method-content .card-wrapper {
         display: block;
+        padding-top: 16px;
         ﻿margin-bottom: 16px;
     }
 
