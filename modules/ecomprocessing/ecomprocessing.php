@@ -232,11 +232,24 @@ class EComProcessing extends PaymentModule
         $this->context->controller->addCSS(
             $this->getPathUri() . 'assets/css/treegrid.min.css', 'all'
         );
+
+        $this->context->controller->addCSS(
+            $this->getPathUri() . 'assets/css/bootstrapValidator.min.css', 'all'
+        );
+
         $this->context->controller->addJS(
             $this->getPathUri() . 'assets/js/treegrid/cookie.min.js'
         );
         $this->context->controller->addJS(
             $this->getPathUri() . 'assets/js/treegrid/treegrid.min.js'
+        );
+
+        $this->context->controller->addJS(
+            $this->getPathUri() . 'assets/js/bootstrap/bootstrapValidator.min.js'
+        );
+
+        $this->context->controller->addJS(
+            $this->getPathUri() . 'assets/js/jQueryExtensions/jquery.number.min.js'
         );
 
         $currency = new Currency((int)$order->id_currency);
@@ -248,7 +261,13 @@ class EComProcessing extends PaymentModule
                     'order'     => array(
                         'id'          => $order->id,
                         'amount'      => $order->getTotalPaid(),
-                        'currency'    => $currency->iso_code,
+                        'currency'    	=> array(
+                            'iso_code' => $currency->iso_code,
+                            'sign' 		 => $currency->sign,
+                            'decimalPlaces' 	 => 2,
+                            'decimalSeparator' => '.',
+                            'thousandSeparator' => '' /* must be empty, otherwise exception could be trown from Genesis */
+                        )
                     ),
                     'error'     => $this->getSessVar('error_transaction'),
                     'tree'      => EComProcessingTransaction::getTransactionTree((int)$params['id_order']),
