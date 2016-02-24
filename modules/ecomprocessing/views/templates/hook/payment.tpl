@@ -28,7 +28,7 @@
             </div>
         {/if}
 
-        {if $ecomprocessing['payment']['methods']['direct']}
+        {if ($ecomprocessing['payment']['methods']['direct'] && $ecomprocessing['ssl']['enabled'])}
             <div id="payment-method-{$ecomprocessing['name']['module']}-direct" class="payment_module">
                 <div class="payment-method-container" style="margin-top:-15px;">
                     <div class="payment-method-header">
@@ -114,7 +114,7 @@
                 </div>
             </div>
         {/if}
-        {if $ecomprocessing['payment']['methods']['direct']}
+        {if ($ecomprocessing['payment']['methods']['direct'] && $ecomprocessing['ssl']['enabled'])}
             <div id="payment-method-{$ecomprocessing['name']['module']}-direct">
                 <div class="row">
                     <div class="col-xs-12">
@@ -318,8 +318,8 @@
     }
 </style>
 
-{* Disable Card init if there is no Direct method available *}
-{if $ecomprocessing['payment']['methods']['direct']}
+{* Enable Card init if there is Direct method available and SSL is enabled *}
+{if ($ecomprocessing['payment']['methods']['direct'] && $ecomprocessing['ssl']['enabled'])}
     <script type="text/javascript">
         new Card({
             form: '#payment-method-{$ecomprocessing['name']['module']}-direct .payment-form',

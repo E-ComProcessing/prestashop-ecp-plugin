@@ -293,7 +293,10 @@ class EComProcessing extends PaymentModule
                         'direct'    => $this->isDirectPaymentMethodAvailable(),
                         'checkout'  => $this->isCheckoutPaymentMethodAvailable()
                     ),
-                )
+                ),
+                'ssl' => array(
+                    'enabled'   	=> Configuration::get('PS_SSL_ENABLED')
+                ),
             ),
             true
         );
@@ -1343,9 +1346,9 @@ class EComProcessing extends PaymentModule
             include_once dirname(__FILE__) . '/backward_compatibility/backward.php';
         }
 
-        /** Check if SSL is enabled */
-        if (!Configuration::get('PS_SSL_ENABLED') && $this->isDirectPaymentMethodAvailable()) {
-        	$this->warning = $this->l( 'This plugin requires SSL enabled and PCI-DSS compliant server in order to accept customer\'s credit card information directly on your website!' );
+        /** Check if SSL is enabled and only DirectPayment Method is Enabled */
+        if (!Configuration::get('PS_SSL_ENABLED') && $this->isDirectPaymentMethodAvailable() && !$this->isCheckoutPaymentMethodAvailable()) {
+            $this->warning = $this->l( 'This plugin requires SSL enabled and PCI-DSS compliant server in order to accept customer\'s credit card information directly on your website!' );
         }
 
         /* Bootstrap Genesis */
