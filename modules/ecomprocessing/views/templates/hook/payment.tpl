@@ -17,7 +17,7 @@
  *}
 
 {if version_compare($ecomprocessing['presta']['version'], '1.5', '>=') && version_compare($ecomprocessing['presta']['version'], '1.6', '<') }
-    <div id="payment-method-{$ecomprocessing['name']['module']}">
+    <div class="row" id="payment-method-{$ecomprocessing['name']['module']}">
         {if $ecomprocessing['payment']['methods']['checkout']}
             <div id="payment-method-{$ecomprocessing['name']['module']}-checkout" class="payment_module">
                 <a class="payment_module_link" href="{$ecomprocessing['payment']['urls']['checkout']}">
