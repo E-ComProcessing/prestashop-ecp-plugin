@@ -164,6 +164,63 @@ class EComProcessingTransaction extends ObjectModel
 	}
 
 	/**
+	 * Get the sum of the ammount for a list of transaction types and status
+	 * @param int $order_reference
+	 * @param string $parent_transaction_id
+	 * @param array $types
+	 * @param string $status
+	 * @return decimal
+	 */
+	private static function getTransactionsSumAmount($order_reference, $parent_transaction_id, $types, $status) {
+		$transactions = self::getTransactionsByTypeAndStatus($order_reference, $parent_transaction_id, $types, $status);
+		$totalAmount = 0;
+
+		/** @var $transaction */
+		foreach ($transactions as $transaction) {
+			$totalAmount +=  $transaction->getFields()['amount'];
+		}
+
+		return $totalAmount;
+	}
+
+	/**
+	 * Get the detailed transactions list of an order for transaction types and status
+	 * @param int $order_reference
+	 * @param string $parent_transaction_id
+	 * @param array $types
+	 * @param string $status
+	 * @return array
+	 */
+	private static function getTransactionsByTypeAndStatus($order_reference, $parent_transaction_id, $types, $status) {
+
+		return ObjectModel::hydrateCollection('EComProcessingTransaction',
+			Db::getInstance()->executeS("
+				SELECT *
+				FROM `" . _DB_PREFIX_ . "ecomprocessing_transactions`
+				WHERE (`ref_order` = '" . pSQL($order_reference) . "') and " .
+				(!empty($parent_transaction_id)	? " (`id_parent` = '" . $parent_transaction_id . "') and " : "") . "
+						(`type` in ('" . (is_array($types) ? implode("','", $types) : $types) . "')) and
+						(`status` = '" . $status . "')
+
+			")
+		);
+	}
+
+	/**
+	 * Get a formatted transaction value for the Admin Transactions Panel
+	 * @param float $amount
+	 * @return string
+	 */
+	private static function formatTransactionValue($amount) {
+		/* DecimalSeparator   -> .
+		   Thousand Separator -> empty
+
+		   Otherwise an exception could be thrown from genesis
+		*/
+		return number_format($amount, 2, ".", "");
+	}
+
+	/**
 	 * Returns an array with tree-structure where
 	 * every branch is a transaction related to
 	 * the order
@@ -211,10 +268,22 @@ class EComProcessingTransaction extends ObjectModel
 				$transaction['can_capture'] = false;
 			}
 
-			if (in_array( $transaction['type'], array( 'authorize', 'authorize3d', 'capture', 'sale', 'sale3d', 'init_recurring_sale', 'recurring_sale' )) && $transaction['status'] == 'approved') {
+			if ($transaction['can_capture']) {
+				$totalAuthorizedAmount = self::getTransactionsSumAmount($order->reference, $transaction['id_parent'], array('authorize', 'authorize3d'), 'approved');
+				$totalCapturedAmount = self::getTransactionsSumAmount($order->reference, $transaction['id_unique'], 'capture', 'approved');
+				$transaction['available_amount'] = $totalAuthorizedAmount - $totalCapturedAmount;
+			}
+
+			if (in_array( $transaction['type'], array( 'capture', 'sale', 'sale3d', 'init_recurring_sale', 'recurring_sale' )) && $transaction['status'] == 'approved') {
 				$transaction['can_refund'] = true;
 			} else {
 				$transaction['can_refund'] = false;
+			}
+
+			if ($transaction['can_refund']) {
+				$totalCapturedAmount = $transaction['amount'];
+				$totalRefundedAmount = self::getTransactionsSumAmount($order->reference, $transaction['id_unique'], 'refund', 'approved');
+				$transaction['available_amount'] = $totalCapturedAmount - $totalRefundedAmount;
 			}
 
 			if (in_array( $transaction['type'], array( 'authorize', 'authorize3d', 'capture', 'sale', 'sale3d', 'init_recurring_sale', 'recurring_sale', 'refund' )) && $transaction ) {
@@ -222,6 +291,14 @@ class EComProcessingTransaction extends ObjectModel
 			} else {
 				$transaction['can_void'] = false;
 			}
+
+			$transaction['amount'] = self::formatTransactionValue($transaction['amount']);
+
+			if (!isset($transaction['available_amount']))
+				$transaction['available_amount'] = $transaction['amount'];
+
+			$transaction['available_amount'] = self::formatTransactionValue($transaction['available_amount']);
+
 		}
 
 		// Create the parent/child relations from a flat array
