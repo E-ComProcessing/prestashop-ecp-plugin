@@ -44,7 +44,7 @@ class EComProcessing extends PaymentModule
         $this->tab          = 'payments_gateways';
         $this->displayName  = 'E-ComProcessing Payment Gateway';
         $this->controllers  = array('checkout', 'notification', 'redirect', 'validation');
-        $this->version      = '1.2.3';
+        $this->version      = '1.2.4';
         $this->author       = 'E-ComProcessing™';
 
         /* The parent construct is required for translations */
