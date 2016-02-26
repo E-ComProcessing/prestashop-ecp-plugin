@@ -166,6 +166,7 @@ class EComProcessingTransaction extends ObjectModel
 	/**
 	 * Get the sum of the ammount for a list of transaction types and status
 	 * @param int $order_reference
+	 * @param string $parent_transaction_id
 	 * @param array $types
 	 * @param string $status
 	 * @return decimal
@@ -174,7 +175,7 @@ class EComProcessingTransaction extends ObjectModel
 		$transactions = self::getTransactionsByTypeAndStatus($order_reference, $parent_transaction_id, $types, $status);
 		$totalAmount = 0;
 
-		/** @var eMerchantPayTransaction $transaction */
+		/** @var $transaction */
 		foreach ($transactions as $transaction) {
 			$totalAmount +=  $transaction->getFields()['amount'];
 		}
@@ -185,6 +186,7 @@ class EComProcessingTransaction extends ObjectModel
 	/**
 	 * Get the detailed transactions list of an order for transaction types and status
 	 * @param int $order_reference
+	 * @param string $parent_transaction_id
 	 * @param array $types
 	 * @param string $status
 	 * @return array

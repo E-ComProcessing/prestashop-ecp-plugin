@@ -1,13 +1,13 @@
 Genesis client for Prestashop
 =============================
 
-This is a Payment Module for E-ComProcessing that gives you the ability to process payments through E-ComProcessing's Payment Gateway - Genesis.
+This is a Payment Module for Prestashop that gives you the ability to process payments through E-ComProcessing's Payment Gateway - Genesis.
 
 Requirements
 ------------
 
 * Prestashop 1.5.x - 1.6.x
-* GenesisPHP 1.2
+* GenesisPHP 1.4
 * PCI-certified server (in order to use ```E-ComProcessing Direct```)
 
 GenesisPHP Requirements
