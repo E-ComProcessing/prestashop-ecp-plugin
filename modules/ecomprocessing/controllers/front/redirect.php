@@ -28,36 +28,36 @@ if (!defined('_PS_VERSION_')) {
  */
 class EComProcessingRedirectModuleFrontController extends ModuleFrontController
 {
-	/** @var  EComProcessing */
-	public $module;
-	/** @var  ContextCore  */
-	protected $context;
+    /** @var  EComProcessing */
+    public $module;
+    /** @var  ContextCore  */
+    protected $context;
     /** @var array  */
     protected $statuses = array('success', 'failure', 'cancel');
 
-	/**
-	 * @see FrontController::initContent()
-	 */
-	public function initContent()
-	{
-		if (version_compare(_PS_VERSION_, '1.6', '<')) {
-			$this->display_column_left  = true;
-			$this->display_column_right = true;
-		}
+    /**
+     * @see FrontController::initContent()
+     */
+    public function initContent()
+    {
+        if (version_compare(_PS_VERSION_, '1.6', '<')) {
+            $this->display_column_left  = true;
+            $this->display_column_right = true;
+        }
 
-		parent::initContent();
+        parent::initContent();
 
-		if (Tools::getIsset('restore')) {
-			if (Tools::getValue('restore') == 'cart') {
-				$this->restoreCustomerCart();
-			}
-		}
+        if (Tools::getIsset('restore')) {
+            if (Tools::getValue('restore') == 'cart') {
+                $this->restoreCustomerCart();
+            }
+        }
 
         if (!in_array(Tools::getValue('action'), $this->statuses)) {
             $this->module->redirectToPage('history.php');
         }
 
-		$this->context->smarty->append(
+        $this->context->smarty->append(
             'ecomprocessing',
             array(
                 'redirect'  => array(
@@ -72,40 +72,44 @@ class EComProcessingRedirectModuleFrontController extends ModuleFrontController
                 )
             ),
             true
-		);
+        );
 
-		$this->setTemplate('redirect.tpl');
-	}
+        if (version_compare(_PS_VERSION_, '1.7', '<')) {
+            $this->setTemplate('redirect.tpl');
+        } else {
+            $this->setTemplate('module:ecomprocessing/views/templates/front/redirectpage.tpl');
+        }
+    }
 
-	/**
-	 * Restore customer's cart
-	 *
-	 * @return void
-	 */
-	private function restoreCustomerCart()
-	{
-		$order = Order::getCustomerOrders($this->context->customer->id, false, $this->context);
+    /**
+     * Restore customer's cart
+     *
+     * @return void
+     */
+    private function restoreCustomerCart()
+    {
+        $order = Order::getCustomerOrders($this->context->customer->id, false, $this->context);
 
-		$order = reset($order);
+        $order = reset($order);
 
-		$oldCart = new Cart((int)Order::getCartIdStatic($order['id_order'], $this->context->customer->id));
+        $oldCart = new Cart((int)Order::getCartIdStatic($order['id_order'], $this->context->customer->id));
 
-		$duplication = $oldCart->duplicate();
+        $duplication = $oldCart->duplicate();
 
-		if ($duplication && Validate::isLoadedObject($duplication['cart']))
-		{
-			$this->context->cookie->id_cart = $duplication['cart']->id;
-			$this->context->cookie->write();
+        if ($duplication && Validate::isLoadedObject($duplication['cart']))
+        {
+            $this->context->cookie->id_cart = $duplication['cart']->id;
+            $this->context->cookie->write();
 
-			if (Configuration::get('PS_ORDER_PROCESS_TYPE') == PS_ORDER_PROCESS_OPC) {
-				$this->module->redirectToPage('order-opc.php', array('step' => '3'));
-			}
-			else {
-				$this->module->redirectToPage('order.php', array('step' => '3'));
-			}
-		}
+            if (Configuration::get('PS_ORDER_PROCESS_TYPE') == PS_ORDER_PROCESS_OPC) {
+                $this->module->redirectToPage('order-opc.php', array('step' => '3'));
+            }
+            else {
+                $this->module->redirectToPage('order.php', array('step' => '3'));
+            }
+        }
 
-		// If all else fails, redirect the customer to their OrderHistory
-		$this->module->redirectToPage('history.php');
-	}
+        // If all else fails, redirect the customer to their OrderHistory
+        $this->module->redirectToPage('history.php');
+    }
 }

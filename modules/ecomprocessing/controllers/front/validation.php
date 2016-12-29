@@ -28,86 +28,102 @@ if (!defined('_PS_VERSION_')) {
  */
 class EComProcessingValidationModuleFrontController extends ModuleFrontControllerCore
 {
-	/** @var EComProcessing */
-	public $module;
+    /** @var EComProcessing */
+    public $module;
 
-	/**
-	 * @see FrontControlwler::initContent()
-	 */
-	public function initContent()
-	{
-		parent::initContent();
+    /**
+     * @see FrontControlwler::initContent()
+     */
+    public function initContent()
+    {
+        parent::initContent();
 
-		if ('POST' != $_SERVER['REQUEST_METHOD']) {
-			$this->module->redirectToPage('order.php', array('step' => 3));
-		}
+        if ('POST' != $_SERVER['REQUEST_METHOD']) {
+            $this->module->redirectToPage('order.php', array('step' => 3));
+        }
 
-		if (!$this->module->checkCurrency($this->context->cart)) {
-			$this->module->redirectToPage('order.php', array('step' => 3));
-		}
+        if (!$this->module->checkCurrency($this->context->cart)) {
+            $this->module->redirectToPage('order.php', array('step' => 3));
+        }
 
-		if (!$this->module->isAvailable()) {
-			$this->module->redirectToPage('order.php', array('step' => 3));
-		}
+        if (!$this->module->isAvailable()) {
+            $this->module->redirectToPage('order.php', array('step' => 3));
+        }
 
-		if (Tools::getIsset('submit' . $this->module->name . 'Checkout')) {
-			$this->validateCheckout();
-		}
-		elseif (Tools::getIsset('submit' . $this->module->name . 'Direct')) {
-			$this->validateDirect();
-		}
-	}
+        if (Tools::getIsset('submit' . $this->module->name . 'Checkout')) {
+            $this->validateCheckout();
+        }
+        elseif (Tools::getIsset('submit' . $this->module->name . 'Direct')) {
+            $this->validateDirect();
+        }
+    }
 
-	public function validateCheckout()
-	{
-		// Is Checkout allowed?
-		if (!$this->module->isCheckoutPaymentMethodAvailable()) {
-			$this->module->redirectToPage('order.php', array('step' => 3));
-		}
+    public function validateCheckout()
+    {
+        // Is Checkout allowed?
+        if (!$this->module->isCheckoutPaymentMethodAvailable()) {
+            $this->module->redirectToPage('order.php', array('step' => 3));
+        }
 
-		// Send transaction
-		$url = $this->module->doCheckout();
+        // Send transaction
+        $url = $this->module->doCheckout();
 
-		if (isset($url)) {
-			Tools::redirect($url);
-		}
-		else {
-			Tools::redirect(
-				$this->context->link->getModuleLink($this->module->name, 'checkout')
-			);
-		}
+        if (isset($url)) {
+            Tools::redirect($url);
+        }
+        else {
+            if (version_compare(_PS_VERSION_, '1.7', '<')) {
+                Tools::redirect(
+                    $this->context->link->getModuleLink($this->module->name, 'checkout')
+                );
+            } else {
+                $this->module->redirectToPage(
+                    'order.php',
+                    array(
+                        'step'                     => 3,
+                        'select_payment_option' => Tools::getValue('select_payment_option')
+                    )
+                );
+            }
+        }
 
-	}
+    }
 
-	public function validateDirect()
-	{
-		// Is standard method allowed?
-		if (!$this->module->isDirectPaymentMethodAvailable()) {
-			$this->module->redirectToPage('order.php', array('step' => 3));
-		}
+    public function validateDirect()
+    {
+        // Is standard method allowed?
+        if (!$this->module->isDirectPaymentMethodAvailable()) {
+            $this->module->redirectToPage('order.php', array('step' => 3));
+        }
 
-		// Is everything required filled in?
-		if (!$this->isRequiredFilled()) {
-			$this->module->setSessVar( 'error_direct',
+        // Is everything required filled in?
+        if (!$this->isRequiredFilled()) {
+            $this->module->setSessVar( 'error_direct',
                                                $this->module->l('Please fill all of the required fields!')
             );
 
-			$this->module->redirectToPage('order.php', array('step' => '3'));
-		}
+            $this->module->redirectToPage(
+                'order.php',
+                array(
+                    'step' => '3',
+                    'select_payment_option' => Tools::getValue('select_payment_option')
+                )
+            );
+        }
 
         $this->module->doPayment();
-	}
+    }
 
-	/**
-	 * Check if all required fields are submitted
-	 *
-	 * @return bool
-	 */
-	public function isRequiredFilled()
-	{
-		return Tools::getIsset($this->module->name . '-cvc') &&
-		       Tools::getIsset($this->module->name . '-name') &&
-               Tools::getIsset($this->module->name . '-number') &&
-	           Tools::getIsset($this->module->name . '-expiry');
-	}
+    /**
+     * Check if all required fields are submitted
+     *
+     * @return bool
+     */
+    public function isRequiredFilled()
+    {
+        return Tools::getIsset($this->module->name . '-cvc') && !empty(Tools::getValue($this->module->name . '-cvc')) &&
+        Tools::getIsset($this->module->name . '-name') && !empty(Tools::getValue($this->module->name . '-name')) &&
+        Tools::getIsset($this->module->name . '-number') && !empty(Tools::getValue($this->module->name . '-number')) &&
+        Tools::getIsset($this->module->name . '-expiry') && !empty(Tools::getValue($this->module->name . '-expiry'));
+    }
 }

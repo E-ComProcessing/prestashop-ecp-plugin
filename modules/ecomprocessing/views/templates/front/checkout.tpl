@@ -38,12 +38,6 @@
     {if $ecomprocessing['checkout']['product_count'] <= 0}
         <p class="warning">{l s='Your shopping cart is empty.' mod='ecomprocessing'}</p>
     {else}
-        <style type="text/css">
-            #module-EComProcessing-checkout #center-column {
-                width: 737px;
-            }
-        </style>
-
         {if $ecomprocessing['checkout']['error']}
             <div class="row row-spacer">
                 <div class="alert alert-warning alert-dismissable error-wrapper" style="width:75%;margin:15px auto;">

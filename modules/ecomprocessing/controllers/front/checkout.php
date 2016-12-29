@@ -28,64 +28,64 @@ if (!defined('_PS_VERSION_')) {
  */
 class EComProcessingCheckoutModuleFrontController extends ModuleFrontController
 {
-	/** @var EComProcessing */
-	public $module;
+    /** @var EComProcessing */
+    public $module;
 
-	// Hide the left column
-	public $display_column_left = false;
+    // Hide the left column
+    public $display_column_left = false;
 
-	/**
-	 * @see FrontController::initContent()
-	 */
-	public function initContent()
-	{
-		parent::initContent();
+    /**
+     * @see FrontController::initContent()
+     */
+    public function initContent()
+    {
+        parent::initContent();
 
-		$this->page_name = $this->module->l('EComProcessing Checkout');
+        $this->page_name = $this->module->l('EComProcessing Checkout');
 
-		if ($this->context->customer->isLogged()) {
-			$this->initCheckout();
-		}
-		else {
-			$this->module->redirectToPage('my-account.php');
-		}
-	}
+        if ($this->context->customer->isLogged()) {
+            $this->initCheckout();
+        }
+        else {
+            $this->module->redirectToPage('my-account.php');
+        }
+    }
 
-	/**
-	 * Show confirmation page to the customer
-	 * and inform them, that they are going
-	 * to be redirected to our payment gateway.
-	 */
-	public function initCheckout()
-	{
-		if ($this->module->isAvailable()) {
-			$cart = $this->context->cart;
+    /**
+     * Show confirmation page to the customer
+     * and inform them, that they are going
+     * to be redirected to our payment gateway.
+     */
+    public function initCheckout()
+    {
+        if ($this->module->isAvailable()) {
+            $cart = $this->context->cart;
 
-			if (!$this->module->checkCurrency($cart)) {
-				$this->module->redirectToPage('order.php');
-			}
+            if (!$this->module->checkCurrency($cart)) {
+                $this->module->redirectToPage('order.php');
+            }
 
-			if(!$cart->getOrderTotal(true, $cart::BOTH)) {
-				$this->module->redirectToPage('order.php');
-			}
+            if(!$cart->getOrderTotal(true, $cart::BOTH)) {
+                $this->module->redirectToPage('order.php');
+            }
 
-			if (version_compare(_PS_VERSION_, '1.6', '<')) {
-				$this->context->controller->addCSS(
-					$this->module->getPathUri() . 'assets/css/bootstrap-custom.min.css', 'all'
-				);
-				$this->context->controller->addJS(
-					$this->module->getPathUri() . 'assets/js/bootstrap/bootstrap.min.js'
-				);
-			}
+            if (version_compare(_PS_VERSION_, '1.6', '<')) {
+                $this->context->controller->addCSS(
+                    $this->module->getPathUri() . 'assets/css/bootstrap-custom.min.css', 'all'
+                );
+                $this->context->controller->addJS(
+                    $this->module->getPathUri() . 'assets/js/bootstrap/bootstrap.min.js'
+                );
+            }
 
-			$this->context->controller->addCSS(
-				$this->module->getPathUri() . 'assets/css/card.min.css', 'all'
-			);
-			$this->context->controller->addJS(
-				$this->module->getPathUri() . 'assets/js/card/card.min.js'
-			);
+            $this->context->controller->addCSS(
+                $this->module->getPathUri() . 'assets/css/card.min.css', 'all'
+            );
+            $this->context->controller->addJS(
+                $this->module->getPathUri() . 'assets/js/card/card.min.js'
+            );
 
-			$this->context->smarty->append(
+            $this->context->smarty->append(
                 'ecomprocessing',
                 array(
                     'checkout' => array(
@@ -103,7 +103,11 @@ class EComProcessingCheckoutModuleFrontController extends ModuleFrontController
                 true
             );
 
-			$this->setTemplate('checkout.tpl');
-		}
-	}
+            if (version_compare(_PS_VERSION_, '1.7', '<')) {
+                $this->setTemplate('checkout.tpl');
+            } else {
+                $this->setTemplate('module:ecomprocessing/views/templates/front/checkoutpage.tpl');
+            }
+        }
+    }
 }

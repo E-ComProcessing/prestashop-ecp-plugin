@@ -15,7 +15,8 @@
  * @copyright   2016 EComProcessing™
  * @license     http://opensource.org/licenses/gpl-2.0.php GNU General Public License, version 2 (GPL-2.0)
  *}
+{extends file='page.tpl'}
 
-{include file="./payment/checkout.tpl"}
-
-{include file="./payment/direct.tpl"}
+{block name="page_content"}
+    {include file="module:ecomprocessing/views/templates/front/redirect.tpl"}
+{/block}

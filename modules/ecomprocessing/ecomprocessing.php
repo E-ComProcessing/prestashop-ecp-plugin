@@ -1,6 +1,6 @@
 <?php
 /*
- * Copyright (C) 2015 E-Comprocessing™
+ * Copyright (C) 2016 E-Comprocessing™
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -13,7 +13,7 @@
  * GNU General Public License for more details.
  *
  * @author      E-Comprocessing™
- * @copyright   2015 E-Comprocessing™
+ * @copyright   2016 E-Comprocessing™
  * @license     http://opensource.org/licenses/gpl-2.0.php GNU General Public License, version 2 (GPL-2.0)
  */
 
@@ -37,19 +37,39 @@ class EComProcessing extends PaymentModule
     /**
      * Constructor
      */
+
+    /**
+     * Configurable module settings
+     */
+    const SETTING_ECP_USERNAME              = 'ECP_USERNAME';
+    const SETTING_ECP_PASSWORD              = 'ECP_PASSWORD';
+    const SETTING_ECP_TOKEN                 = 'ECP_TOKEN';
+    const SETTING_ECP_ENVIRONMENT           = 'ECP_ENVIRONMENT';
+    const SETTING_ECP_DIRECT                = 'ECP_DIRECT';
+    const SETTING_ECP_DIRECT_TRX_TYPE       = 'ECP_DIRECT_TRX_TYPE';
+    const SETTING_ECP_CHECKOUT              = 'ECP_CHECKOUT';
+    const SETTING_ECP_CHECKOUT_TRX_TYPES    = 'ECP_CHECKOUT_TRX_TYPES';
+    const SETTING_ECP_ALLOW_PARTIAL_CAPTURE = 'ECP_ALLOW_PARTIAL_CAPTURE';
+    const SETTING_ECP_ALLOW_PARTIAL_REFUND  = 'ECP_ALLOW_PARTIAL_REFUND';
+    const SETTING_ECP_ALLOW_VOID            = 'ECP_ALLOW_VOID';
+    const SETTING_ECP_ADD_JQUERY_CHECKOUT   = 'ECP_ADD_JQUERY_CHECKOUT';
+
     public function __construct()
     {
         /* Initial Module Setup */
-        $this->name         = 'ecomprocessing';
-        $this->tab          = 'payments_gateways';
-        $this->displayName  = 'E-ComProcessing Payment Gateway';
-        $this->controllers  = array('checkout', 'notification', 'redirect', 'validation');
-        $this->version      = '1.2.5';
-        $this->author       = 'E-ComProcessing™';
+        $this->name                   = 'ecomprocessing';
+        $this->tab                    = 'payments_gateways';
+        $this->displayName            = 'E-ComProcessing Payment Gateway';
+        $this->controllers            = array('checkout', 'notification', 'redirect', 'validation');
+        $this->version                = '1.3.2';
+        $this->author                 = 'E-ComProcessing™';
+        $this->need_instance          = 1;
+        $this->ps_versions_compliancy = array('min' => '1.5', 'max' => _PS_VERSION_);
+        $this->bootstrap              = true;
 
         /* The parent construct is required for translations */
         $this->page         = basename(__FILE__, '.php');
-        $this->description  = $this->l('Accept payments through E-ComProcessing\'s Payment Gateway - Genesis');
+        $this->description  = 'Accept payments through E-ComProcessing\'s Payment Gateway - Genesis';
 
         /* Use Bootstrap */
         $this->bootstrap = true;
@@ -87,6 +107,8 @@ class EComProcessing extends PaymentModule
                 'warning'   => $this->warning
             )
         );
+
+        $this->doMigrateSettings();
     }
 
     /**
@@ -109,7 +131,7 @@ class EComProcessing extends PaymentModule
         // Create Tables
         $install->createSchema();
 
-        return $pre_install && $install->isSuccessful();
+        return $pre_install && $install->isSuccessful() && $this->setDefaultSettingsToDB();
     }
 
     /**
@@ -158,7 +180,7 @@ class EComProcessing extends PaymentModule
      */
     public function isDirectPaymentMethodAvailable()
     {
-        return (Configuration::get('ECP_DIRECT') == 'true' ? true : false);
+        return $this->getBoolConfigurationValue(self::SETTING_ECP_DIRECT);
     }
 
     /**
@@ -168,7 +190,7 @@ class EComProcessing extends PaymentModule
      */
     public function isCheckoutPaymentMethodAvailable()
     {
-        return (Configuration::get('ECP_CHECKOUT') == 'true' ? true : false);
+        return $this->getBoolConfigurationValue(self::SETTING_ECP_CHECKOUT);
     }
 
     /**
@@ -183,7 +205,7 @@ class EComProcessing extends PaymentModule
     public function isAsyncTransaction()
     {
         if ($this->isDirectPaymentMethodAvailable()) {
-            return (stripos(Configuration::get('ECP_DIRECT_TRX_TYPE'), '3d') !== false) ? true : false;
+            return (stripos(Configuration::get(self::SETTING_ECP_DIRECT_TRX_TYPE), '3d') !== false) ? true : false;
         }
 
         return false;
@@ -191,7 +213,7 @@ class EComProcessing extends PaymentModule
 
     /**
      * Hook AdminOrder to display the saved transactions,
-     * related to the order
+     * related to the order (Used for 1.5.x and 1.6.x)
      *
      * @param array $params
      *
@@ -234,7 +256,7 @@ class EComProcessing extends PaymentModule
         );
 
         $this->context->controller->addCSS(
-            $this->getPathUri() . 'assets/css/bootstrapValidator.min.css', 'all'
+            $this->getPathUri() . 'assets/js/bootstrap/bootstrapValidator.min.css'
         );
 
         $this->context->controller->addJS(
@@ -269,6 +291,16 @@ class EComProcessing extends PaymentModule
                             'thousandSeparator' => '' /* must be empty, otherwise exception could be trown from Genesis */
                         )
                     ),
+                    'options' => array(
+                        'allow_partial_capture' => $this->getBoolConfigurationValue(self::SETTING_ECP_ALLOW_PARTIAL_CAPTURE),
+                        'allow_partial_refund'  => $this->getBoolConfigurationValue(self::SETTING_ECP_ALLOW_PARTIAL_REFUND),
+                        'allow_void'            => $this->getBoolConfigurationValue(self::SETTING_ECP_ALLOW_VOID)
+                    ),
+                    'text' => array(
+                        'denied_partial_capture' => $this->l('Partial Capture is currently disabled! You can enable this option in the Module Settings.'),
+                        'denied_partial_refund' => $this->l('Partial Refund is currently disabled! You can enable this option in the Module Settings.'),
+                        'denied_void' => $this->l('Cancel Transaction are currently disabled! You can enable this option in the Module Settings.'),
+                    ),
                     'error'     => $this->getSessVar('error_transaction'),
                     'tree'      => EComProcessingTransaction::getTransactionTree((int)$params['id_order']),
                 )
@@ -277,6 +309,127 @@ class EComProcessing extends PaymentModule
         );
 
         return $this->fetchTemplate('/views/templates/admin/admin_order/transactions.tpl');
+    }
+
+    /**
+     * Hook AdminOrder to display the saved transactions,
+     * related to the order (Used for 1.7.x)
+     *
+     * @param array $params
+     *
+     * @return string HTML source
+     */
+    public function hookDisplayAdminOrder($params)
+    {
+        return $this->hookAdminOrder($params);
+    }
+
+    /**
+     * Hook Payment Options to display the payment methods on the checkout page,
+     * (Used for 1.7.x)
+     *
+     * @param array $params
+     *
+     * @return array
+     */
+    public function hookPaymentOptions($params)
+    {
+        if (!$this->isAvailable()) {
+            return null;
+        }
+
+        if (!$this->checkCurrency($params['cart'])) {
+            return;
+        }
+
+        if (!isset($_SESSION)) {
+            session_start();
+        }
+
+        $this->context->smarty->append(
+            'ecomprocessing',
+            array(
+                'payment'   => array(
+                    'option' => array(
+                        'selected_id' =>
+                            Tools::getIsset('select_payment_option')
+                                ? Tools::getValue('select_payment_option')
+                                : ''
+                    ),
+                    'methods'       => array(
+                        'direct'    => $this->isDirectPaymentMethodAvailable(),
+                        'checkout'  => $this->isCheckoutPaymentMethodAvailable()
+                    ),
+                    'errors'        => array(
+                        'direct'    => $this->getSessVar('error_direct'),
+                        'checkout'  => $this->getSessVar('error_checkout')
+                    )
+                ),
+                'ssl' => array(
+                    'enabled'       => $this->getIsSSLEnabled()
+                ),
+            ),
+            true
+        );
+
+        $paymentMethods = array(
+            array(
+                'title' => 'Pay safely with E-ComProcessing Checkout',
+                'name'  => 'checkout',
+                'clientSideEvents' => array(
+                    'onFormSubmit' => 'return doBeforeSubmitEComProcessingCheckoutPaymentForm(this);"'
+                ),
+                'availabilityClosure' => function() {
+                    return $this->isCheckoutPaymentMethodAvailable();
+                }
+            ),
+            array(
+                'title' => 'Pay safely with E-ComProcessing Direct',
+                'name'  => 'direct',
+                'clientSideEvents' => array(
+                    'onFormSubmit' => 'return doBeforeSubmitEComProcessingDirectPaymentForm(this);"'
+                ),
+                'availabilityClosure' => function() {
+                    return $this->isDirectPaymentMethodAvailable() && $this->getIsSSLEnabled();
+                }
+            ),
+        );
+
+        $paymentOptions = array();
+
+        foreach ($paymentMethods as $paymentMethod) {
+            $availabilityClosure = $paymentMethod['availabilityClosure'];
+            if (!is_callable($availabilityClosure) || $availabilityClosure()) {
+                $submitFormAction = $this->context->link->getModuleLink(
+                    $this->name,
+                    'validation',
+                    array(),
+                    true
+                );
+                $paymentMethodInputName = 'submit' . $this->name . ucfirst($paymentMethod['name']);
+                $paymentMethodOption = new PrestaShop\PrestaShop\Core\Payment\PaymentOption();
+                $paymentMethodOption
+                    ->setCallToActionText($paymentMethod['title'])
+                    ->setForm(
+                        '<form
+                            class="payment-option-form-"' . $this->name . '"
+                            method="post"
+                            action="' . $submitFormAction . '"
+                            onsubmit="' . $paymentMethod['clientSideEvents']['onFormSubmit'] . '">
+                            <input type="hidden" name="' . $paymentMethodInputName .'" value="1" />
+                         </form>'
+                    )
+                    ->setAdditionalInformation(
+                        $this->context->smarty->fetch(
+                            "module:{$this->name}/views/templates/hook/payment/{$paymentMethod['name']}.tpl"
+                        )
+                    );
+
+                $paymentOptions[] = $paymentMethodOption;
+            }
+        }
+
+        return $paymentOptions;
     }
 
     /**
@@ -314,7 +467,7 @@ class EComProcessing extends PaymentModule
                     ),
                 ),
                 'ssl' => array(
-                    'enabled'   	=> Configuration::get('PS_SSL_ENABLED')
+                    'enabled'   	=> $this->getIsSSLEnabled()
                 ),
             ),
             true
@@ -355,6 +508,37 @@ class EComProcessing extends PaymentModule
     }
 
     /**
+     * Load the CSS/JS needed in advance to ensure that
+     * when the form is called through hookPayment we
+     * have loaded the CSS/JS.
+     * (Used for 1.7.x)
+     *
+     * @return void
+     */
+    public function hookHeader()
+    {
+        if (!$this->isAvailable()) {
+            return;
+        }
+
+        if (!$this->isDirectPaymentMethodAvailable()) {
+            return;
+        }
+
+        $cardJSUri = $this->getPathUri() . 'assets/js/card/card.min.js';
+        if ($this->isPrestaVersion17()) {
+            if ($this->getBoolConfigurationValue(self::SETTING_ECP_ADD_JQUERY_CHECKOUT)) {
+                $this->registerCore17Javascript(
+                    $this->getJQueryUri()
+                );
+            }
+            $this->registerCore17Javascript($cardJSUri);
+        } else {
+            $this->context->controller->addJS($cardJSUri);
+        }
+    }
+
+    /**
      * Show a information about the customers order
      *
      * @param $params
@@ -384,7 +568,7 @@ class EComProcessing extends PaymentModule
             case Configuration::get('PS_OS_PREPARATION'):
                 $status = 'pending';
                 break;
-            case Configuration::get('PS_OS_PAYMENT'):
+            case Configuration::get('PS_OS_WS_PAYMENT'):
                 $status = 'success';
                 break;
             default:
@@ -428,7 +612,7 @@ class EComProcessing extends PaymentModule
 
         // Parameters
         $data->id               = md5(mt_rand() . microtime(true) . uniqid());
-        $data->transaction_type = Configuration::get('ECP_DIRECT_TRX_TYPE');
+        $data->transaction_type = Configuration::get(self::SETTING_ECP_DIRECT_TRX_TYPE);
         $data->usage            = $this->l('Prestashop Transaction');
 
         $description = '';
@@ -467,10 +651,10 @@ class EComProcessing extends PaymentModule
         if (Tools::getIsset('ecomprocessing-expiry')) {
             $data->expiration = Tools::getValue('ecomprocessing-expiry');
 
-            list($month, $year) = explode(' / ', $data->expiration);
+            list($month, $year) = explode('/', $data->expiration);
 
-            $data->expiration_month = $month;
-            $data->expiration_year  = substr(date('Y'), 0, 2) . substr($year, -2);
+            $data->expiration_month = trim($month);
+            $data->expiration_year  = substr(date('Y'), 0, 2) . substr(trim($year), -2);
         }
 
         // Billing
@@ -482,7 +666,7 @@ class EComProcessing extends PaymentModule
             $data->billing->address2  = $invoice->address2;
             $data->billing->postcode  = $invoice->postcode;
             $data->billing->city      = $invoice->city;
-            $data->billing->state     = State::getNameById($invoice->id_state);
+            $data->billing->state     = $this->getStateIsoCodeById($invoice->id_state);
             $data->billing->country   = \Genesis\Utils\Country::getCountryISO($invoice->country);
         }
 
@@ -495,7 +679,7 @@ class EComProcessing extends PaymentModule
             $data->shipping->address2  = $shipping->address2;
             $data->shipping->postcode  = $shipping->postcode;
             $data->shipping->city      = $shipping->city;
-            $data->shipping->state     = State::getNameById($shipping->id_state);
+            $data->shipping->state     = $this->getStateIsoCodeById($shipping->id_state);
             $data->shipping->country   = \Genesis\Utils\Country::getCountryISO($shipping->country);
         }
 
@@ -571,16 +755,12 @@ class EComProcessing extends PaymentModule
         } catch (\Exception $e) {
             $this->logError($e);
 
- 						$this->setSessVar('error_checkout',
-                $this->l("Please, make sure you've entered all of the required data correctly, e.g. Email, Phone, Billing/Shipping Address.")
+            $this->setSessVar('error_checkout',
+                'Please, make sure you\'ve entered correct credentials for accessing the gateway and all of the required data, e.g. Email, Phone, Billing/Shipping Address.'
             );
         }
 
-        Tools::redirect(
-            $this->context->link->getModuleLink($this->name, 'checkout')
-        );
-
-        return false;
+        return null;
     }
 
     /**
@@ -602,6 +782,28 @@ class EComProcessing extends PaymentModule
             );
 
             $response = $responseObj->getResponseObject();
+
+            $positiveStates = array(
+                \Genesis\API\Constants\Transaction\States::APPROVED,
+                \Genesis\API\Constants\Transaction\States::PENDING_ASYNC
+            );
+
+            if (!in_array($response->status, $positiveStates)) {
+                $this->setSessVar('error_direct',
+                    isset($response->message)
+                        ? $response->message
+                        : $this->l('Your payment was declined! Please, check your card data and try again!')
+                );
+
+                $this->redirectToPage(
+                    'order.php',
+                    array(
+                        'step'                  => '3',
+                        'select_payment_option' => Tools::getValue('select_payment_option')
+                    )
+                );
+                return;
+            }
 
             $message = 'TransactionId: ' . $response->unique_id . PHP_EOL;
 
@@ -649,20 +851,24 @@ class EComProcessing extends PaymentModule
             } else {
                 $this->redirectToPage('order-confirmation.php');
             }
-        } catch (\Genesis\Exceptions\ErrorAPI $api) {
-            $this->logError($api);
-
-            $this->setSessVar('error_direct', $api->getMessage());
-
-            $this->redirectToPage('order.php', array('step' => '3'));
         } catch (\Exception $e) {
             $this->logError($e);
 
-            $this->setSessVar('error_direct',
-                $this->l('There was a problem processing your transaction, please try again!')
-            );
+            if ($e instanceof \Genesis\Exceptions\ErrorAPI) {
+                $this->setSessVar('error_direct', $e->getMessage());
+            } else {
+                $this->setSessVar('error_direct',
+                    $this->l('There was a problem processing your transaction, please try again! ' . $e->getMessage())
+                );
+            }
 
-            $this->redirectToPage('order.php', array('step' => '3'));
+            $this->redirectToPage(
+                'order.php',
+                array(
+                    'step'                  => '3',
+                    'select_payment_option' => Tools::getValue('select_payment_option')
+                )
+            );
         }
     }
 
@@ -703,8 +909,12 @@ class EComProcessing extends PaymentModule
             $transaction_response->id_parent = $transaction->id_unique;
             $transaction_response->ref_order = $transaction->ref_order;
             $transaction_response->importResponse($response->getResponseObject());
+            if ($transaction->terminal) {
+                $transaction_response->terminal = $transaction->terminal;
+            }
+
             $transaction_response->updateOrderHistory(
-                Configuration::get('PS_OS_PAYMENT'), true
+                Configuration::get('PS_OS_WS_PAYMENT'), true
             );
             $transaction_response->add();
         } catch (\Exception $e) {
@@ -851,7 +1061,7 @@ class EComProcessing extends PaymentModule
     {
         switch ($status) {
             case \Genesis\API\Constants\Transaction\States::APPROVED:
-                return Configuration::get('PS_OS_PAYMENT');
+                return Configuration::get('PS_OS_WS_PAYMENT');
                 break;
             case \Genesis\API\Constants\Transaction\States::REFUNDED:
                 return Configuration::get('PS_OS_REFUND');
@@ -878,7 +1088,7 @@ class EComProcessing extends PaymentModule
     {
         switch ($transaction_type) {
             case \Genesis\API\Constants\Transaction\Types::CAPTURE:
-                return Configuration::get('PS_OS_PAYMENT');
+                return Configuration::get('PS_OS_WS_PAYMENT');
                 break;
             case \Genesis\API\Constants\Transaction\Types::REFUND:
                 return Configuration::get('PS_OS_REFUND');
@@ -1049,7 +1259,7 @@ class EComProcessing extends PaymentModule
         $processed_list = array();
 
         $selected_types = json_decode(
-            Configuration::get('ECP_CHECKOUT_TRX_TYPES')
+            Configuration::get(self::SETTING_ECP_CHECKOUT_TRX_TYPES)
         );
 
         $alias_map = array(
@@ -1098,14 +1308,18 @@ class EComProcessing extends PaymentModule
     public function getConfigKeys()
     {
         return array(
-            'ECP_USERNAME',
-            'ECP_PASSWORD',
-            'ECP_TOKEN',
-            'ECP_ENVIRONMENT',
-            'ECP_DIRECT',
-            'ECP_DIRECT_TRX_TYPE',
-            'ECP_CHECKOUT',
-            'ECP_CHECKOUT_TRX_TYPES'
+            self::SETTING_ECP_USERNAME,
+            self::SETTING_ECP_PASSWORD,
+            self::SETTING_ECP_TOKEN,
+            self::SETTING_ECP_ENVIRONMENT,
+            self::SETTING_ECP_DIRECT,
+            self::SETTING_ECP_DIRECT_TRX_TYPE,
+            self::SETTING_ECP_CHECKOUT,
+            self::SETTING_ECP_CHECKOUT_TRX_TYPES,
+            self::SETTING_ECP_ALLOW_PARTIAL_CAPTURE,
+            self::SETTING_ECP_ALLOW_PARTIAL_REFUND,
+            self::SETTING_ECP_ALLOW_VOID,
+            self::SETTING_ECP_ADD_JQUERY_CHECKOUT
         );
     }
 
@@ -1119,7 +1333,7 @@ class EComProcessing extends PaymentModule
         $config_key_value = array();
 
         foreach ($this->getConfigKeys() as $config_key) {
-            if (in_array($config_key, array('ECP_CHECKOUT_TRX_TYPES'))) {
+            if (in_array($config_key, array(self::SETTING_ECP_CHECKOUT_TRX_TYPES))) {
                 $config_key_value[$config_key . '[]'] = json_decode(Configuration::get($config_key));
             } else {
                 $config_key_value[$config_key] = Configuration::get($config_key);
@@ -1143,13 +1357,13 @@ class EComProcessing extends PaymentModule
             foreach ($this->getConfigKeys() as $key) {
                 $value = Tools::getValue($key);
 
-                if (in_array($key, array('ECP_CHECKOUT_TRX_TYPES'))) {
+                if (in_array($key, array(self::SETTING_ECP_CHECKOUT_TRX_TYPES))) {
                     $value = json_encode($value);
                 }
 
                 if (!Validate::isConfigName($key)) {
                     $output = $this->displayError($this->l('Invalid config name: ' . $key));
-                } elseif (empty($value)) {
+                } elseif (is_string($value) && strlen($value) == 0) {
                     $output = $this->displayError($this->l('Invalid content for: ' . $key));
                 } else {
                     Configuration::updateValue($key, $value);
@@ -1206,7 +1420,7 @@ class EComProcessing extends PaymentModule
                         'desc' => $this->l(
                             'Enter your Username, required for accessing the Genesis Gateway'
                         ),
-                        'name' => 'ECP_USERNAME',
+                        'name' => self::SETTING_ECP_USERNAME,
                         'size' => 20,
                         'required' => true
                     ),
@@ -1216,7 +1430,7 @@ class EComProcessing extends PaymentModule
                         'desc' => $this->l(
                             'Enter your Password, required for accessing the Genesis Gateway'
                         ),
-                        'name' => 'ECP_PASSWORD',
+                        'name' => self::SETTING_ECP_PASSWORD,
                         'size' => 20,
                         'required' => true
                     ),
@@ -1226,7 +1440,7 @@ class EComProcessing extends PaymentModule
                         'desc' => $this->l(
                             'Enter your Token, required for accessing the Genesis Gateway'
                         ),
-                        'name' => 'ECP_TOKEN',
+                        'name' => self::SETTING_ECP_TOKEN,
                         'size' => 20,
                         'required' => true
                     ),
@@ -1237,7 +1451,7 @@ class EComProcessing extends PaymentModule
                             'Select the environment you wish to use for processing your transactions.' . PHP_EOL .
                             'Note: Its recommended to use the Sandbox environment every-time you alter your settings, in order to ensure everything works as intended.'
                         ),
-                        'name' => 'ECP_ENVIRONMENT',
+                        'name' => self::SETTING_ECP_ENVIRONMENT,
                         'options' => array(
                             'query' => array(
                                 array(
@@ -1254,23 +1468,19 @@ class EComProcessing extends PaymentModule
                         )
                     ),
                     array(
-                        'type' => 'radio',
+                        'type' => 'switch',
                         'label' => 'Direct (Hosted) Payment Method',
                         'desc' => $this->l(
                             'Enable/Disable the Direct API - allow customers to enter their CreditCard information on your website.' . PHP_EOL .
                             'Note: You need PCI-DSS certificate in order to enable this feature.'
                         ),
-                        'name' => 'ECP_DIRECT',
+                        'name' => self::SETTING_ECP_DIRECT,
                         'values' => array(
                             array(
-                                'id' => 'on',
-                                'value' => 'true',
-                                'label' => $this->l('Enable'),
+                                'value' => '1',
                             ),
                             array(
-                                'id' => 'off',
-                                'value' => 'false',
-                                'label' => $this->l('Disable'),
+                                'value' => '0'
                             )
                         )
                     ),
@@ -1280,7 +1490,7 @@ class EComProcessing extends PaymentModule
                         'desc' => $this->l(
                             'Select the transaction type you want to use for Direct processing.'
                         ),
-                        'name' => 'ECP_DIRECT_TRX_TYPE',
+                        'name' => self::SETTING_ECP_DIRECT_TRX_TYPE,
                         'options' => array(
                             'query' => array(
                                 array(
@@ -1305,23 +1515,19 @@ class EComProcessing extends PaymentModule
                         )
                     ),
                     array(
-                        'type' => 'radio',
+                        'type' => 'switch',
                         'label' => 'Checkout (Remote) Payment Method',
                         'desc' => $this->l(
                             'Enable/Disable the Checkout payment method - receive credit-card payments, without the need of PCI-DSS certificate or HTTPS.' . PHP_EOL .
                             'Note: Upon checkout, the customer will be redirected to a secure payment form, located on our servers and we will notify you, once the payment reached a final status'
                         ),
-                        'name' => 'ECP_CHECKOUT',
+                        'name' => self::SETTING_ECP_CHECKOUT,
                         'values' => array(
                             array(
-                                'id' => 'on',
-                                'value' => 'true',
-                                'label' => $this->l('Enable'),
+                                'value' => '1'
                             ),
                             array(
-                                'id' => 'off',
-                                'value' => 'false',
-                                'label' => $this->l('Disable'),
+                                'value' => '0'
                             )
                         )
                     ),
@@ -1331,8 +1537,8 @@ class EComProcessing extends PaymentModule
                         'desc' => $this->l(
                             'Select the transaction types you want to use during Checkout session.'
                         ),
-                        'id' => 'ECP_CHECKOUT_TRX_TYPES',
-                        'name' => 'ECP_CHECKOUT_TRX_TYPES[]',
+                        'id' => self::SETTING_ECP_CHECKOUT_TRX_TYPES,
+                        'name' => self::SETTING_ECP_CHECKOUT_TRX_TYPES . '[]',
                         'multiple' => true,
                         'options' => array(
                             'query' => array(
@@ -1421,12 +1627,85 @@ class EComProcessing extends PaymentModule
                             'name' => 'name',
                         )
                     ),
+                    array(
+                        'type' => 'switch',
+                        'label' => 'Partial Capture',
+                        'desc' => $this->l(
+                            'Use this option to allow / deny Partial Capture Transactions'
+                        ),
+                        'name' => self::SETTING_ECP_ALLOW_PARTIAL_CAPTURE,
+                        'values' => array(
+                            array(
+                                'value' => '1'
+                            ),
+                            array(
+                                'value' => '0'
+                            )
+                        )
+                    ),
+                    array(
+                        'type' => 'switch',
+                        'label' => 'Partial Refund',
+                        'desc' => $this->l(
+                            'Use this option to allow / deny Partial Refund Transactions'
+                        ),
+                        'name' => self::SETTING_ECP_ALLOW_PARTIAL_REFUND,
+                        'values' => array(
+                            array(
+                                'value' => '1'
+                            ),
+                            array(
+                                'value' => '0'
+                            )
+                        )
+                    ),
+                    array(
+                        'type' => 'switch',
+                        'label' => 'Cancel Transaction',
+                        'desc' => $this->l(
+                            'Use this option to allow / deny Cancel Transactions'
+                        ),
+                        'name' => self::SETTING_ECP_ALLOW_VOID,
+                        'values' => array(
+                            array(
+                                'value' => '1'
+                            ),
+                            array(
+                                'value' => '0'
+                            )
+                        )
+                    ),
                 ),
                 'submit' => array(
                     'title' => $this->l('Save'),
                 )
             ),
         );
+
+        /**
+         * Option for registering jQuery to Checkout Page
+         *
+         * Note: 1.7.x does not register jQuery on the Checkout Page, so we are adding this option
+         * in order to be disabled if jQuery has been added from other module
+         */
+        if ($this->isPrestaVersion17()) {
+            $form_structure['form']['input'][] = array(
+                'type' => 'switch',
+                'label' => 'Include jQuery Plugin to Checkout Page',
+                'desc' => $this->l(
+                    'Use this option to allow / deny jQuery Plugin Registration. This option should be enabled unless jQuery has already been registered.'
+                ),
+                'name' => self::SETTING_ECP_ADD_JQUERY_CHECKOUT,
+                'values' => array(
+                    array(
+                        'value' => '1'
+                    ),
+                    array(
+                        'value' => '0'
+                    )
+                )
+            );
+        }
 
         $helper = new HelperForm();
         // Title and toolbar
@@ -1470,7 +1749,7 @@ class EComProcessing extends PaymentModule
         }
 
         /** Check if SSL is enabled and only DirectPayment Method is Enabled */
-        if (!Configuration::get('PS_SSL_ENABLED') && $this->isDirectPaymentMethodAvailable() && !$this->isCheckoutPaymentMethodAvailable()) {
+        if (!$this->getIsSSLEnabled() && $this->isDirectPaymentMethodAvailable() && !$this->isCheckoutPaymentMethodAvailable()) {
             $this->warning = $this->l( 'This plugin requires SSL enabled and PCI-DSS compliant server in order to accept customer\'s credit card information directly on your website!' );
         }
 
@@ -1489,6 +1768,16 @@ class EComProcessing extends PaymentModule
         /* Check if Genesis Library is initialized */
         if (!class_exists('\Genesis\Genesis')) {
             $this->warning = 'Sorry, there was a problem initializing Genesis client, please verify your installation!';
+        }
+
+        /* Catch Block added -> Prestashop 1.6.0 calls Model Constructor even when the Module is not yet installed */
+        try {
+            /* Check and update database if necessary */
+            EComProcessingInstall::doProcessSchemaUpdate();
+        }
+        catch (\Exception $e) {
+            /* just ignore and log exception - Init Method is called on Upload Module (it should be called after Module is installed) */
+            $this->logError($e);
         }
 
         /* Verify system requirements */
@@ -1529,5 +1818,137 @@ class EComProcessing extends PaymentModule
         \Genesis\Config::setEnvironment(
             Configuration::get('ECP_ENVIRONMENT')
         );
+    }
+
+    /**
+     * Determines if the Store is running over secured connection
+     * @return bool
+     */
+    protected function getIsSSLEnabled()
+    {
+        return Configuration::get('PS_SSL_ENABLED');
+    }
+
+    /**
+     * Get a state iso with by its id
+     *
+     * @param int $id_state
+     * @return string
+     */
+    public static function getStateIsoCodeById($id_state)
+    {
+        return Db::getInstance()->getValue('
+		SELECT `iso_code`
+		FROM `'._DB_PREFIX_.'state`
+		WHERE `id_state` = '.(int)$id_state);
+    }
+
+    /**
+     * Migrates old Toggle Button values (true => 1; false => 0)
+     * @return void
+     */
+    protected function doMigrateSettings()
+    {
+        $toggleSettingKeys = array(
+            self::SETTING_ECP_DIRECT,
+            self::SETTING_ECP_CHECKOUT
+        );
+
+        foreach ($toggleSettingKeys as $toggleSettingKey) {
+            $settingValue = strtolower(Configuration::get($toggleSettingKey));
+            if ($settingValue == 'true') {
+                Configuration::updateValue($toggleSettingKey, '1');
+            } elseif ($settingValue == 'false') {
+                Configuration::updateValue($toggleSettingKey, '0');
+            }
+        }
+    }
+
+    /**
+     * Prepares default values for some configuration keys
+     *
+     * @return bool
+     */
+    protected function setDefaultSettingsToDB()
+    {
+        $defaultConfigItems = array(
+            self::SETTING_ECP_DIRECT          => '0',
+            self::SETTING_ECP_CHECKOUT        => '0',
+            self::SETTING_ECP_DIRECT_TRX_TYPE =>
+                \Genesis\API\Constants\Transaction\Types::AUTHORIZE,
+            self::SETTING_ECP_CHECKOUT_TRX_TYPES => array(
+                \Genesis\API\Constants\Transaction\Types::AUTHORIZE,
+                \Genesis\API\Constants\Transaction\Types::SALE,
+            ),
+            self::SETTING_ECP_ALLOW_PARTIAL_CAPTURE => '1',
+            self::SETTING_ECP_ALLOW_PARTIAL_REFUND  => '1',
+            self::SETTING_ECP_ALLOW_VOID            => '1',
+            self::SETTING_ECP_ADD_JQUERY_CHECKOUT   => '1'
+        );
+
+        try {
+            foreach ($defaultConfigItems as $key => $value) {
+                $value = is_array($value) ? json_encode($value) : $value;
+                Configuration::updateValue($key, $value);
+            }
+
+            return true;
+        } catch (Exception $e) {
+            $this->logError($e);
+            return false;
+        }
+    }
+
+    /**
+     * Retrieves a bool setting value by key
+     *
+     * @param string $key
+     * @return bool
+     */
+    protected function getBoolConfigurationValue($key)
+    {
+        return Configuration::get($key) == '1';
+    }
+
+    /**
+     * Registers Javascript File on the current page
+     * Note: used for PrestaShop 1.7.x
+     *
+     * @param string|null $relativePath
+     * @param array $params
+     */
+    protected function registerCore17Javascript($relativePath, $params = array('position' => 'head'))
+    {
+        if (!$relativePath) {
+            return;
+        }
+        $this->context->controller->registerJavascript(
+            sha1($relativePath),
+            $relativePath,
+            $params
+        );
+    }
+    /**
+     * Retrieves if the current PrestaSHop Version is 1.7.x
+     *
+     * @return bool
+     */
+    protected function isPrestaVersion17()
+    {
+        return
+            version_compare(_PS_VERSION_, '1.7', '>=') &&
+            version_compare(_PS_VERSION_, '1.8', '<');
+    }
+    /**
+     * Retrieves the current jQuery path
+     *
+     * @return null|string
+     */
+    protected function getJQueryUri()
+    {
+        if (defined('_PS_JQUERY_VERSION_')) {
+            return _PS_JS_DIR_. "jquery/jquery-" . _PS_JQUERY_VERSION_ . ".min.js";
+        }
+        return null;
     }
 }

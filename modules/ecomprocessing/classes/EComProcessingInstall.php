@@ -1,6 +1,6 @@
 <?php
 /*
- * Copyright (C) 2015 E-Comprocessing™
+ * Copyright (C) 2016 E-Comprocessing™
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -13,7 +13,7 @@
  * GNU General Public License for more details.
  *
  * @author      E-Comprocessing™
- * @copyright   2015 E-Comprocessing™
+ * @copyright   2016 E-Comprocessing™
  * @license     http://opensource.org/licenses/gpl-2.0.php GNU General Public License, version 2 (GPL-2.0)
  */
 
@@ -28,22 +28,27 @@ if (!defined('_PS_VERSION_')) {
  */
 class EComProcessingInstall
 {
-	private $status = true;
+    private $status = true;
 
-	private $hooks = array(
-		'header',
-		'payment',
-		'paymentTop',
-		'orderConfirmation',
-		'adminOrder',
-		'BackOfficeHeader',
-	);
+    private $hooks = array(
+        'header',
+        'payment',
+        'paymentTop',
+        'orderConfirmation',
+        'adminOrder',
+        'BackOfficeHeader',
+        /*
+         * Hooks for 1.7.x
+         */
+        'displayAdminOrder',
+        'paymentOptions'
+    );
 
-	/**
-	 * Create the table/tables required by the module
-	 */
-	public function createSchema()
-	{
+    /**
+     * Create the table/tables required by the module
+     */
+    public function createSchema()
+    {
         $schema = '
             CREATE TABLE IF NOT EXISTS `' . _DB_PREFIX_ . 'ecomprocessing_transactions`
               (
@@ -64,58 +69,67 @@ class EComProcessingInstall
             engine=`' . _MYSQL_ENGINE_ . '`
             DEFAULT charset=utf8;';
 
-		if (!Db::getInstance()->execute($schema)) {
-			$this->status = false;
+        if (!Db::getInstance()->execute($schema)) {
+            $this->status = false;
             throw new PrestaShopException('Module Install: Unable to create MySQL Database');
-		}
-	}
+        }
+    }
 
-	/**
-	 * Register all Hooks required by the module
-	 *
-	 * @param $instance EComProcessing
-	 *
-	 * @throws PrestaShopException
-	 */
-	public function registerHooks($instance)
-	{
-		foreach ($this->hooks as $hook) {
-			if (!$instance->registerHook($hook)) {
-				$this->status = false;
-				throw new PrestaShopException('Module Install: Hook (' . $hook . ') can\'t be registered!');
-			}
-		}
-	}
+    /**
+     * Updates the scheme, if a new version of the module is directly copied in the root folder
+     * without deinstalling the old one and installing the new one
+     */
+    public static function doProcessSchemaUpdate()
+    {
+        // nothing
+    }
 
-	/**
-	 * Delete the table/tables required by the module
-	 */
-	public function dropSchema()
-	{
-		$schema = 'DROP TABLE IF EXISTS `'._DB_PREFIX_.'ecomprocessing_transactions`';
+    /**
+     * Register all Hooks required by the module
+     *
+     * @param $instance EComProcessing
+     *
+     * @throws PrestaShopException
+     */
+    public function registerHooks($instance)
+    {
+        foreach ($this->hooks as $hook) {
+            if (!$instance->registerHook($hook)) {
+                $this->status = false;
+                throw new PrestaShopException('Module Install: Hook (' . $hook . ') can\'t be registered!');
+            }
+        }
+    }
 
-		if (!Db::getInstance()->execute($schema)) {
-			$this->status = false;
+    /**
+     * Delete the table/tables required by the module
+     */
+    public function dropSchema()
+    {
+        $schema = 'DROP TABLE IF EXISTS `'._DB_PREFIX_.'ecomprocessing_transactions`';
+
+        if (!Db::getInstance()->execute($schema)) {
+            $this->status = false;
             throw new PrestaShopException('Module Uninstall: Unable to DROP transactions table!');
-		}
-	}
+        }
+    }
 
-	/**
-	 * Delete registered hooks
-	 *
-	 * @param $instance EComProcessing
-	 *
-	 * @throws PrestaShopException
-	 */
-	public function dropHooks($instance)
-	{
-		foreach ($this->hooks as $hook) {
-			if (!$instance->unregisterHook($hook)) {
-				$this->status = false;
-				throw new PrestaShopException('Module Uninstall: Hook (' . $hook . ') can\'t be unregistered!');
-			}
-		}
-	}
+    /**
+     * Delete registered hooks
+     *
+     * @param $instance EComProcessing
+     *
+     * @throws PrestaShopException
+     */
+    public function dropHooks($instance)
+    {
+        foreach ($this->hooks as $hook) {
+            if (!$instance->unregisterHook($hook)) {
+                $this->status = false;
+                throw new PrestaShopException('Module Uninstall: Hook (' . $hook . ') can\'t be unregistered!');
+            }
+        }
+    }
 
     /**
      * Delete module configuration
@@ -123,21 +137,21 @@ class EComProcessingInstall
      * @param EComProcessing $instance
      * @throws PrestaShopException
      */
-	public function dropKeys($instance)
-	{
-		foreach ($instance->getConfigKeys() as $key) {
-			if (!Configuration::deleteByName($key)) {
-				$this->status = false;
+    public function dropKeys($instance)
+    {
+        foreach ($instance->getConfigKeys() as $key) {
+            if (!Configuration::deleteByName($key)) {
+                $this->status = false;
                 throw new PrestaShopException('Module Uninstall: Unable to remove configuration keys');
-			}
-		}
-	}
+            }
+        }
+    }
 
-	/**
-	 * Return the status of all processed methods
-	 * @return bool
-	 */
-	public function isSuccessful() {
-		return $this->status;
-	}
+    /**
+     * Return the status of all processed methods
+     * @return bool
+     */
+    public function isSuccessful() {
+        return $this->status;
+    }
 }
