@@ -1,5 +1,5 @@
 {*
- * Copyright (C) 2015 EComProcessing™
+ * Copyright (C) 2018 E-ComProcessing Ltd.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -11,7 +11,7 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
- * @author      EComProcessing
- * @copyright   2015 EComProcessing™
+ * @author      E-ComProcessing
+ * @copyright   2018 E-ComProcessing Ltd.
  * @license     http://opensource.org/licenses/gpl-2.0.php GNU General Public License, version 2 (GPL-2.0)
  *}

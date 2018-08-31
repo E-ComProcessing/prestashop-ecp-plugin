@@ -1,5 +1,5 @@
 {*
- * Copyright (C) 2016 EComProcessing™
+ * Copyright (C) 2018 E-ComProcessing Ltd.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -11,8 +11,8 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
- * @author      EComProcessing
- * @copyright   2016 EComProcessing™
+ * @author      E-ComProcessing
+ * @copyright   2018 E-ComProcessing Ltd.
  * @license     http://opensource.org/licenses/gpl-2.0.php GNU General Public License, version 2 (GPL-2.0)
  *}
 
@@ -95,7 +95,7 @@
                     </div>
                     <div class="row">
                         <p>
-                            {l s="You will be redirected to our E-ComProcessing&#39s website, where you can safely enter your payment details and complete this order." mod='ecomprocessing'}
+                            {l s="You will be redirected to E-ComProcessing, where you can safely enter your payment details and complete this order." mod='ecomprocessing'}
                         </p>
                     </div>
                 </div>

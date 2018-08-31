@@ -1,6 +1,6 @@
 <?php
 /*
- * Copyright (C) 2015 EComProcessing™
+ * Copyright (C) 2018 E-ComProcessing Ltd.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -12,8 +12,8 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
- * @author      EComProcessing
- * @copyright   2015 EComProcessing™
+ * @author      E-ComProcessing
+ * @copyright   2018 E-ComProcessing Ltd.
  * @license     http://opensource.org/licenses/gpl-2.0.php GNU General Public License, version 2 (GPL-2.0)
  */
 
@@ -41,14 +41,9 @@ class EComProcessingCheckoutModuleFrontController extends ModuleFrontController
     {
         parent::initContent();
 
-        $this->page_name = $this->module->l('EComProcessing Checkout');
+        $this->page_name = $this->module->l('E-ComProcessing Checkout');
 
-        if ($this->context->customer->isLogged()) {
-            $this->initCheckout();
-        }
-        else {
-            $this->module->redirectToPage('my-account.php');
-        }
+        $this->initCheckout();
     }
 
     /**
@@ -65,7 +60,7 @@ class EComProcessingCheckoutModuleFrontController extends ModuleFrontController
                 $this->module->redirectToPage('order.php');
             }
 
-            if(!$cart->getOrderTotal(true, $cart::BOTH)) {
+            if (!$cart->getOrderTotal(true, $cart::BOTH)) {
                 $this->module->redirectToPage('order.php');
             }
 
@@ -87,19 +82,19 @@ class EComProcessingCheckoutModuleFrontController extends ModuleFrontController
 
             $this->context->smarty->append(
                 'ecomprocessing',
-                array(
-                    'checkout' => array(
+                [
+                    'checkout' => [
                         'product_count' => $cart->nbProducts(),
                         'currency'      => $cart->id_currency,
                         'total'         => $cart->getOrderTotal(true, $cart::BOTH),
                         'isoCode'       => $this->context->language->iso_code,
                         'error'         => $this->module->getSessVar('error_checkout'),
-                        'links'         => array(
-                            'back'      => $this->context->link->getPageLink('order', true, NULL, "step=3"),
-                            'confirm'   => $this->context->link->getModuleLink($this->module->name, 'validation'),
-                        )
-                    )
-                ),
+                        'links'         => [
+                            'back'    => $this->context->link->getPageLink('order', true, null, "step=3"),
+                            'confirm' => $this->context->link->getModuleLink($this->module->name, 'validation'),
+                        ]
+                    ]
+                ],
                 true
             );
 

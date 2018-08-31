@@ -1,5 +1,5 @@
 {*
- * Copyright (C) 2015 EComProcessing™
+ * Copyright (C) 2018 E-ComProcessing Ltd.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -11,8 +11,8 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
- * @author      EComProcessing
- * @copyright   2015 EComProcessing™
+ * @author      E-ComProcessing
+ * @copyright   2018 E-ComProcessing Ltd.
  * @license     http://opensource.org/licenses/gpl-2.0.php GNU General Public License, version 2 (GPL-2.0)
  *}
 
@@ -27,7 +27,7 @@
     <br/>
 
     <fieldset {if isset($ecomprocessing['presta']['version']) && ($ecomprocessing['presta']['version'] < '1.5')}style="width: 400px"{/if}>
-        <legend><img src="{$ecomprocessing['presta']['url']}/modules/{$ecomprocessing['name']['module']}/logo.png" style="width:16px" alt="" />{l s='EComProcessing Transactions' mod='ecomprocessing'}</legend>
+        <legend><img src="{$ecomprocessing['presta']['url']}/modules/{$ecomprocessing['name']['module']}/logo.png" style="width:16px" alt="" />{l s='E-ComProcessing Transactions' mod='ecomprocessing'}</legend>
         {* System errors, impacting the module functionallity *}
         {if $ecomprocessing['warning']}
             <div class="warn">{$ecomprocessing['warning']|escape:html:'UTF-8'}</div>
@@ -185,7 +185,7 @@
             <div class="panel">
                 <div class="panel-heading">
                     <img src="{$ecomprocessing['presta']['url']}modules/{$ecomprocessing['name']['module']}/logo.png" alt="" style="width:16px;" />
-                    <span>{l s='EComProcessing Transactions' mod='ecomprocessing'}</span>
+                    <span>{l s='E-ComProcessing Transactions' mod='ecomprocessing'}</span>
                 </div>
                 <div class="panel-collapse collapse in">
 
@@ -216,7 +216,7 @@
                         </div>
                         <div class="col-xs-3"></div>
                     </div>
-
+                    
                     {if $ecomprocessing['transactions']['tree']}
                         <table class="table table-hover tree">
                             <thead>
@@ -257,11 +257,11 @@
                                         {if $transaction['can_capture']}
                                             <div class="transaction-action-button">
                                                 <a class="btn btn-transaction btn-success button-capture button" role="button" data-type="capture" data-id-unique="{$transaction['id_unique']}" data-amount="{$transaction['available_amount']}"
-                                                        {if !$ecomprocessing['transactions']['options']['allow_partial_capture']}
-                                                            data-toggle="tooltip" data-placement="bottom"
-                                                            title="{$ecomprocessing['transactions']['text']['denied_partial_capture']|escape:html:'UTF-8'}"
-                                                        {/if}
-                                                >
+                                                    {if !$ecomprocessing['transactions']['options']['allow_partial_capture']}
+                                                        data-toggle="tooltip" data-placement="bottom"
+                                                        title="{$ecomprocessing['transactions']['text']['denied_partial_capture']|escape:html:'UTF-8'}"
+                                                    {/if}
+                                                    >
                                                     <i class="icon-check icon-large"></i>
                                                 </a>
                                             </div>
@@ -271,11 +271,11 @@
                                         {if $transaction['can_refund']}
                                             <div class="transaction-action-button">
                                                 <a class="btn btn-transaction btn-warning button-refund button" role="button" data-type="refund" data-id-unique="{$transaction['id_unique']}" data-amount="{$transaction['available_amount']}"
-                                                        {if !$ecomprocessing['transactions']['options']['allow_partial_refund']}
-                                                            data-toggle="tooltip" data-placement="bottom"
-                                                            title="{$ecomprocessing['transactions']['text']['denied_partial_refund']|escape:html:'UTF-8'}"
-                                                        {/if}
-                                                >
+                                                    {if !$ecomprocessing['transactions']['options']['allow_partial_refund']}
+                                                        data-toggle="tooltip" data-placement="bottom"
+                                                        title="{$ecomprocessing['transactions']['text']['denied_partial_refund']|escape:html:'UTF-8'}"
+                                                    {/if}
+                                                    >
                                                     <i class="icon-reply icon-large"></i>
                                                 </a>
                                             </div>
@@ -285,11 +285,11 @@
                                         {if $transaction['can_void']}
                                             <div class="transaction-action-button">
                                                 <a class="btn btn-transaction btn-danger button-void button" role="button" data-type="void" data-id-unique="{$transaction['id_unique']}" data-amount="0"
-                                                        {if !$ecomprocessing['transactions']['options']['allow_void']}
-                                                            data-disabled="disabled" style="cursor: default" data-toggle="tooltip" data-placement="bottom"
-                                                            title="{$ecomprocessing['transactions']['text']['denied_void']|escape:html:'UTF-8'}"
-                                                        {/if}
-                                                >
+                                                    {if !$ecomprocessing['transactions']['options']['allow_void']}
+                                                        data-disabled="disabled" style="cursor: default" data-toggle="tooltip" data-placement="bottom"
+                                                        title="{$ecomprocessing['transactions']['text']['denied_void']|escape:html:'UTF-8'}"
+                                                    {/if}
+                                                    >
                                                     <i class="icon-remove icon-large"></i>
                                                 </a>
                                             </div>
@@ -359,17 +359,16 @@
                                 <span class="input-group-addon" data-toggle="{$ecomprocessing['name']['module']}-tooltip" data-placement="top" title="{{$ecomprocessing['transactions']['order']['currency']['iso_code']}}">{{$ecomprocessing['transactions']['order']['currency']['sign']}}</span>
                                 <input type="text" class="form-control" id="{$ecomprocessing['name']['module']}_transaction_amount" name="{$ecomprocessing['name']['module']}_transaction_amount" placeholder="{l s="Amount..." mod="ecomprocessing"}" value="{{$ecomprocessing['transactions']['order']['amount']}}" />
                             </div>
-                            <span class="help-block" id="{$ecomprocessing['name']['module']}-amount-error-container"></span>
+                            <span class="help-block" id="{$ecomprocessing['name']['module']}-amount-error-container"></span>                           
                         </div>
 
                         <div class="form-group usage-input">
-                            <label for="{$ecomprocessing['name']['module']}_transaction_usage">{l s='Message (optional):' mod="ecomprocessing"}</label>
-                            <textarea class="form-control form-message" rows="3" id="{$ecomprocessing['name']['module']}_transaction_usage" name="{$ecomprocessing['name']['module']}_transaction_usage" placeholder="{l s='Message' mod="ecomprocessing"}"></textarea>
+                            <label for="{$ecomprocessing['name']['module']}_transaction_usage">{l s='Message (optional):' mod='ecomprocessing'}</label>
+                            <textarea class="form-control form-message" rows="3" id="{$ecomprocessing['name']['module']}_transaction_usage" name="{$ecomprocessing['name']['module']}_transaction_usage" placeholder="{l s='Message' mod='ecomprocessing'}"></textarea>
                         </div>
-
                     </form>
                 </div>
-                <div class="modal-footer">
+                <div class="modal-footer">                    	
                     <span class="form-loading hidden">
                         <i class="icon-spinner icon-spin icon-large"></i>
                     </span>
@@ -381,18 +380,17 @@
             </div>
         </div>
     </div>
-
+		
     <script type="text/javascript">
-
         var modalPopupDecimalValueFormatConsts = {
             decimalPlaces       : {$ecomprocessing['transactions']['order']['currency']['decimalPlaces']},
             decimalSeparator    : "{$ecomprocessing['transactions']['order']['currency']['decimalSeparator']}",
             thousandSeparator   : "{$ecomprocessing['transactions']['order']['currency']['thousandSeparator']}"
         };
-
+        
         (function($) {
             jQuery.exists = function(selector) {
-                return ($(selector).length > 0);
+                    return ($(selector).length > 0);
             }
 
             $('[data-toggle="tooltip"]').tooltip();
@@ -409,16 +407,16 @@
 
                 validate: function(validator, $field, options) {
                     var fieldValue 	    = $field.val(),
-                            regexp          = /^(([0-9]*)|(([0-9]*)\.([0-9]*)))$/i,
-                            isValid    	    = true,
-                            errorMessage    = options.message || $.fn.bootstrapValidator.i18n.transactionAmount['default'],
-                            exampleValue    = options.exampleValue || "123.45";
+                        regexp          = /^(([0-9]*)|(([0-9]*)\.([0-9]*)))$/i,
+                        isValid    	    = true,
+                        errorMessage    = options.message || $.fn.bootstrapValidator.i18n.transactionAmount['default'],
+                        exampleValue    = options.exampleValue || "123.45";
 
                     errorMessage = $.fn.bootstrapValidator.helpers.format(errorMessage, [exampleValue]);
 
                     return {
-                        valid: regexp.test(fieldValue),
-                        message: errorMessage
+                            valid: regexp.test(fieldValue),
+                            message: errorMessage
                     };
                 }
             }
@@ -426,11 +424,11 @@
 
         function formatTransactionAmount(amount) {
             if ((typeof amount == 'undefined') || (amount == null))
-                amount = 0;
+                    amount = 0;
 
             return $.number(amount, modalPopupDecimalValueFormatConsts.decimalPlaces,
-                                    modalPopupDecimalValueFormatConsts.decimalSeparator,
-                                    modalPopupDecimalValueFormatConsts.thousandSeparator);
+                                                            modalPopupDecimalValueFormatConsts.decimalSeparator,
+                                                            modalPopupDecimalValueFormatConsts.thousandSeparator);
         }
 
         function destroyBootstrapValidator(submitFormId) {
@@ -438,11 +436,11 @@
         }
 
         function createBootstrapValidator(submitFormId) {
-            var submitForm = $(submitFormId),
-                    transactionAmount = formatTransactionAmount($('#{$ecomprocessing['name']['module']}_transaction_amount').val());
+        var submitForm = $(submitFormId),
+            transactionAmount = formatTransactionAmount($('#{$ecomprocessing['name']['module']}_transaction_amount').val());
 
             destroyBootstrapValidator(submitFormId);
-
+						
             var transactionAmountControlSelector = '#{$ecomprocessing['name']['module']}_transaction_amount';
             
             var shouldCreateValidator = $.exists(transactionAmountControlSelector);
@@ -450,10 +448,10 @@
             /* it is not needed to create attach the bootstapValidator, when the field to validate is not visible (Void Transaction) */
             if (!shouldCreateValidator) 
                 return false;
-
+								
             submitForm.bootstrapValidator({
-                fields: {
-                    fieldAmount: {
+            fields: {
+                fieldAmount: {
                         selector: transactionAmountControlSelector,
                         container: '#{$ecomprocessing['name']['module']}-amount-error-container',
                         trigger: 'keyup',
@@ -462,31 +460,31 @@
                                 message: 'The transaction amount is a required field!'
                             },
                             stringLength: {
-                                max: 10
+                                    max: 10
                             },
                             greaterThan: {
-                                value: 0,
-                                inclusive: false
+                                    value: 0,
+                                    inclusive: false
                             },
                             lessThan: {
-                                value: transactionAmount,
-                                inclusive: true
+                                    value: transactionAmount,
+                                    inclusive: true
                             },
                             transactionAmount: {
-                                exampleValue: transactionAmount,
+                                    exampleValue: transactionAmount,
                             }
                         }
                     }
                 }
             })
             .on('error.field.bv', function(e, data) {
-                $('#{$ecomprocessing['name']['module']}-modal-submit').attr('disabled', 'disabled');
+                    $('#{$ecomprocessing['name']['module']}-modal-submit').attr('disabled', 'disabled');
             })
             .on('success.field.bv', function(e) {
-                $('#{$ecomprocessing['name']['module']}-modal-submit').removeAttr('disabled');
+                    $('#{$ecomprocessing['name']['module']}-modal-submit').removeAttr('disabled');
             })
             .on('success.form.bv', function(e) {
-                e.preventDefault(); // Prevent the form from submitting
+                    e.preventDefault(); // Prevent the form from submitting
 
                 /* submits the transaction form (No validators have failed) */
                 submitForm.bootstrapValidator('defaultSubmit');
@@ -522,7 +520,7 @@
             var modalObj = $('#{$ecomprocessing['name']['module']}-modal'),
                 transactionAmountInput = $('#{$ecomprocessing['name']['module']}_transaction_amount', modalObj);
 
-            $('.btn-submit').click(function() {
+                $('.btn-submit').click(function() {
                 $('#{$ecomprocessing['name']['module']}-modal-form').submit();
             });
 
@@ -542,7 +540,6 @@
             transactionAmountInput.number(true, modalPopupDecimalValueFormatConsts.decimalPlaces,
                                                 modalPopupDecimalValueFormatConsts.decimalSeparator,
                                                 modalPopupDecimalValueFormatConsts.thousandSeparator);
-
         });
 
         function transactionModal(type, id_unique, amount) {
@@ -552,51 +549,51 @@
             modalObj = $('#{$ecomprocessing['name']['module']}-modal');
 
             var modalTitle = modalObj.find('h3.{$ecomprocessing['name']['module']}-modal-title'),
-                    modalAmountInputContainer = modalObj.find('div.amount-input'),
-                    captureTransactionInfoHolder = $('#{$ecomprocessing['name']['module']}_capture_trans_info', modalObj),
-                    refundTransactionInfoHolder = $('#{$ecomprocessing['name']['module']}_refund_trans_info', modalObj),
-                    cancelTransactionWarningHolder = $('#{$ecomprocessing['name']['module']}_cancel_trans_warning', modalObj),
-                    transactionAmountInput = $('#{$ecomprocessing['name']['module']}_transaction_amount', modalObj);
+                modalAmountInputContainer = modalObj.find('div.amount-input'),
+                captureTransactionInfoHolder = $('#{$ecomprocessing['name']['module']}_capture_trans_info', modalObj),
+                refundTransactionInfoHolder = $('#{$ecomprocessing['name']['module']}_refund_trans_info', modalObj),
+                cancelTransactionWarningHolder = $('#{$ecomprocessing['name']['module']}_cancel_trans_warning', modalObj),
+                transactionAmountInput = $('#{$ecomprocessing['name']['module']}_transaction_amount', modalObj);
 
             switch(type) {
                 case 'capture':
-                    modalTitle.text('{l s="Capture transaction" mod="ecomprocessing"}');
-                {if !$ecomprocessing['transactions']['options']['allow_partial_capture']}
-                    updateTransModalControlState([captureTransactionInfoHolder], true);
-                {else}
-                    updateTransModalControlState([captureTransactionInfoHolder], false);
-                {/if}
-                    updateTransModalControlState([modalAmountInputContainer], true);
-                    updateTransModalControlState([refundTransactionInfoHolder, cancelTransactionWarningHolder], false);
+                      modalTitle.text('{l s="Capture transaction" mod="ecomprocessing"}');
+                      {if !$ecomprocessing['transactions']['options']['allow_partial_capture']}
+                          updateTransModalControlState([captureTransactionInfoHolder], true);
+                      {else}
+                          updateTransModalControlState([captureTransactionInfoHolder], false);
+                      {/if}
+                      updateTransModalControlState([modalAmountInputContainer], true);
+                      updateTransModalControlState([refundTransactionInfoHolder, cancelTransactionWarningHolder], false);
 
-                {if !$ecomprocessing['transactions']['options']['allow_partial_capture']}
-                    transactionAmountInput.attr('readonly', 'readonly');
-                {else}
-                    transactionAmountInput.removeAttr('readonly');
-                {/if}
-                    break;
+                      {if !$ecomprocessing['transactions']['options']['allow_partial_capture']}
+                          transactionAmountInput.attr('readonly', 'readonly');
+                      {else}
+                          transactionAmountInput.removeAttr('readonly');
+                      {/if}
+                      break;
 
                 case 'refund':
-                    modalTitle.text('{l s="Refund transaction" mod="ecomprocessing"}');
-                    updateTransModalControlState([captureTransactionInfoHolder, cancelTransactionWarningHolder], false);
-                {if !$ecomprocessing['transactions']['options']['allow_partial_refund']}
-                    updateTransModalControlState([refundTransactionInfoHolder], true);
-                {else}
-                    updateTransModalControlState([refundTransactionInfoHolder], false);
-                {/if}
-                    updateTransModalControlState([modalAmountInputContainer], true);
-                {if !$ecomprocessing['transactions']['options']['allow_partial_refund']}
-                    transactionAmountInput.attr('readonly', 'readonly');
-                {else}
-                    transactionAmountInput.removeAttr('readonly');
-                {/if}
-                    break;
+                      modalTitle.text('{l s="Refund transaction" mod="ecomprocessing"}');
+                      updateTransModalControlState([captureTransactionInfoHolder, cancelTransactionWarningHolder], false);
+                      {if !$ecomprocessing['transactions']['options']['allow_partial_refund']}
+                          updateTransModalControlState([refundTransactionInfoHolder], true);
+                      {else}
+                          updateTransModalControlState([refundTransactionInfoHolder], false);
+                      {/if}
+                      updateTransModalControlState([modalAmountInputContainer], true);
+                      {if !$ecomprocessing['transactions']['options']['allow_partial_refund']}
+                          transactionAmountInput.attr('readonly', 'readonly');
+                      {else}
+                          transactionAmountInput.removeAttr('readonly');
+                      {/if}
+                      break;
 
                 case 'void':
-                    modalTitle.text('{l s="Cancel transaction" mod="ecomprocessing"}');
-                    updateTransModalControlState([captureTransactionInfoHolder, refundTransactionInfoHolder, modalAmountInputContainer], false);
-                    updateTransModalControlState([cancelTransactionWarningHolder], true);
-                    break;
+                      modalTitle.text('{l s="Cancel transaction" mod="ecomprocessing"}');
+                      updateTransModalControlState([captureTransactionInfoHolder, refundTransactionInfoHolder, modalAmountInputContainer], false);
+                      updateTransModalControlState([cancelTransactionWarningHolder], true);
+                      break;
                 default:
                     return;
             }
@@ -614,7 +611,7 @@
         function updateTransModalControlState(controls, visibilityStatus) {
             $.each(controls, function(index, control){
                 if (!$.exists(control))
-                    return; /* continue to the next item */
+                        return; /* continue to the next item */
 
                 if (visibilityStatus)
                     control.fadeIn('fast');

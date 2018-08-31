@@ -1,6 +1,6 @@
 <?php
 /*
- * Copyright (C) 2015 EComProcessing™
+ * Copyright (C) 2018 E-ComProcessing Ltd.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -12,8 +12,8 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
- * @author      EComProcessing™
- * @copyright   2015 EComProcessing™
+ * @author      E-ComProcessing
+ * @copyright   2018 E-ComProcessing Ltd.
  * @license     http://opensource.org/licenses/gpl-2.0.php GNU General Public License, version 2 (GPL-2.0)
  */
 
@@ -39,21 +39,20 @@ class EComProcessingValidationModuleFrontController extends ModuleFrontControlle
         parent::initContent();
 
         if ('POST' != $_SERVER['REQUEST_METHOD']) {
-            $this->module->redirectToPage('order.php', array('step' => 3));
+            $this->module->redirectToPage('order.php', ['step' => 3]);
         }
 
         if (!$this->module->checkCurrency($this->context->cart)) {
-            $this->module->redirectToPage('order.php', array('step' => 3));
+            $this->module->redirectToPage('order.php', ['step' => 3]);
         }
 
         if (!$this->module->isAvailable()) {
-            $this->module->redirectToPage('order.php', array('step' => 3));
+            $this->module->redirectToPage('order.php', ['step' => 3]);
         }
 
         if (Tools::getIsset('submit' . $this->module->name . 'Checkout')) {
             $this->validateCheckout();
-        }
-        elseif (Tools::getIsset('submit' . $this->module->name . 'Direct')) {
+        } elseif (Tools::getIsset('submit' . $this->module->name . 'Direct')) {
             $this->validateDirect();
         }
     }
@@ -62,7 +61,7 @@ class EComProcessingValidationModuleFrontController extends ModuleFrontControlle
     {
         // Is Checkout allowed?
         if (!$this->module->isCheckoutPaymentMethodAvailable()) {
-            $this->module->redirectToPage('order.php', array('step' => 3));
+            $this->module->redirectToPage('order.php', ['step' => 3]);
         }
 
         // Send transaction
@@ -70,8 +69,7 @@ class EComProcessingValidationModuleFrontController extends ModuleFrontControlle
 
         if (isset($url)) {
             Tools::redirect($url);
-        }
-        else {
+        } else {
             if (version_compare(_PS_VERSION_, '1.7', '<')) {
                 Tools::redirect(
                     $this->context->link->getModuleLink($this->module->name, 'checkout')
@@ -79,35 +77,35 @@ class EComProcessingValidationModuleFrontController extends ModuleFrontControlle
             } else {
                 $this->module->redirectToPage(
                     'order.php',
-                    array(
-                        'step'                     => 3,
+                    [
+                        'step'                  => 3,
                         'select_payment_option' => Tools::getValue('select_payment_option')
-                    )
+                    ]
                 );
             }
         }
-
     }
 
     public function validateDirect()
     {
         // Is standard method allowed?
         if (!$this->module->isDirectPaymentMethodAvailable()) {
-            $this->module->redirectToPage('order.php', array('step' => 3));
+            $this->module->redirectToPage('order.php', ['step' => 3]);
         }
 
         // Is everything required filled in?
         if (!$this->isRequiredFilled()) {
-            $this->module->setSessVar( 'error_direct',
-                                               $this->module->l('Please fill all of the required fields!')
+            $this->module->setSessVar(
+                'error_direct',
+                $this->module->l('Please fill all of the required fields!')
             );
 
             $this->module->redirectToPage(
                 'order.php',
-                array(
-                    'step' => '3',
+                [
+                    'step'                  => '3',
                     'select_payment_option' => Tools::getValue('select_payment_option')
-                )
+                ]
             );
         }
 
@@ -121,9 +119,13 @@ class EComProcessingValidationModuleFrontController extends ModuleFrontControlle
      */
     public function isRequiredFilled()
     {
-        return Tools::getIsset($this->module->name . '-cvc') && !empty(Tools::getValue($this->module->name . '-cvc')) &&
-        Tools::getIsset($this->module->name . '-name') && !empty(Tools::getValue($this->module->name . '-name')) &&
-        Tools::getIsset($this->module->name . '-number') && !empty(Tools::getValue($this->module->name . '-number')) &&
-        Tools::getIsset($this->module->name . '-expiry') && !empty(Tools::getValue($this->module->name . '-expiry'));
+        return Tools::getIsset($this->module->name . '-cvc') &&
+               !empty(Tools::getValue($this->module->name . '-cvc')) &&
+               Tools::getIsset($this->module->name . '-name') &&
+               !empty(Tools::getValue($this->module->name . '-name')) &&
+               Tools::getIsset($this->module->name . '-number') &&
+               !empty(Tools::getValue($this->module->name . '-number')) &&
+               Tools::getIsset($this->module->name . '-expiry') &&
+               !empty(Tools::getValue($this->module->name . '-expiry'));
     }
 }

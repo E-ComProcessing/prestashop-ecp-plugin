@@ -1,5 +1,5 @@
 {*
- * Copyright (C) 2015 EComProcessing™
+ * Copyright (C) 2018 E-ComProcessing Ltd.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -11,8 +11,8 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
- * @author      EComProcessing
- * @copyright   2015 EComProcessing™
+ * @author      E-ComProcessing
+ * @copyright   2018 E-ComProcessing Ltd.
  * @license     http://opensource.org/licenses/gpl-2.0.php GNU General Public License, version 2 (GPL-2.0)
  *}
 
@@ -25,7 +25,7 @@
         <span class="navigation-pipe">
         {$navigationPipe}
     </span>
-        {l s='EComProcessing Secure Checkout' mod='ecomprocessing'}
+        {l s='E-ComProcessing Secure Checkout' mod='ecomprocessing'}
     {/capture}
 
     {include file="$tpl_dir./breadcrumb.tpl"}
@@ -38,6 +38,12 @@
     {if $ecomprocessing['checkout']['product_count'] <= 0}
         <p class="warning">{l s='Your shopping cart is empty.' mod='ecomprocessing'}</p>
     {else}
+        <style type="text/css">
+            #module-EComProcessing-checkout #center-column {
+                width: 737px;
+            }
+        </style>
+
         {if $ecomprocessing['checkout']['error']}
             <div class="row row-spacer">
                 <div class="alert alert-warning alert-dismissable error-wrapper" style="width:75%;margin:15px auto;">
@@ -47,14 +53,14 @@
             </div>
         {/if}
 
-        <h3>{l s='EComProcessing Secure Checkout' mod='ecomprocessing'}</h3>
+        <h3>{l s='E-ComProcessing Secure Checkout' mod='ecomprocessing'}</h3>
         <form action="{$ecomprocessing['checkout']['links']['confirm']|escape:'html'}" method="POST" name="">
             <input type="hidden" name="checkout" value="confirmed" />
             <input type="hidden" name="submit{$ecomprocessing['name']['module']}Checkout" value="true" />
 
             <p>
-                <img src="{$ecomprocessing['path']}/assets/img/logos/ecomprocessing.png" alt="{l s='EComProcessing Checkout' mod='ecomprocessing'}" width="128" style="float:left;margin: 0 10px 5px 0;" />
-                {l s='You have chosen to pay via EComProcessing Secure Checkout' mod='ecomprocessing'}
+                <img src="{$ecomprocessing['path']}/assets/img/logos/ecomprocessing.png" alt="{l s='E-ComProcessing Checkout' mod='ecomprocessing'}" width="128" style="float:left;margin: 0 10px 5px 0;" />
+                {l s='You have chosen to pay via E-ComProcessing Secure Checkout' mod='ecomprocessing'}
             </p>
             <p style="margin-top:20px;">
                 {l s='Here is a short summary of your order:' mod='ecomprocessing'}
@@ -81,7 +87,7 @@
 
 {if version_compare($ecomprocessing['presta']['version'], '1.6', '>=') && version_compare($ecomprocessing['presta']['version'], '1.7', '<') }
 
-    {capture name=path}{l s='EComProcessing Checkout' mod='ecomprocessing'}{/capture}
+    {capture name=path}{l s='E-ComProcessing Checkout' mod='ecomprocessing'}{/capture}
 
     <h1 class="page-heading">{l s='Order summary' mod='ecomprocessing'}</h1>
 
@@ -106,10 +112,10 @@
             <input type="hidden" name="submit{$ecomprocessing['name']['module']}Checkout" value="true" />
 
             <div class="box cheque-box">
-                <h3 class="page-subheading">{l s='EComProcessing Checkout' mod='ecomprocessing'}</h3>
-                <p class="cheque-indent">
+                <h3 class="page-subheading">{l s='E-ComProcessing Checkout' mod='ecomprocessing'}</h3>
+                <p>
                     <strong class="dark">
-                        {l s='You have chosen to pay via EComProcessing\'s Secure Checkout.' mod='ecomprocessing'}
+                        {l s='You have chosen to pay via E-ComProcessing\'s Secure Checkout.' mod='ecomprocessing'}
                         <br/>
                         {l s='Here is a short summary of your order:' mod='ecomprocessing'}
                     </strong>

@@ -1,6 +1,6 @@
 <?php
 /*
- * Copyright (C) 2015 EComProcessing™
+ * Copyright (C) 2018 E-ComProcessing Ltd.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -12,8 +12,8 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
- * @author      EComProcessing™
- * @copyright   2015 EComProcessing™
+ * @author      E-ComProcessing
+ * @copyright   2018 E-ComProcessing Ltd.
  * @license     http://opensource.org/licenses/gpl-2.0.php GNU General Public License, version 2 (GPL-2.0)
  */
 
@@ -30,10 +30,12 @@ class EComProcessingRedirectModuleFrontController extends ModuleFrontController
 {
     /** @var  EComProcessing */
     public $module;
-    /** @var  ContextCore  */
+    /** @var  ContextCore */
     protected $context;
-    /** @var array  */
-    protected $statuses = array('success', 'failure', 'cancel');
+    /** @var array */
+    protected $statuses = ['success', 'failure', 'cancel'];
+    /** @var array */
+    protected $actionsToRestoreCart = ['failure', 'cancel'];
 
     /**
      * @see FrontController::initContent()
@@ -47,10 +49,8 @@ class EComProcessingRedirectModuleFrontController extends ModuleFrontController
 
         parent::initContent();
 
-        if (Tools::getIsset('restore')) {
-            if (Tools::getValue('restore') == 'cart') {
-                $this->restoreCustomerCart();
-            }
+        if ($this->shouldRestoreCustomerCart()) {
+            $this->restoreCustomerCart();
         }
 
         if (!in_array(Tools::getValue('action'), $this->statuses)) {
@@ -59,18 +59,22 @@ class EComProcessingRedirectModuleFrontController extends ModuleFrontController
 
         $this->context->smarty->append(
             'ecomprocessing',
-            array(
-                'redirect'  => array(
-                    'status'        => Tools::getValue('action'),
-                    'url'   => array(
-                        'history'   => $this->context->link->getPageLink('history.php'),
-                        'restore'   => $this->context->link->getModuleLink(
-                            $this->module->name, 'redirect', array('restore' => 'cart')
+            [
+                'redirect' => [
+                    'status' => Tools::getValue('action'),
+                    'url'    => [
+                        'order'   => $this->getOrderUrl(),
+                        'history' => $this->context->link->getPageLink('history.php'),
+                        'restore' => $this->context->link->getModuleLink(
+                            $this->module->name,
+                            'redirect',
+                            ['restore' => 'cart']
                         ),
-                        'support'   => $this->context->link->getPageLink('contact.php'),
-                    )
-                )
-            ),
+                        'support' => $this->context->link->getPageLink('contact.php'),
+                    ]
+                ],
+                'cart'     => new Cart(intval(Tools::getValue('id_cart')))
+            ],
             true
         );
 
@@ -82,34 +86,80 @@ class EComProcessingRedirectModuleFrontController extends ModuleFrontController
     }
 
     /**
+     * Checks if cart should be restored.
+     *
+     * @return bool
+     */
+    protected function shouldRestoreCustomerCart()
+    {
+        return Tools::getValue('restore') === 'cart' ||
+               in_array(
+                   Tools::getValue('action'),
+                   $this->actionsToRestoreCart
+               );
+    }
+
+    /**
+     * @return string
+     */
+    protected function getOrderUrl()
+    {
+        return $this->isOrderProcessTypeOPC() ?
+            $this->context->link->getPageLink('order-opc.php', ['step' => '3']) :
+            $this->context->link->getPageLink('order.php', ['step' => '3']);
+    }
+
+    /**
+     * @return bool
+     */
+    protected function isOrderProcessTypeOPC()
+    {
+        return defined('PS_ORDER_PROCESS_OPC') &&
+               Configuration::get('PS_ORDER_PROCESS_TYPE') == PS_ORDER_PROCESS_OPC;
+    }
+
+    /**
      * Restore customer's cart
      *
      * @return void
      */
-    private function restoreCustomerCart()
+    protected function restoreCustomerCart()
     {
         $order = Order::getCustomerOrders($this->context->customer->id, false, $this->context);
-
         $order = reset($order);
 
-        $oldCart = new Cart((int)Order::getCartIdStatic($order['id_order'], $this->context->customer->id));
+        $duplication = $this->getCart(
+            $order['id_order']
+        )->duplicate();
 
-        $duplication = $oldCart->duplicate();
-
-        if ($duplication && Validate::isLoadedObject($duplication['cart']))
-        {
+        if ($duplication && Validate::isLoadedObject($duplication['cart']) && !$this->context->cookie->id_cart) {
+            $this->context->cart            = $duplication['cart'];
             $this->context->cookie->id_cart = $duplication['cart']->id;
             $this->context->cookie->write();
 
-            if (Configuration::get('PS_ORDER_PROCESS_TYPE') == PS_ORDER_PROCESS_OPC) {
-                $this->module->redirectToPage('order-opc.php', array('step' => '3'));
-            }
-            else {
-                $this->module->redirectToPage('order.php', array('step' => '3'));
-            }
+            // Refresh page here so correct cart content is shown
+            Tools::redirect(
+                Context::getContext()->link->getModuleLink(
+                    'ecomprocessing',
+                    'redirect',
+                    Tools::getAllValues()
+                )
+            );
         }
+    }
 
-        // If all else fails, redirect the customer to their OrderHistory
-        $this->module->redirectToPage('history.php');
+    /**
+     * @param int $orderId
+     *
+     * @return Cart
+     */
+    protected function getCart($orderId)
+    {
+        return new Cart(
+            (int)Order::getCartIdStatic(
+                $orderId,
+                $this->context->customer->id
+            )
+        );
     }
 }

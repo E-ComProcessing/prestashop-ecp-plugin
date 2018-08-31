@@ -1,6 +1,6 @@
 <?php
 /*
- * Copyright (C) 2015 E-Comprocessing™
+ * Copyright (C) 2018 E-ComProcessing Ltd.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -12,8 +12,8 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
- * @author      E-Comprocessing™
- * @copyright   2015 E-Comprocessing™
+ * @author      E-ComProcessing
+ * @copyright   2018 E-ComProcessing Ltd.
  * @license     http://opensource.org/licenses/gpl-2.0.php GNU General Public License, version 2 (GPL-2.0)
  */
 
@@ -24,13 +24,14 @@ if (!defined('_PS_VERSION_')) {
 /**
  * Class EComProcessingTransaction
  *
- * E-ComProcessing Transaction Model
+ * EComProcessing Transaction Model
  */
 class EComProcessingTransaction extends ObjectModel
 {
     public $id_unique;
     public $id_parent;
     public $ref_order;
+    public $transaction_id;
     public $type;
     public $status;
     public $message;
@@ -43,37 +44,68 @@ class EComProcessingTransaction extends ObjectModel
     /**
      * @see ObjectModel::$definition
      */
-    public static $definition = array(
-        'table'  => 'ecomprocessing_transactions',
-        'primary'=> 'id_entry',
-        'fields' => array(
-            'id_unique' => array('type' => self::TYPE_STRING, 'validate' => 'isString', 'required' => true, 'size' => 254),
-            'id_parent' => array('type' => self::TYPE_STRING, 'validate' => 'isString', 'required' => true, 'size' => 254),
-            'ref_order' => array('type' => self::TYPE_STRING, 'validate' => 'isString', 'required' => true, 'size' => 9),
-            'type'      => array('type' => self::TYPE_STRING, 'validate' => 'isString', 'required' => true, 'size' => 254),
-            'status'    => array('type' => self::TYPE_STRING, 'validate' => 'isString', 'required' => true, 'size' => 254),
-            'message'   => array('type' => self::TYPE_STRING, 'validate' => 'isString', 'size' => 254),
-            'currency'  => array('type' => self::TYPE_STRING, 'validate' => 'isString', 'size' => 3),
-            'amount'    => array('type' => self::TYPE_FLOAT,  'validate' => 'isPrice'),
-            'terminal'  => array('type' => self::TYPE_STRING, 'validate' => 'isString'),
-            'date_add'  => array('type' => self::TYPE_DATE,   'validate' => 'isDate'),
-            'date_upd'  => array('type' => self::TYPE_DATE,   'validate' => 'isDate'),
-        ),
-    );
+    public static $definition = [
+        'table'   => 'ecomprocessing_transactions',
+        'primary' => 'id_entry',
+        'fields'  => [
+            'id_unique'      => [
+                'type'     => self::TYPE_STRING,
+                'validate' => 'isString',
+                'required' => true,
+                'size'     => 254
+            ],
+            'id_parent'      => [
+                'type'     => self::TYPE_STRING,
+                'validate' => 'isString',
+                'required' => true,
+                'size'     => 254
+            ],
+            'ref_order'      => [
+                'type'     => self::TYPE_STRING,
+                'validate' => 'isString',
+                'required' => true,
+                'size'     => 9
+            ],
+            'transaction_id' => [
+                'type'     => self::TYPE_STRING,
+                'validate' => 'isString',
+                'required' => false,
+                'size'     => 254
+            ],
+            'type'           => [
+                'type'     => self::TYPE_STRING,
+                'validate' => 'isString',
+                'required' => true,
+                'size'     => 254
+            ],
+            'status'         => [
+                'type'     => self::TYPE_STRING,
+                'validate' => 'isString',
+                'required' => true,
+                'size'     => 254
+            ],
+            'message'        => ['type' => self::TYPE_STRING, 'validate' => 'isString', 'size' => 254],
+            'currency'       => ['type' => self::TYPE_STRING, 'validate' => 'isString', 'size' => 3],
+            'amount'         => ['type' => self::TYPE_FLOAT, 'validate' => 'isPrice'],
+            'terminal'       => ['type' => self::TYPE_STRING, 'validate' => 'isString'],
+            'date_add'       => ['type' => self::TYPE_DATE, 'validate' => 'isDate'],
+            'date_upd'       => ['type' => self::TYPE_DATE, 'validate' => 'isDate'],
+        ],
+    ];
 
     /**
      * Add transaction
      *
-     * @param bool $autodate    set autodate without explicit declaration?
-     * @param bool $nullValues  accept nulls?
+     * @param bool $autodate set autodate without explicit declaration?
+     * @param bool $nullValues accept nulls?
      *
      * @return bool
      */
     public function add($autodate = true, $nullValues = false)
     {
-        if (parent::add($autodate, $nullValues))
-        {
-            Hook::exec('actionEComProcessingAddTransaction', array('ecomprocessingAddTransaction' => $this));
+        if (parent::add($autodate, $nullValues)) {
+            Hook::exec('actionEComProcessingAddTransaction', ['ecomprocessingAddTransaction' => $this]);
+
             return true;
         }
 
@@ -90,6 +122,7 @@ class EComProcessingTransaction extends ObjectModel
         /** @var PrestaShopCollectionCore $orders */
         $orders = new PrestaShopCollection('Order');
         $orders->where('reference', '=', $this->ref_order);
+
         return $orders->getFirst();
     }
 
@@ -107,6 +140,7 @@ class EComProcessingTransaction extends ObjectModel
         /** @var PrestaShopCollectionCore $result */
         $result = new PrestaShopCollection('EComProcessingTransaction');
         $result->where('id_unique', '=', $id_unique);
+
         return $result->getFirst();
     }
 
@@ -124,6 +158,7 @@ class EComProcessingTransaction extends ObjectModel
         /** @var PrestaShopCollectionCore $transactions */
         $transactions = new PrestaShopCollection('EComProcessingTransaction');
         $transactions->where('ref_order', '=', $order->reference);
+
         return $transactions;
     }
 
@@ -142,42 +177,28 @@ class EComProcessingTransaction extends ObjectModel
         /** @var PrestaShopCollectionCore $orders */
         $orders = new PrestaShopCollection('Order');
         $orders->where('reference', '=', $transaction->ref_order);
+
         return $orders->getFirst();
     }
 
     /**
-     * Get the detailed payment of an order
-     * @param int $order_reference
-     * @return array
-     * @since 1.5.0.13
-     */
-    public static function getByOrderReference($order_reference)
-    {
-        return ObjectModel::hydrateCollection('EComProcessingTransaction',
-
-            Db::getInstance()->executeS("
-                SELECT *
-                FROM `" . _DB_PREFIX_ . "ecomprocessing_transactions`
-                WHERE `ref_order` = '" . pSQL($order_reference) . "'
-            ")
-        );
-    }
-
-    /**
      * Get the sum of the ammount for a list of transaction types and status
+     *
      * @param int $order_reference
      * @param string $parent_transaction_id
      * @param array $types
      * @param string $status
+     *
      * @return decimal
      */
-    private static function getTransactionsSumAmount($order_reference, $parent_transaction_id, $types, $status) {
+    private static function getTransactionsSumAmount($order_reference, $parent_transaction_id, $types, $status)
+    {
         $transactions = self::getTransactionsByTypeAndStatus($order_reference, $parent_transaction_id, $types, $status);
-        $totalAmount = 0;
+        $totalAmount  = 0;
 
         /** @var $transaction */
         foreach ($transactions as $transaction) {
-            $totalAmount +=  $transaction->getFields()['amount'];
+            $totalAmount += $transaction->getFields()['amount'];
         }
 
         return $totalAmount;
@@ -185,33 +206,58 @@ class EComProcessingTransaction extends ObjectModel
 
     /**
      * Get the detailed transactions list of an order for transaction types and status
+     *
      * @param int $order_reference
      * @param string $parent_transaction_id
      * @param array $types
      * @param string $status
+     *
      * @return array
      */
-    private static function getTransactionsByTypeAndStatus($order_reference, $parent_transaction_id, $types, $status) {
+    private static function getTransactionsByTypeAndStatus($order_reference, $parent_transaction_id, $types, $status)
+    {
 
         return ObjectModel::hydrateCollection('EComProcessingTransaction',
             Db::getInstance()->executeS("
-                SELECT *
-                FROM `" . _DB_PREFIX_ . "ecomprocessing_transactions`
-                WHERE (`ref_order` = '" . pSQL($order_reference) . "') and " .
-                (!empty($parent_transaction_id)    ? " (`id_parent` = '" . $parent_transaction_id . "') and " : "") . "
-                        (`type` in ('" . (is_array($types) ? implode("','", $types) : $types) . "')) and
-                        (`status` = '" . $status . "')
+				SELECT *
+				FROM `" . _DB_PREFIX_ . "ecomprocessing_transactions`
+				WHERE (`ref_order` = '" . pSQL($order_reference) . "') and " .
+                                        (!empty($parent_transaction_id) ? " (`id_parent` = '" . $parent_transaction_id . "') and " : "") . "
+						(`type` in ('" . (is_array($types) ? implode("','", $types) : $types) . "')) and
+						(`status` = '" . $status . "')
 
-            ")
+			")
+        );
+    }
+
+    /**
+     * Get the detailed payment of an order
+     *
+     * @param int $order_reference
+     *
+     * @return array
+     * @since 1.5.0.13
+     */
+    public static function getByOrderReference($order_reference)
+    {
+        return ObjectModel::hydrateCollection('EComProcessingTransaction',
+            Db::getInstance()->executeS("
+				SELECT *
+				FROM `" . _DB_PREFIX_ . "ecomprocessing_transactions`
+				WHERE `ref_order` = '" . pSQL($order_reference) . "'
+			")
         );
     }
 
     /**
      * Get a formatted transaction value for the Admin Transactions Panel
+     *
      * @param float $amount
+     *
      * @return string
      */
-    private static function formatTransactionValue($amount) {
+    private static function formatTransactionValue($amount)
+    {
         /* DecimalSeparator   -> .
            Thousand Separator -> empty
 
@@ -236,7 +282,7 @@ class EComProcessingTransaction extends ObjectModel
 
         $result = self::getByOrderReference($order->reference);
 
-        $transactions = array();
+        $transactions = [];
 
         /** @var EComProcessingTransaction $transaction */
         foreach ($result as $transaction) {
@@ -249,11 +295,12 @@ class EComProcessingTransaction extends ObjectModel
         // 2. Sort by relations, i.e. every parent has the child nodes immediately after
 
         // Ascending Date/Timestamp sorting
-        uasort($transactions, function($a, $b) {
+        uasort($transactions, function ($a, $b) {
             // sort by timestamp (date) first
-            if (@$a["date_add"] == @$b["date_add"]){
+            if (@$a["date_add"] == @$b["date_add"]) {
                 return 0;
             }
+
             return (@$a["date_add"] > @$b["date_add"]) ? 1 : -1;
         });
 
@@ -261,54 +308,58 @@ class EComProcessingTransaction extends ObjectModel
         foreach ($transactions as &$transaction) {
             $transaction['date_add'] = date("H:i:s \n m/d/Y", strtotime($transaction['date_add']));
 
-            if (in_array( $transaction['type'], array( 'authorize', 'authorize3d')) && $transaction['status'] == 'approved') {
-                $transaction['can_capture'] = true;
-            }
-            else {
-                $transaction['can_capture'] = false;
-            }
+            $transaction['can_capture'] =
+                \Genesis\API\Constants\Transaction\Types::canCapture($transaction['type']) &&
+                $transaction['status'] == 'approved';
 
             if ($transaction['can_capture']) {
-                $totalAuthorizedAmount = self::getTransactionsSumAmount($order->reference, $transaction['id_parent'], array('authorize', 'authorize3d'), 'approved');
-                $totalCapturedAmount = self::getTransactionsSumAmount($order->reference, $transaction['id_unique'], 'capture', 'approved');
+                $totalAuthorizedAmount           = self::getTransactionsSumAmount(
+                    $order->reference,
+                    $transaction['id_parent'],
+                    ['authorize', 'authorize3d'],
+                    'approved'
+                );
+                $totalCapturedAmount             = self::getTransactionsSumAmount(
+                    $order->reference,
+                    $transaction['id_unique'],
+                    'capture',
+                    'approved'
+                );
                 $transaction['available_amount'] = $totalAuthorizedAmount - $totalCapturedAmount;
             }
 
-            if (in_array( $transaction['type'], array( 'capture', 'sale', 'sale3d', 'init_recurring_sale', 'recurring_sale' )) && $transaction['status'] == 'approved') {
-                $transaction['can_refund'] = true;
-            } else {
-                $transaction['can_refund'] = false;
-            }
+            $transaction['can_refund'] = static::canRefund($transaction);
 
             if ($transaction['can_refund']) {
-                $totalCapturedAmount = $transaction['amount'];
-                $totalRefundedAmount = self::getTransactionsSumAmount($order->reference, $transaction['id_unique'], 'refund', 'approved');
+                $totalCapturedAmount             = $transaction['amount'];
+                $totalRefundedAmount             = self::getTransactionsSumAmount(
+                    $order->reference,
+                    $transaction['id_unique'],
+                    'refund',
+                    'approved'
+                );
                 $transaction['available_amount'] = $totalCapturedAmount - $totalRefundedAmount;
             }
 
-            if (in_array( $transaction['type'], array( 'authorize', 'authorize3d', 'capture', 'sale', 'sale3d', 'init_recurring_sale', 'recurring_sale', 'refund' )) && $transaction ) {
-                $transaction['can_void'] = true;
-            } else {
-                $transaction['can_void'] = false;
-            }
+            $transaction['can_void'] = static::canVoid($transaction);
 
             $transaction['amount'] = self::formatTransactionValue($transaction['amount']);
 
-            if (!isset($transaction['available_amount']))
+            if (!isset($transaction['available_amount'])) {
                 $transaction['available_amount'] = $transaction['amount'];
+            }
 
             $transaction['available_amount'] = self::formatTransactionValue($transaction['available_amount']);
-
         }
 
         // Create the parent/child relations from a flat array
-        $array_asc = array();
+        $array_asc = [];
 
-        foreach($transactions as $key => $val){
+        foreach ($transactions as $key => $val) {
             // create an array with ids as keys and children
             // with the assumption that parents are created earlier.
             // store the original key
-            $array_asc[$val['id_unique']] = array_merge($val, array('org_key' => $key));
+            $array_asc[$val['id_unique']] = array_merge($val, ['org_key' => $key]);
 
             if (isset($val['id_parent']) && (bool)$val['id_parent']) {
                 $array_asc[$val['id_parent']]['children'][] = $val['id_unique'];
@@ -316,9 +367,9 @@ class EComProcessingTransaction extends ObjectModel
         }
 
         // Order the parent/child entries
-        $transactions = array();
+        $transactions = [];
 
-        foreach($array_asc as $val) {
+        foreach ($array_asc as $val) {
 
             /*
             if (isset($val['id_parent']) && $val['id_parent']){
@@ -333,6 +384,28 @@ class EComProcessingTransaction extends ObjectModel
     }
 
     /**
+     * @param array $transaction
+     *
+     * @return bool
+     */
+    protected static function canRefund($transaction)
+    {
+        return \Genesis\API\Constants\Transaction\Types::canRefund($transaction['type']) &&
+               $transaction['status'] == 'approved';
+    }
+
+    /**
+     * @param array $transaction
+     *
+     * @return bool
+     */
+    protected static function canVoid($transaction)
+    {
+        return \Genesis\API\Constants\Transaction\Types::canVoid($transaction['type']) &&
+               $transaction['status'] == 'approved';
+    }
+
+    /**
      * Recursive function used in the process of sorting
      * the Transactions list
      *
@@ -343,14 +416,14 @@ class EComProcessingTransaction extends ObjectModel
     public static function treeTransactionSort(&$array_out, $val, $array_asc)
     {
         if (isset($val['org_key'])) {
-            $array_out[ $val['org_key'] ] = $val;
+            $array_out[$val['org_key']] = $val;
 
-            if ( isset( $val['children'] ) && sizeof( $val['children'] ) ) {
-                foreach ( $val['children'] as $id ) {
-                    self::treeTransactionSort( $array_out, $array_asc[ $id ], $array_asc );
+            if (isset($val['children']) && sizeof($val['children'])) {
+                foreach ($val['children'] as $id) {
+                    self::treeTransactionSort($array_out, $array_asc[$id], $array_asc);
                 }
             }
-            unset( $array_out[ $val['org_key'] ]['children'], $array_out[ $val['org_key'] ]['org_key'] );
+            unset($array_out[$val['org_key']]['children'], $array_out[$val['org_key']]['org_key']);
         }
     }
 
@@ -392,15 +465,15 @@ class EComProcessingTransaction extends ObjectModel
     /**
      * Update the order history of the order related to the transaction
      *
-     * @param int   $status             Order Status Id
-     * @param bool  $notify_customer    Should we notify the customer?
+     * @param int $status Order Status Id
+     * @param bool $notify_customer Should we notify the customer?
      */
     public function updateOrderHistory($status, $notify_customer = null)
     {
         $order = $this->getOrder();
 
         /** @var OrderHistoryCore $new_history */
-        $new_history = new OrderHistory();
+        $new_history           = new OrderHistory();
         $new_history->id_order = (int)$order->id;
         $new_history->changeIdOrderState((int)$status, $order, true);
 
@@ -409,4 +482,62 @@ class EComProcessingTransaction extends ObjectModel
         }
     }
 
+    /**
+     * Changes parent status with the child status.
+     * @return bool
+     */
+    public function changeParentStatus()
+    {
+        if (!$this->shouldChangeParentStatus()) {
+            return false;
+        }
+
+        $parent_transaction         = static::getByUniqueId($this->id_parent);
+        $parent_transaction->status = $this->getStatusFromTransactionType($this->type);
+
+        try {
+            return $parent_transaction->update();
+        } catch (\Exception $e) {
+            if (class_exists('Logger')) {
+                Logger::addLog($e->getMessage(), 4);
+            }
+
+            return false;
+        }
+    }
+
+    /**
+     * @return bool
+     */
+    public function shouldChangeParentStatus()
+    {
+        if ($this->status != 'approved') {
+            return false;
+        }
+
+        switch ($this->type) {
+            case \Genesis\API\Constants\Transaction\Types::REFUND:
+            case \Genesis\API\Constants\Transaction\Types::VOID:
+                return true;
+            default:
+                return false;
+        }
+    }
+
+    /**
+     * @param string $type
+     *
+     * @return string
+     */
+    protected function getStatusFromTransactionType($type)
+    {
+        switch ($type) {
+            case \Genesis\API\Constants\Transaction\Types::REFUND:
+                return \Genesis\API\Constants\Transaction\States::REFUNDED;
+            case \Genesis\API\Constants\Transaction\Types::VOID:
+                return \Genesis\API\Constants\Transaction\States::VOIDED;
+            default:
+                return 'unknown';
+        }
+    }
 }

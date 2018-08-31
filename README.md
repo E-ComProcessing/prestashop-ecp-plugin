@@ -6,14 +6,14 @@ This is a Payment Module for Prestashop that gives you the ability to process pa
 Requirements
 ------------
 
-* Prestashop 1.5.x - 1.6.x - 1.7.x (Tested up to __1.7.0.2__)
-* [GenesisPHP v1.4](https://github.com/GenesisGateway/genesis_php) - (Integrated in Module)
+* Prestashop 1.6.x - 1.7.x (Tested up to __1.7.4__)
+* [GenesisPHP v1.9.0](https://github.com/GenesisGateway/genesis_php/releases/tag/1.9.0) - (Integrated in Module)
 * PCI-certified server in order to use ```E-ComProcessing Direct```
 
 GenesisPHP Requirements
 ------------
 
-* PHP version 5.3.2 or newer
+* PHP version 5.5.9 or newer
 * PHP Extensions:
     * [BCMath](https://php.net/bcmath)
     * [CURL](https://php.net/curl) (required, only if you use the curl network interface)
@@ -66,4 +66,4 @@ _Note_: If you have trouble with your credentials or terminal configuration, get
 
 You're now ready to process payments through our gateway.
 
-[support]: mailto:tech-support@e-comprocessing.net
+[support]: mailto:tech-support@e-comprocessing.com

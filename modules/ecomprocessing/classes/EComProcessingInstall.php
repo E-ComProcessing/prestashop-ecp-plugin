@@ -1,6 +1,6 @@
 <?php
 /*
- * Copyright (C) 2016 E-Comprocessing™
+ * Copyright (C) 2018 E-ComProcessing Ltd.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -12,8 +12,8 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
- * @author      E-Comprocessing™
- * @copyright   2016 E-Comprocessing™
+ * @author      E-ComProcessing
+ * @copyright   2018 E-ComProcessing Ltd.
  * @license     http://opensource.org/licenses/gpl-2.0.php GNU General Public License, version 2 (GPL-2.0)
  */
 
@@ -30,7 +30,7 @@ class EComProcessingInstall
 {
     private $status = true;
 
-    private $hooks = array(
+    private $hooks = [
         'header',
         'payment',
         'paymentTop',
@@ -41,8 +41,9 @@ class EComProcessingInstall
          * Hooks for 1.7.x
          */
         'displayAdminOrder',
+        'displayOrderDetail',
         'paymentOptions'
-    );
+    ];
 
     /**
      * Create the table/tables required by the module
@@ -52,18 +53,19 @@ class EComProcessingInstall
         $schema = '
             CREATE TABLE IF NOT EXISTS `' . _DB_PREFIX_ . 'ecomprocessing_transactions`
               (
-                 `id_entry`  INT NOT NULL auto_increment,
-                 `id_unique` VARCHAR(255) NOT NULL,
-                 `id_parent` VARCHAR(255) NOT NULL,
-                 `ref_order` VARCHAR(9) NOT NULL,
-                 `type`      VARCHAR(255) NOT NULL,
-                 `status`    VARCHAR(255) NOT NULL,
-                 `message`   VARCHAR(255) NULL,
-                 `currency`  VARCHAR(3) NULL,
-                 `amount`    DECIMAL(10, 2) NULL,
-                 `terminal`  VARCHAR(255) NULL,
-                 `date_add`  DATETIME DEFAULT NULL,
-                 `date_upd`  TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+                 `id_entry`       INT NOT NULL auto_increment,
+                 `id_unique`      VARCHAR(255) NOT NULL,
+                 `id_parent`      VARCHAR(255) NOT NULL,
+                 `ref_order`      VARCHAR(9) NOT NULL,
+                 `transaction_id` VARCHAR(255) NULL,
+                 `type`           VARCHAR(255) NOT NULL,
+                 `status`         VARCHAR(255) NOT NULL,
+                 `message`        VARCHAR(255) NULL,
+                 `currency`       VARCHAR(3) NULL,
+                 `amount`         DECIMAL(10, 2) NULL,
+                 `terminal`       VARCHAR(255) NULL,
+                 `date_add`       DATETIME DEFAULT NULL,
+                 `date_upd`       TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
                  PRIMARY KEY (`id_entry`)
               )
             engine=`' . _MYSQL_ENGINE_ . '`
@@ -77,11 +79,17 @@ class EComProcessingInstall
 
     /**
      * Updates the scheme, if a new version of the module is directly copied in the root folder
-     * without deinstalling the old one and installing the new one
+     * without uninstalling the old one and installing the new one
      */
     public static function doProcessSchemaUpdate()
     {
-        // nothing
+        if (!Db::getInstance()->Execute('SELECT transaction_id from `' . _DB_PREFIX_ . 'ecomprocessing_transactions`')) {
+            $sqlAddTransactionIdField = '
+              ALTER TABLE `' . _DB_PREFIX_ . 'ecomprocessing_transactions`
+                ADD `transaction_id` VARCHAR(255) NOT NULL AFTER `ref_order`';
+
+            Db::getInstance()->Execute($sqlAddTransactionIdField);
+        }
     }
 
     /**
@@ -106,7 +114,7 @@ class EComProcessingInstall
      */
     public function dropSchema()
     {
-        $schema = 'DROP TABLE IF EXISTS `'._DB_PREFIX_.'ecomprocessing_transactions`';
+        $schema = 'DROP TABLE IF EXISTS `' . _DB_PREFIX_ . 'ecomprocessing_transactions`';
 
         if (!Db::getInstance()->execute($schema)) {
             $this->status = false;
@@ -135,6 +143,7 @@ class EComProcessingInstall
      * Delete module configuration
      *
      * @param EComProcessing $instance
+     *
      * @throws PrestaShopException
      */
     public function dropKeys($instance)
@@ -151,7 +160,8 @@ class EComProcessingInstall
      * Return the status of all processed methods
      * @return bool
      */
-    public function isSuccessful() {
+    public function isSuccessful()
+    {
         return $this->status;
     }
 }
