@@ -1,5 +1,5 @@
 {*
- * Copyright (C) 2018 E-ComProcessing Ltd.
+ * Copyright (C) 2018 E-Comprocessing Ltd.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -11,8 +11,8 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
- * @author      E-ComProcessing
- * @copyright   2018 E-ComProcessing Ltd.
+ * @author      E-Comprocessing
+ * @copyright   2018 E-Comprocessing Ltd.
  * @license     http://opensource.org/licenses/gpl-2.0.php GNU General Public License, version 2 (GPL-2.0)
  *}
 
@@ -25,7 +25,7 @@
                         <div class="row">
                             <div class="col-xs-12">
                                 <img src="{$ecomprocessing['path']}/assets/img/logos/ecomprocessing_direct.png"
-                                     alt="{l s="E-ComProcessing Logo" mod="ecomprocessing"}" style="width:224px;"/>
+                                     alt="{l s="E-Comprocessing Logo" mod="ecomprocessing"}" style="width:224px;"/>
                                 <span>&nbsp;{l s="Pay with Credit / Debit Card" mod="ecomprocessing"}</span>
                             </div>
                         </div>
@@ -103,7 +103,7 @@
                                 <div class="row">
                                     <div class="col-xs-12">
                                         <img src="{$ecomprocessing['path']}/assets/img/logos/ecomprocessing_direct.png"
-                                             alt="{l s="E-ComProcessing Logo" mod="ecomprocessing"}" style="width:224px;"/>
+                                             alt="{l s="E-Comprocessing Logo" mod="ecomprocessing"}" style="width:224px;"/>
                                         <span>&nbsp;{l s="Pay with Credit / Debit Card" mod="ecomprocessing"}</span>
                                     </div>
                                 </div>
@@ -197,7 +197,7 @@
                                 <div class="row">
                                     <div class="col-xs-12">
                                         <img src="{$ecomprocessing['path']}/assets/img/logos/ecomprocessing_direct.png"
-                                             alt="{l s="E-ComProcessing Logo" mod="ecomprocessing"}" style="width:224px;"/>
+                                             alt="{l s="E-Comprocessing Logo" mod="ecomprocessing"}" style="width:224px;"/>
                                         <span>&nbsp;{l s="Pay with Credit / Debit Card" mod="ecomprocessing"}</span>
                                     </div>
                                 </div>

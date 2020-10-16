@@ -1,5 +1,5 @@
 {*
- * Copyright (C) 2018 E-ComProcessing Ltd.
+ * Copyright (C) 2018 E-Comprocessing Ltd.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -11,8 +11,8 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
- * @author      E-ComProcessing
- * @copyright   2018 E-ComProcessing Ltd.
+ * @author      E-Comprocessing
+ * @copyright   2018 E-Comprocessing Ltd.
  * @license     http://opensource.org/licenses/gpl-2.0.php GNU General Public License, version 2 (GPL-2.0)
  *}
 {if $ecomprocessing['transactions']['tree'] && version_compare($ecomprocessing['presta']['version'], '1.7.2', '>=')}
@@ -20,7 +20,7 @@
     <section class="box">
         <h3>
             <img src="{$ecomprocessing['presta']['url']}modules/{$ecomprocessing['name']['module']}/logo.png" alt="" style="width:16px;" />
-            <span>{l s='E-ComProcessing Transactions' mod='ecomprocessing'}</span>
+            <span>{l s='E-Comprocessing Transactions' mod='ecomprocessing'}</span>
         </h3>
 
         <table class="table table-hover tree">

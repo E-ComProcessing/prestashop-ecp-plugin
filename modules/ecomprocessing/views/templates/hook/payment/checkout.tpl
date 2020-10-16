@@ -1,5 +1,5 @@
 {*
- * Copyright (C) 2018 E-ComProcessing Ltd.
+ * Copyright (C) 2018 E-Comprocessing Ltd.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -11,8 +11,8 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
- * @author      E-ComProcessing
- * @copyright   2018 E-ComProcessing Ltd.
+ * @author      E-Comprocessing
+ * @copyright   2018 E-Comprocessing Ltd.
  * @license     http://opensource.org/licenses/gpl-2.0.php GNU General Public License, version 2 (GPL-2.0)
  *}
 
@@ -22,8 +22,8 @@
             <div id="payment-method-{$ecomprocessing['name']['module']}-checkout" class="payment_module">
                 <a class="payment_module_link" href="{$ecomprocessing['payment']['urls']['checkout']}">
                     <img src="{$ecomprocessing['path']}/assets/img/logos/ecomprocessing_checkout.png"
-                         alt="{l s="E-ComProcessing Logo" mod="ecomprocessing"}" style="width:224px;"/>
-                    {l s="Pay safely with E-ComProcessing" mod="ecomprocessing"}
+                         alt="{l s="E-Comprocessing Logo" mod="ecomprocessing"}" style="width:224px;"/>
+                    {l s="Pay safely with E-Comprocessing" mod="ecomprocessing"}
                 </a>
             </div>
         {/if}
@@ -45,8 +45,8 @@
                         <p class="payment_module">
                             <a class="payment_module_link" href="{$ecomprocessing['payment']['urls']['checkout']}">
                                 <img src="{$ecomprocessing['path']}/assets/img/logos/ecomprocessing_checkout.png"
-                                     alt="{l s="E-ComProcessing Logo" mod="ecomprocessing"}"/>
-                                <span>{l s="Pay safely with E-ComProcessing" mod="ecomprocessing"}</span>
+                                     alt="{l s="E-Comprocessing Logo" mod="ecomprocessing"}"/>
+                                <span>{l s="Pay safely with E-Comprocessing" mod="ecomprocessing"}</span>
                             </a>
                         </p>
                     </div>
@@ -90,12 +90,12 @@
                 <div class="payment-method-container">
                     <div class="row">
                         <img src="{$ecomprocessing['path']}/assets/img/logos/ecomprocessing_checkout.png"
-                             alt="{l s="E-ComProcessing Logo" mod="ecomprocessing"}"/>
-                        <span>{l s="Pay safely with E-ComProcessing" mod="ecomprocessing"}</span>
+                             alt="{l s="E-Comprocessing Logo" mod="ecomprocessing"}"/>
+                        <span>{l s="Pay safely with E-Comprocessing" mod="ecomprocessing"}</span>
                     </div>
                     <div class="row">
                         <p>
-                            {l s="You will be redirected to E-ComProcessing, where you can safely enter your payment details and complete this order." mod='ecomprocessing'}
+                            {l s="You will be redirected to E-Comprocessing, where you can safely enter your payment details and complete this order." mod='ecomprocessing'}
                         </p>
                     </div>
                 </div>

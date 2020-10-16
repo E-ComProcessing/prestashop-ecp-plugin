@@ -1,14 +1,14 @@
-E-ComProcessing Gateway Module for Prestashop
+E-Comprocessing Gateway Module for Prestashop
 =============================
 
-This is a Payment Module for Prestashop that gives you the ability to process payments through E-ComProcessing's Payment Gateway - Genesis.
+This is a Payment Module for Prestashop that gives you the ability to process payments through E-Comprocessing's Payment Gateway - Genesis.
 
 Requirements
 ------------
 
 * Prestashop 1.6.x - 1.7.x (Tested up to __1.7.4__)
 * [GenesisPHP v1.9.0](https://github.com/GenesisGateway/genesis_php/releases/tag/1.9.0) - (Integrated in Module)
-* PCI-certified server in order to use ```E-ComProcessing Direct```
+* PCI-certified server in order to use ```E-Comprocessing Direct```
 
 GenesisPHP Requirements
 ------------
@@ -27,7 +27,7 @@ Installation (Manual)
 * Upload the contents of folder (excluding ```README.md```) to the ```<root>``` folder of your Prestashop installation
 * Login into your ```Prestashop Admin Panel```
 * Navigate to ```Modules``` -> ```Payment```
-* Locate ```E-ComProcessing Payment Gateway``` in the list and click ```Install```
+* Locate ```E-Comprocessing Payment Gateway``` in the list and click ```Install```
 * Tweak the settings to your liking and click the ```Save``` button when ready
 * You can find the new payment methods in the ```Checkout``` section in your Store Front
 * Clear the cache via ```Advanced Parameters``` -> ```Performance``` -> ```Clear cache```
@@ -41,8 +41,8 @@ __Recommended if you do not have FTP account to upload the plugin code directly 
 * Login into your ```Prestashop Admin Panel```
 * Navigate to ```Modules and Services``` in the main menu
 * Click the button ```Upload a module``` or ```Add a new module``` (depending on the version of Prestashop) and choose the manually created ```zip``` file.
-* If you are using Prestashop 1.7.x, then the plugin will be automatically installed. If you are using an older version of Prestashop, find our ```E-ComProcessing Payment Gateway``` Module below and install it
-* After the Module is installed, you could ```Configure``` the newly installed ```E-ComProcessing Payment Gateway``` to your needs and click ```Save``` button when ready
+* If you are using Prestashop 1.7.x, then the plugin will be automatically installed. If you are using an older version of Prestashop, find our ```E-Comprocessing Payment Gateway``` Module below and install it
+* After the Module is installed, you could ```Configure``` the newly installed ```E-Comprocessing Payment Gateway``` to your needs and click ```Save``` button when ready
 * You can find the new payment methods in the ```Checkout``` section in your Store Front
 * Clear the cache via ```Advanced Parameters``` -> ```Performance``` -> ```Clear cache```
 
@@ -50,7 +50,7 @@ __Note__: If you have payment restrictions in place, you'll have to add the newl
 
 Enable PrestaShop SSL
 ------------
-This steps should be followed if you wish to use the ```E-ComProcessing Direct``` Method.
+This steps should be followed if you wish to use the ```E-Comprocessing Direct``` Method.
 
 * Ensure you have installed a valid __SSL Certificate__ on your __PCI-DSS Certified__ Web Server and you have configured your __Virtual Host__ properly.
 * Login to your PrestaShop Admin Panel

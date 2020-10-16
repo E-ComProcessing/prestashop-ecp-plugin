@@ -1,5 +1,5 @@
 {*
- * Copyright (C) 2018 E-ComProcessing Ltd.
+ * Copyright (C) 2018 E-Comprocessing Ltd.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -11,8 +11,8 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
- * @author      E-ComProcessing
- * @copyright   2018 E-ComProcessing Ltd.
+ * @author      E-Comprocessing
+ * @copyright   2018 E-Comprocessing Ltd.
  * @license     http://opensource.org/licenses/gpl-2.0.php GNU General Public License, version 2 (GPL-2.0)
  *}
 
@@ -27,7 +27,7 @@
     <br/>
 
     <fieldset {if isset($ecomprocessing['presta']['version']) && ($ecomprocessing['presta']['version'] < '1.5')}style="width: 400px"{/if}>
-        <legend><img src="{$ecomprocessing['presta']['url']}/modules/{$ecomprocessing['name']['module']}/logo.png" style="width:16px" alt="" />{l s='E-ComProcessing Transactions' mod='ecomprocessing'}</legend>
+        <legend><img src="{$ecomprocessing['presta']['url']}/modules/{$ecomprocessing['name']['module']}/logo.png" style="width:16px" alt="" />{l s='E-Comprocessing Transactions' mod='ecomprocessing'}</legend>
         {* System errors, impacting the module functionallity *}
         {if $ecomprocessing['warning']}
             <div class="warn">{$ecomprocessing['warning']|escape:html:'UTF-8'}</div>
@@ -185,7 +185,7 @@
             <div class="panel">
                 <div class="panel-heading">
                     <img src="{$ecomprocessing['presta']['url']}modules/{$ecomprocessing['name']['module']}/logo.png" alt="" style="width:16px;" />
-                    <span>{l s='E-ComProcessing Transactions' mod='ecomprocessing'}</span>
+                    <span>{l s='E-Comprocessing Transactions' mod='ecomprocessing'}</span>
                 </div>
                 <div class="panel-collapse collapse in">
 

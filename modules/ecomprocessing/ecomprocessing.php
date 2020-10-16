@@ -1,6 +1,6 @@
 <?php
 /*
- * Copyright (C) 2018 E-ComProcessing Ltd.
+ * Copyright (C) 2018 E-Comprocessing Ltd.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -12,8 +12,8 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
- * @author      E-ComProcessing
- * @copyright   2018 E-ComProcessing Ltd.
+ * @author      E-Comprocessing
+ * @copyright   2018 E-Comprocessing Ltd.
  * @license     http://opensource.org/licenses/gpl-2.0.php GNU General Public License, version 2 (GPL-2.0)
  */
 
@@ -59,9 +59,9 @@ class EComProcessing extends PaymentModule
         /* Initial Module Setup */
         $this->name                   = 'ecomprocessing';
         $this->tab                    = 'payments_gateways';
-        $this->displayName            = 'E-ComProcessing Payment Gateway';
+        $this->displayName            = 'E-Comprocessing Payment Gateway';
         $this->controllers            = ['checkout', 'notification', 'redirect', 'validation'];
-        $this->version                = '1.6.2';
+        $this->version                = '1.6.3';
         $this->author                 = 'E-ComProcessing Ltd.';
         $this->need_instance          = 1;
         $this->ps_versions_compliancy = ['min' => '1.5', 'max' => _PS_VERSION_];
@@ -70,7 +70,7 @@ class EComProcessing extends PaymentModule
 
         /* The parent construct is required for translations */
         $this->page        = basename(__FILE__, '.php');
-        $this->description = 'Accept payments through E-ComProcessing\'s Payment Gateway - Genesis';
+        $this->description = 'Accept payments through E-Comprocessing\'s Payment Gateway - Genesis';
 
         /* Use Bootstrap */
         $this->bootstrap = true;
@@ -423,7 +423,7 @@ class EComProcessing extends PaymentModule
 
         $paymentMethods = [
             [
-                'title'               => 'Pay safely with E-ComProcessing Checkout',
+                'title'               => 'Pay safely with E-Comprocessing Checkout',
                 'name'                => 'checkout',
                 'clientSideEvents'    => [
                     'onFormSubmit' => 'return doBeforeSubmitEComProcessingCheckoutPaymentForm(this);"'
@@ -433,7 +433,7 @@ class EComProcessing extends PaymentModule
                 }
             ],
             [
-                'title'               => 'Pay safely with E-ComProcessing Direct',
+                'title'               => 'Pay safely with E-Comprocessing Direct',
                 'name'                => 'direct',
                 'clientSideEvents'    => [
                     'onFormSubmit' => 'return doBeforeSubmitEComProcessingDirectPaymentForm(this);"'
@@ -1823,7 +1823,7 @@ class EComProcessing extends PaymentModule
         $form_structure = [
             'form' => [
                 'legend' => [
-                    'title' => $this->l('E-ComProcessing Configuration'),
+                    'title' => $this->l('E-Comprocessing Configuration'),
                     'icon'  => 'icon-cog'
                 ],
                 'input'  => [
