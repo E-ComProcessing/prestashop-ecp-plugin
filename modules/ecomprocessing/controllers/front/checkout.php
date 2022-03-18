@@ -22,13 +22,13 @@ if (!defined('_PS_VERSION_')) {
 }
 
 /**
- * Class EComProcessingCheckoutModuleFrontController
+ * Class EComprocessingCheckoutModuleFrontController
  *
  * Checkout Front-End Controller
  */
-class EComProcessingCheckoutModuleFrontController extends ModuleFrontController
+class EComprocessingCheckoutModuleFrontController extends ModuleFrontController
 {
-    /** @var EComProcessing */
+    /** @var E-Comprocessing */
     public $module;
 
     // Hide the left column
@@ -41,7 +41,7 @@ class EComProcessingCheckoutModuleFrontController extends ModuleFrontController
     {
         parent::initContent();
 
-        $this->page_name = $this->module->l('E-Comprocessing Checkout');
+        $this->page_name = $this->module->l('EComprocessing Checkout');
 
         $this->initCheckout();
     }

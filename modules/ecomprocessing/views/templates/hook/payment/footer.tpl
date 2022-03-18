@@ -28,7 +28,7 @@
                 }, 3000);
             });
         {/if}
-        function doBeforeSubmitEComProcessingCheckoutPaymentForm(sender) {
+        function doBeforeSubmitEComprocessingCheckoutPaymentForm(sender) {
             var submitBtnIdPrefix = 'pay-with-';
             var submitBtnId = $(sender).find('button[type="submit"]').attr('id');
             var paymentOptionId = submitBtnId.substr(submitBtnId.indexOf(submitBtnIdPrefix) + submitBtnIdPrefix.length);
@@ -42,8 +42,8 @@
 
             return true;
         }
-        function doBeforeSubmitEComProcessingDirectPaymentForm(sender) {
-            doBeforeSubmitEComProcessingCheckoutPaymentForm(sender);
+        function doBeforeSubmitEComprocessingDirectPaymentForm(sender) {
+            doBeforeSubmitEComprocessingCheckoutPaymentForm(sender);
 
             $('#payment-method-ecomprocessing-direct').find('form.payment-form').find('input').each(function(index) {
                 $('<input>').attr(

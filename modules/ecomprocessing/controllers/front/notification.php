@@ -22,13 +22,13 @@ if (!defined('_PS_VERSION_')) {
 }
 
 /**
- * Class EComProcessingNotificationModuleFrontController
+ * Class EComprocessingNotificationModuleFrontController
  *
  * Notifications Front-End Controller
  */
-class EComProcessingNotificationModuleFrontController extends ModuleFrontController
+class EComprocessingNotificationModuleFrontController extends ModuleFrontController
 {
-    /** @var EComProcessing */
+    /** @var E-Comprocessing */
     public $module;
 
     /**
@@ -49,17 +49,15 @@ class EComProcessingNotificationModuleFrontController extends ModuleFrontControl
         \Genesis\API\Constants\Transaction\Types::SALE,
         \Genesis\API\Constants\Transaction\Types::SALE_3D,
         \Genesis\API\Constants\Transaction\Types::SOFORT,
-        \Genesis\API\Constants\Transaction\Types::CITADEL_PAYIN,
         \Genesis\API\Constants\Transaction\Types::EZEEWALLET,
         \Genesis\API\Constants\Transaction\Types::IDEBIT_PAYIN,
         \Genesis\API\Constants\Transaction\Types::INPAY,
         \Genesis\API\Constants\Transaction\Types::INSTA_DEBIT_PAYIN,
         \Genesis\API\Constants\Transaction\Types::INTERSOLVE,
+        \Genesis\API\Constants\Transaction\Types::ONLINE_BANKING_PAYIN,
         \Genesis\API\Constants\Transaction\Types::P24,
         \Genesis\API\Constants\Transaction\Types::PAYBYVOUCHER_SALE,
-        \Genesis\API\Constants\Transaction\Types::PAYBYVOUCHER_YEEPAY,
         \Genesis\API\Constants\Transaction\Types::PAYPAL_EXPRESS,
-        \Genesis\API\Constants\Transaction\Types::PAYSEC_PAYIN,
         \Genesis\API\Constants\Transaction\Types::POLI,
         \Genesis\API\Constants\Transaction\Types::SDD_SALE,
         \Genesis\API\Constants\Transaction\Types::TCS,
@@ -104,7 +102,7 @@ class EComProcessingNotificationModuleFrontController extends ModuleFrontControl
 
                 if (isset($reconcile->unique_id)) {
 
-                    $transaction = EComProcessingTransaction::getByUniqueId($reconcile->unique_id);
+                    $transaction = EComprocessingTransaction::getByUniqueId($reconcile->unique_id);
 
                     if (isset($transaction->id_unique) && $transaction->id_unique == $reconcile->unique_id) {
                         if (in_array($reconcile->transaction_type, $this->types)) {
@@ -145,7 +143,7 @@ class EComProcessingNotificationModuleFrontController extends ModuleFrontControl
 
                 if (isset($checkout_reconcile->unique_id)) {
 
-                    $checkout_transaction = EComProcessingTransaction::getByUniqueId($checkout_reconcile->unique_id);
+                    $checkout_transaction = EComprocessingTransaction::getByUniqueId($checkout_reconcile->unique_id);
 
                     if (isset($checkout_transaction->id_unique)) {
 
@@ -200,15 +198,15 @@ class EComProcessingNotificationModuleFrontController extends ModuleFrontControl
     /**
      * @param $payment_reconcile
      *
-     * @return EComProcessingTransaction
+     * @return EComprocessingTransaction
      */
     protected function getPaymentTransaction($payment_reconcile)
     {
         if ($payment_reconcile instanceof \ArrayObject) {
-            return EComProcessingTransaction::getByUniqueId($payment_reconcile[0]->unique_id);
+            return EComprocessingTransaction::getByUniqueId($payment_reconcile[0]->unique_id);
         }
 
-        return EComProcessingTransaction::getByUniqueId($payment_reconcile->unique_id);
+        return EComprocessingTransaction::getByUniqueId($payment_reconcile->unique_id);
     }
 
     /**
@@ -217,7 +215,7 @@ class EComProcessingNotificationModuleFrontController extends ModuleFrontControl
      */
     protected function addPaymentTransaction($checkout_transaction, $payment_reconcile)
     {
-        $payment_transaction = new EComProcessingTransaction();
+        $payment_transaction = new EComprocessingTransaction();
 
         $payment_transaction->id_parent = $checkout_transaction->id_unique;
         $payment_transaction->ref_order = $checkout_transaction->ref_order;

@@ -17,22 +17,26 @@
  * @license     http://opensource.org/licenses/gpl-2.0.php GNU General Public License, version 2 (GPL-2.0)
  */
 
+use Genesis\API\Constants\Transaction\Names;
+use Genesis\API\Constants\Transaction\Parameters\Mobile\GooglePay\PaymentTypes as GooglePaymentTypes;
+use Genesis\API\Constants\Transaction\Types;
+
 if (!defined('_PS_VERSION_')) {
     exit;
 }
 
 /**
- * The main EComProcessing class that handles
+ * The main E-Comprocessing class that handles
  * all the logic related to the payment module
  */
-class EComProcessing extends PaymentModule
+class EComprocessing extends PaymentModule
 {
     /**
      * List supported languages
      *
      * @var array
      */
-    private $languages = ['en', 'it', 'es', 'fr', 'de', 'pl', 'ja', 'zh', 'ar', 'pt', 'tr', 'ru', 'hi', 'bg'];
+    private $languages = array();
 
     /**
      * Constructor
@@ -53,6 +57,20 @@ class EComProcessing extends PaymentModule
     const SETTING_ECOMPROCESSING_ALLOW_PARTIAL_REFUND  = 'ECOMPROCESSING_ALLOW_PARTIAL_REFUND';
     const SETTING_ECOMPROCESSING_ALLOW_VOID            = 'ECOMPROCESSING_ALLOW_VOID';
     const SETTING_ECOMPROCESSING_ADD_JQUERY_CHECKOUT   = 'ECOMPROCESSING_ADD_JQUERY_CHECKOUT';
+    const SETTING_ECOMPROCESSING_WPF_TOKENIZATION      = 'ECOMPROCESSING_WPF_TOKENIZATION';
+
+    /**
+     * Transaction Type specifics
+     */
+    const PPRO_TRANSACTION_SUFFIX           = '_ppro';
+    const GOOGLE_PAY_TRANSACTION_PREFIX     = 'google_pay_';
+    const GOOGLE_PAY_PAYMENT_TYPE_AUTHORIZE = 'authorize';
+    const GOOGLE_PAY_PAYMENT_TYPE_SALE      = 'sale';
+
+    /**
+     * Custom prefix
+     */
+    const PLATFORM_TRANSACTION_PREFIX = 'ps-';
 
     public function __construct()
     {
@@ -61,8 +79,8 @@ class EComProcessing extends PaymentModule
         $this->tab                    = 'payments_gateways';
         $this->displayName            = 'E-Comprocessing Payment Gateway';
         $this->controllers            = ['checkout', 'notification', 'redirect', 'validation'];
-        $this->version                = '1.6.3';
-        $this->author                 = 'E-ComProcessing Ltd.';
+        $this->version                = '1.7.5';
+        $this->author                 = 'E-Comprocessing Ltd.';
         $this->need_instance          = 1;
         $this->ps_versions_compliancy = ['min' => '1.5', 'max' => _PS_VERSION_];
         $this->bootstrap              = true;
@@ -124,7 +142,7 @@ class EComProcessing extends PaymentModule
         // Call PaymentModule default install function
         $pre_install = parent::install();
 
-        $install = new EComProcessingInstall();
+        $install = new EComprocessingInstall();
 
         // Register Hooks
         $install->registerHooks($this);
@@ -146,7 +164,7 @@ class EComProcessing extends PaymentModule
     {
         $pre_uninstall = parent::uninstall();
 
-        $uninstall = new EComProcessingInstall();
+        $uninstall = new EComprocessingInstall();
 
         // Clear the transaction database
         $uninstall->dropSchema();
@@ -192,6 +210,16 @@ class EComProcessing extends PaymentModule
     public function isCheckoutPaymentMethodAvailable()
     {
         return $this->getBoolConfigurationValue(self::SETTING_ECOMPROCESSING_CHECKOUT);
+    }
+
+    /**
+     * Is WPF Tokenization enabled?
+     *
+     * @return bool
+     */
+    public function isWpfTokenizationEnabled()
+    {
+        return $this->getBoolConfigurationValue(self::SETTING_ECOMPROCESSING_WPF_TOKENIZATION);
     }
 
     /**
@@ -305,7 +333,7 @@ class EComProcessing extends PaymentModule
                         'denied_void'            => $this->l('Cancel Transaction are currently disabled! You can enable this option in the Module Settings.'),
                     ],
                     'error'   => $this->getSessVar('error_transaction'),
-                    'tree'    => EComProcessingTransaction::getTransactionTree((int)$params['id_order']),
+                    'tree'    => EComprocessingTransaction::getTransactionTree((int)$params['id_order']),
                 ],
             ],
             true
@@ -364,7 +392,7 @@ class EComProcessing extends PaymentModule
             'ecomprocessing',
             [
                 'transactions' => [
-                    'tree' => EComProcessingTransaction::getTransactionTree((int)$order->id),
+                    'tree' => EComprocessingTransaction::getTransactionTree((int)$order->id),
                 ],
             ],
             true
@@ -426,7 +454,7 @@ class EComProcessing extends PaymentModule
                 'title'               => 'Pay safely with E-Comprocessing Checkout',
                 'name'                => 'checkout',
                 'clientSideEvents'    => [
-                    'onFormSubmit' => 'return doBeforeSubmitEComProcessingCheckoutPaymentForm(this);"'
+                    'onFormSubmit' => 'return doBeforeSubmitEComprocessingCheckoutPaymentForm(this);"'
                 ],
                 'availabilityClosure' => function () {
                     return $this->isCheckoutPaymentMethodAvailable();
@@ -436,7 +464,7 @@ class EComProcessing extends PaymentModule
                 'title'               => 'Pay safely with E-Comprocessing Direct',
                 'name'                => 'direct',
                 'clientSideEvents'    => [
-                    'onFormSubmit' => 'return doBeforeSubmitEComProcessingDirectPaymentForm(this);"'
+                    'onFormSubmit' => 'return doBeforeSubmitEComprocessingDirectPaymentForm(this);"'
                 ],
                 'availabilityClosure' => function () {
                     return $this->isDirectPaymentMethodAvailable() && $this->getIsSSLEnabled();
@@ -651,7 +679,7 @@ class EComProcessing extends PaymentModule
      */
     private function generateTransactionId($length = 30)
     {
-        return substr(md5(mt_rand() . microtime(true) . uniqid()), 0, $length);
+        return self::PLATFORM_TRANSACTION_PREFIX . substr(md5(mt_rand() . microtime(true) . uniqid()), 0, $length);
     }
 
     /**
@@ -678,7 +706,7 @@ class EComProcessing extends PaymentModule
         // Parameters
         $data->id               = $this->generateTransactionId();
         $data->transaction_type = Configuration::get(self::SETTING_ECOMPROCESSING_DIRECT_TRX_TYPE);
-        $data->usage            = $this->l('Prestashop Transaction');
+        $data->usage            = $this->l('Payment via') . ' ' . Configuration::get('PS_SHOP_NAME');
 
         $description = '';
 
@@ -696,6 +724,7 @@ class EComProcessing extends PaymentModule
         $data->currency  = $currency->iso_code;
         $data->amount    = $cart->getOrderTotal();
 
+        $data->customer = $customer;
         $data->customer_email = $customer->email;
         $data->customer_phone = (empty($invoice->phone) ? $invoice->phone_mobile : $invoice->phone);
 
@@ -767,7 +796,10 @@ class EComProcessing extends PaymentModule
         }
 
         // Set WPF transaction types
-        $data->transaction_types = $this->getCheckoutTransactionTypes();
+        $data->transaction_types = $this->getCheckoutTransactionTypes($cart);
+
+        // Set WPF tokenization flag
+        $data->is_wpf_tokenization_enabled = $this->isWpfTokenizationEnabled();
 
         return $this->transaction_data = $data;
     }
@@ -798,9 +830,13 @@ class EComProcessing extends PaymentModule
         $this->applyGenesisConfig();
 
         try {
-            $responseObj = EComProcessingTransactionProcess::checkout(
-                $this->populateTransactionData()
-            );
+            $data = $this->populateTransactionData();
+
+            if ($this->isWpfTokenizationEnabled() && !$this->context->customer->isLogged()) {
+                throw new Exception('WPF Tokenization is available only for logged users');
+            }
+
+            $responseObj = EComprocessingTransactionProcess::checkout($data);
 
             $response = $responseObj->getResponseObject();
 
@@ -823,13 +859,21 @@ class EComProcessing extends PaymentModule
             $new_order = new Order((int)$this->currentOrder);
 
             // Save the transaction to Db
-            $transaction                 = new EComProcessingTransaction();
+            $transaction                 = new EComprocessingTransaction();
             $transaction->id_parent      = 0;
             $transaction->ref_order      = $new_order->reference;
             $transaction->transaction_id = $this->transaction_data->id;
             $transaction->type           = 'checkout';
             $transaction->importResponse($response);
             $transaction->add();
+
+            if (!empty($response->consumer_id)) {
+                EComprocessingConsumer::createConsumer(
+                    \Genesis\Config::getUsername(),
+                    $data->customer_email,
+                    $response->consumer_id
+                );
+            }
 
             return $response->redirect_url;
         } catch (\Genesis\Exceptions\ErrorAPI $api) {
@@ -861,7 +905,7 @@ class EComProcessing extends PaymentModule
         $this->applyGenesisConfig();
 
         try {
-            $responseObj = EComProcessingTransactionProcess::pay(
+            $responseObj = EComprocessingTransactionProcess::pay(
                 $this->populateTransactionData()
             );
 
@@ -924,7 +968,7 @@ class EComProcessing extends PaymentModule
             }
 
             // Save the transaction to Db
-            $transaction            = new EComProcessingTransaction();
+            $transaction            = new EComprocessingTransaction();
             $transaction->id_parent = 0;
             $transaction->ref_order = $new_order->reference;
             $transaction->importResponse($response);
@@ -974,24 +1018,32 @@ class EComProcessing extends PaymentModule
         $this->applyGenesisConfig();
 
         try {
-            $transaction = EComProcessingTransaction::getByUniqueId($id_unique);
+            $transaction = EComprocessingTransaction::getByUniqueId($id_unique);
+            $items       = null;
 
             if ($transaction->terminal) {
                 \Genesis\Config::setToken($transaction->terminal);
             }
 
+            if ($transaction->type === Types::KLARNA_AUTHORIZE) {
+                $cart  = new Cart($this->context->cart->id);
+                $items = $this->getKlarnaCustomParamItems($cart);
+            }
+
             $data = [
-                'transaction_id' => md5(uniqid() . mt_rand() . microtime(true)),
-                'usage'          => $usage,
-                'remote_ip'      => $ip_addr,
-                'reference_id'   => $transaction->id_unique,
-                'currency'       => $transaction->currency,
-                'amount'         => $amount,
+                'transaction_type' => $transaction->type,
+                'transaction_id'   => md5(uniqid() . mt_rand() . microtime(true)),
+                'usage'            => $usage,
+                'remote_ip'        => $ip_addr,
+                'reference_id'     => $transaction->id_unique,
+                'currency'         => $transaction->currency,
+                'amount'           => $amount,
+                'items'            => $items
             ];
 
-            $response = EComProcessingTransactionProcess::capture($data);
+            $response = EComprocessingTransactionProcess::capture($data);
 
-            $transaction_response            = new EComProcessingTransaction();
+            $transaction_response            = new EComprocessingTransaction();
             $transaction_response->id_parent = $transaction->id_unique;
             $transaction_response->ref_order = $transaction->ref_order;
             $transaction_response->importResponse($response->getResponseObject());
@@ -1028,24 +1080,32 @@ class EComProcessing extends PaymentModule
         $this->applyGenesisConfig();
 
         try {
-            $transaction = EComProcessingTransaction::getByUniqueId($id_unique);
+            $transaction = EComprocessingTransaction::getByUniqueId($id_unique);
+            $items       = null;
 
             if ($transaction->terminal) {
                 \Genesis\Config::setToken($transaction->terminal);
             }
 
+            if ($transaction->type === Types::KLARNA_CAPTURE) {
+                $cart  = new Cart($this->context->cart->id);
+                $items = $this->getKlarnaCustomParamItems($cart);
+            }
+
             $data = [
-                'transaction_id' => md5(uniqid() . mt_rand() . microtime(true)),
-                'usage'          => $usage,
-                'remote_ip'      => $ip_addr,
-                'reference_id'   => $transaction->id_unique,
-                'currency'       => $transaction->currency,
-                'amount'         => $amount,
+                'transaction_type' => $transaction->type,
+                'transaction_id'   => md5(uniqid() . mt_rand() . microtime(true)),
+                'usage'            => $usage,
+                'remote_ip'        => $ip_addr,
+                'reference_id'     => $transaction->id_unique,
+                'currency'         => $transaction->currency,
+                'amount'           => $amount,
+                'items'            => $items
             ];
 
-            $response = EComProcessingTransactionProcess::refund($data);
+            $response = EComprocessingTransactionProcess::refund($data);
 
-            $transaction_response            = new EComProcessingTransaction();
+            $transaction_response            = new EComprocessingTransaction();
             $transaction_response->id_parent = $transaction->id_unique;
             $transaction_response->ref_order = $transaction->ref_order;
             $transaction_response->importResponse($response->getResponseObject());
@@ -1079,7 +1139,7 @@ class EComProcessing extends PaymentModule
         $this->applyGenesisConfig();
 
         try {
-            $transaction = EComProcessingTransaction::getByUniqueId($id_unique);
+            $transaction = EComprocessingTransaction::getByUniqueId($id_unique);
 
             if ($transaction->terminal) {
                 \Genesis\Config::setToken($transaction->terminal);
@@ -1092,9 +1152,9 @@ class EComProcessing extends PaymentModule
                 'reference_id'   => $transaction->id_unique,
             ];
 
-            $response = EComProcessingTransactionProcess::void($data);
+            $response = EComprocessingTransactionProcess::void($data);
 
-            $transaction_response            = new EComProcessingTransaction();
+            $transaction_response            = new EComprocessingTransaction();
             $transaction_response->id_parent = $transaction->id_unique;
             $transaction_response->ref_order = $transaction->ref_order;
             $transaction_response->importResponse($response->getResponseObject());
@@ -1180,13 +1240,13 @@ class EComProcessing extends PaymentModule
     public function getPrestaBackendStatus($transaction_type)
     {
         switch ($transaction_type) {
-            case \Genesis\API\Constants\Transaction\Types::CAPTURE:
+            case Types::CAPTURE:
                 return Configuration::get('PS_OS_WS_PAYMENT');
                 break;
-            case \Genesis\API\Constants\Transaction\Types::REFUND:
+            case Types::REFUND:
                 return Configuration::get('PS_OS_REFUND');
                 break;
-            case \Genesis\API\Constants\Transaction\Types::VOID:
+            case Types::VOID:
                 return Configuration::get('PS_OS_CANCELED');
                 break;
             default:
@@ -1374,93 +1434,185 @@ class EComProcessing extends PaymentModule
         return $this->display(__FILE__, $name);
     }
 
-    private function getCheckoutTransactionTypes()
+    /**
+     * @param $cart
+     * @return array
+     * @throws \Genesis\Exceptions\ErrorParameter
+     */
+    private function getCheckoutTransactionTypes($cart)
     {
-        $processed_list = [];
+        $processedList = [];
+        $types         = $this->getTransactionTypes();
 
-        $selected_types = json_decode(
+        foreach ($types as $transactionParams) {
+            if (is_array($transactionParams)) {
+                $processedList[$transactionParams['name']]['name']       = $transactionParams['name'];
+                $processedList[$transactionParams['name']]['parameters'] = $transactionParams['parameters'];
+
+                continue;
+            }
+
+            $attributes = $this->getCustomRequiredAttributes($transactionParams, $cart);
+
+            if (empty($attributes)) {
+                $processedList[$transactionParams]               = $transactionParams;
+            } else {
+                $processedList[$transactionParams]['name']       = $transactionParams;
+                $processedList[$transactionParams]['parameters'] = $attributes;
+            }
+        }
+
+        return $processedList;
+    }
+
+    /**
+     * @return array
+     */
+    private function getTransactionTypes()
+    {
+        $processedList = [];
+        $aliasMap      = [];
+
+        $selectedTypes = json_decode(
             Configuration::get(self::SETTING_ECOMPROCESSING_CHECKOUT_TRX_TYPES)
         );
 
-        $alias_map = [
-            \Genesis\API\Constants\Payment\Methods::EPS         =>
-                \Genesis\API\Constants\Transaction\Types::PPRO,
-            \Genesis\API\Constants\Payment\Methods::GIRO_PAY    =>
-                \Genesis\API\Constants\Transaction\Types::PPRO,
-            \Genesis\API\Constants\Payment\Methods::PRZELEWY24  =>
-                \Genesis\API\Constants\Transaction\Types::PPRO,
-            \Genesis\API\Constants\Payment\Methods::QIWI        =>
-                \Genesis\API\Constants\Transaction\Types::PPRO,
-            \Genesis\API\Constants\Payment\Methods::SAFETY_PAY  =>
-                \Genesis\API\Constants\Transaction\Types::PPRO,
-            \Genesis\API\Constants\Payment\Methods::TELEINGRESO =>
-                \Genesis\API\Constants\Transaction\Types::PPRO,
-            \Genesis\API\Constants\Payment\Methods::TRUST_PAY   =>
-                \Genesis\API\Constants\Transaction\Types::PPRO,
-            \Genesis\API\Constants\Payment\Methods::BCMC        =>
-                \Genesis\API\Constants\Transaction\Types::PPRO,
-            \Genesis\API\Constants\Payment\Methods::MYBANK      =>
-                \Genesis\API\Constants\Transaction\Types::PPRO,
-            \Genesis\API\Constants\Payment\Methods::IDEAL       =>
-                \Genesis\API\Constants\Transaction\Types::PPRO,
-        ];
+        $pproSuffix = self::PPRO_TRANSACTION_SUFFIX;
+        $methods    = \Genesis\API\Constants\Payment\Methods::getMethods();
 
-        $orderItemsList = $this->getItemList();
-        $userIdHash     = $this->getCurrentUserIdHash();
-
-        $transactionsCustomParams = [
-            \Genesis\API\Constants\Transaction\Types::PAYBYVOUCHER_SALE   => [
-                'card_type'   =>
-                    \Genesis\API\Constants\Transaction\Parameters\PayByVouchers\CardTypes::VIRTUAL,
-                'redeem_type' =>
-                    \Genesis\API\Constants\Transaction\Parameters\PayByVouchers\RedeemTypes::INSTANT
-            ],
-            \Genesis\API\Constants\Transaction\Types::PAYBYVOUCHER_YEEPAY => [
-                'card_type'        =>
-                    \Genesis\API\Constants\Transaction\Parameters\PayByVouchers\CardTypes::VIRTUAL,
-                'redeem_type'      =>
-                    \Genesis\API\Constants\Transaction\Parameters\PayByVouchers\RedeemTypes::INSTANT,
-                'product_name'     => $orderItemsList,
-                'product_category' => $orderItemsList
-            ],
-            \Genesis\API\Constants\Transaction\Types::CITADEL_PAYIN       => [
-                'merchant_customer_id' => $userIdHash
-            ],
-            \Genesis\API\Constants\Transaction\Types::IDEBIT_PAYIN        => [
-                'customer_account_id' => $userIdHash
-            ],
-            \Genesis\API\Constants\Transaction\Types::INSTA_DEBIT_PAYIN   => [
-                'customer_account_id' => $userIdHash
-            ]
-        ];
-
-        foreach ($selected_types as $selected_type) {
-
-            if (array_key_exists($selected_type, $alias_map)) {
-                $transaction_type = $alias_map[$selected_type];
-
-                $processed_list[$transaction_type]['name'] = $transaction_type;
-
-                $processed_list[$transaction_type]['parameters'][] = [
-                    'payment_method' => $selected_type
-                ];
-                continue;
-            }
-
-            if (array_key_exists($selected_type, $transactionsCustomParams)) {
-
-                $processed_list[$selected_type]['name'] = $selected_type;
-
-                $processed_list[$selected_type]['parameters'] = $transactionsCustomParams[$selected_type];
-
-                continue;
-            }
-
-            $processed_list[] = $selected_type;
-
+        foreach ($methods as $method) {
+            $aliasMap[$method . $pproSuffix] = Types::PPRO;
         }
 
-        return $processed_list;
+        $aliasMap = array_merge($aliasMap, [
+            self::GOOGLE_PAY_TRANSACTION_PREFIX . self::GOOGLE_PAY_PAYMENT_TYPE_AUTHORIZE => Types::GOOGLE_PAY,
+            self::GOOGLE_PAY_TRANSACTION_PREFIX . self::GOOGLE_PAY_PAYMENT_TYPE_SALE      => Types::GOOGLE_PAY
+        ]);
+
+        foreach ($selectedTypes as $selectedType) {
+            if (array_key_exists($selectedType, $aliasMap)) {
+                $transactionType = $aliasMap[$selectedType];
+
+                $processedList[$transactionType]['name'] = $transactionType;
+
+                $key = $transactionType === Types::GOOGLE_PAY ? 'payment_type' : 'payment_method';
+
+                $processedList[$transactionType]['parameters'][] = [
+                    $key => str_replace([$pproSuffix, self::GOOGLE_PAY_TRANSACTION_PREFIX], '', $selectedType)
+                ];
+            } else {
+                $processedList[] = $selectedType;
+            }
+        }
+
+        return $processedList;
+    }
+
+    /**
+     * @param string $transactionType
+     * @param CardCore $cart
+     * @return array
+     * @throws \Genesis\Exceptions\ErrorParameter
+     */
+    private function getCustomRequiredAttributes($transactionType, $cart)
+    {
+        $attributes = array();
+        $userIdHash = $this->getCurrentUserIdHash();
+
+        switch ($transactionType) {
+            case Types::PAYBYVOUCHER_SALE:
+                $attributes = [
+                    'card_type'   =>
+                        \Genesis\API\Constants\Transaction\Parameters\PayByVouchers\CardTypes::VIRTUAL,
+                    'redeem_type' =>
+                        \Genesis\API\Constants\Transaction\Parameters\PayByVouchers\RedeemTypes::INSTANT
+                ];
+                break;
+            case Types::IDEBIT_PAYIN:
+            case Types::INSTA_DEBIT_PAYOUT:
+                $attributes = [
+                    'customer_account_id' => $userIdHash
+                ];
+                break;
+            case Types::TRUSTLY_SALE:
+                $userId      = $this->getCurrentUserId();
+                $trustlyUser = empty($userId) ? $userIdHash : $userId;
+
+                $attributes = [
+                    'user_id' => $trustlyUser
+                ];
+                break;
+            case Types::KLARNA_AUTHORIZE:
+                $attributes = $this->getKlarnaCustomParamItems($cart)->toArray();
+                break;
+        }
+
+        return $attributes;
+    }
+
+    /**
+     * @param CartCore $cart
+     * @return \Genesis\API\Request\Financial\Alternatives\Klarna\Items
+     * @throws \Genesis\Exceptions\ErrorParameter
+     */
+    private function getKlarnaCustomParamItems($cart)
+    {
+        /** @var CurrencyCore $currency */
+        $currency    = new Currency(intval($cart->id_currency));
+        $cartSummary = $cart->getSummaryDetails();
+        $items       = new \Genesis\API\Request\Financial\Alternatives\Klarna\Items($currency->iso_code);
+
+        foreach ($cartSummary['products'] as $product) {
+            $type = $product['is_virtual'] ?
+                \Genesis\API\Request\Financial\Alternatives\Klarna\Item::ITEM_TYPE_DIGITAL :
+                \Genesis\API\Request\Financial\Alternatives\Klarna\Item::ITEM_TYPE_PHYSICAL;
+
+            $klarnaItem = new \Genesis\API\Request\Financial\Alternatives\Klarna\Item(
+                $product['name'],
+                $type,
+                $product['quantity'],
+                $product['price_with_reduction_without_tax']
+            );
+            $items->addItem($klarnaItem);
+        }
+
+        $discount = floatval($cartSummary['total_discounts']);
+        if ($discount) {
+            $items->addItem(
+                new \Genesis\API\Request\Financial\Alternatives\Klarna\Item(
+                    'Discount',
+                    \Genesis\API\Request\Financial\Alternatives\Klarna\Item::ITEM_TYPE_DISCOUNT,
+                    1,
+                    -$discount
+                )
+            );
+        }
+
+        $tax = floatval($cartSummary['total_tax']);
+        if ($tax) {
+            $items->addItem(
+                new \Genesis\API\Request\Financial\Alternatives\Klarna\Item(
+                    'Tax',
+                    \Genesis\API\Request\Financial\Alternatives\Klarna\Item::ITEM_TYPE_SURCHARGE,
+                    1,
+                    $tax
+                )
+            );
+        }
+
+        $shippingCost = floatval($cartSummary['total_shipping']);
+        if ($shippingCost) {
+            $items->addItem(
+                new \Genesis\API\Request\Financial\Alternatives\Klarna\Item(
+                    'Shipping Cost',
+                    \Genesis\API\Request\Financial\Alternatives\Klarna\Item::ITEM_TYPE_SHIPPING_FEE,
+                    1,
+                    $shippingCost
+                )
+            );
+        }
+
+        return $items;
     }
 
     /**
@@ -1526,7 +1678,8 @@ class EComProcessing extends PaymentModule
             self::SETTING_ECOMPROCESSING_ALLOW_PARTIAL_CAPTURE,
             self::SETTING_ECOMPROCESSING_ALLOW_PARTIAL_REFUND,
             self::SETTING_ECOMPROCESSING_ALLOW_VOID,
-            self::SETTING_ECOMPROCESSING_ADD_JQUERY_CHECKOUT
+            self::SETTING_ECOMPROCESSING_ADD_JQUERY_CHECKOUT,
+            self::SETTING_ECOMPROCESSING_WPF_TOKENIZATION
         ];
     }
 
@@ -1728,10 +1881,18 @@ class EComProcessing extends PaymentModule
                 'options' => [
                     'query' => $this->generateOptionsFromArray(
                         [
-                            \Genesis\API\Constants\Transaction\Types::AUTHORIZE    => $this->l('Authorize'),
-                            \Genesis\API\Constants\Transaction\Types::AUTHORIZE_3D => $this->l('Authorize 3D'),
-                            \Genesis\API\Constants\Transaction\Types::SALE         => $this->l('Sale'),
-                            \Genesis\API\Constants\Transaction\Types::SALE_3D      => $this->l('Sale 3D')
+                            Types::AUTHORIZE    => $this->l(
+                                Names::getName(Types::AUTHORIZE)
+                            ),
+                            Types::AUTHORIZE_3D => $this->l(
+                                Names::getName(Types::AUTHORIZE_3D)
+                            ),
+                            Types::SALE         => $this->l(
+                                Names::getName(Types::SALE)
+                            ),
+                            Types::SALE_3D      => $this->l(
+                                Names::getName(Types::SALE_3D)
+                            )
                         ]
                     ),
                     'id'    => 'id',
@@ -1765,52 +1926,78 @@ class EComProcessing extends PaymentModule
                 'name'     => self::SETTING_ECOMPROCESSING_CHECKOUT_TRX_TYPES . '[]',
                 'multiple' => true,
                 'options'  => [
-                    'query' => $this->generateOptionsFromArray(
-                        [
-                            \Genesis\API\Constants\Transaction\Types::ABNIDEAL            => $this->l('ABN iDEAL'),
-                            \Genesis\API\Constants\Transaction\Types::ALIPAY              => $this->l('Alipay'),
-                            \Genesis\API\Constants\Transaction\Types::AUTHORIZE           => $this->l('Authorize'),
-                            \Genesis\API\Constants\Transaction\Types::AUTHORIZE_3D        => $this->l('Authorize 3D'),
-                            \Genesis\API\Constants\Transaction\Types::CASHU               => $this->l('CashU'),
-                            \Genesis\API\Constants\Transaction\Types::CITADEL_PAYIN       => $this->l('Citadel'),
-                            \Genesis\API\Constants\Payment\Methods::EPS                   => $this->l('eps'),
-                            \Genesis\API\Constants\Transaction\Types::EZEEWALLET          => $this->l('eZeeWallet'),
-                            \Genesis\API\Constants\Transaction\Types::FASHIONCHEQUE       => $this->l('Fashioncheque'),
-                            \Genesis\API\Constants\Payment\Methods::GIRO_PAY              => $this->l('GiroPay'),
-                            \Genesis\API\Constants\Transaction\Types::IDEBIT_PAYIN        => $this->l('iDebit'),
-                            \Genesis\API\Constants\Transaction\Types::INPAY               => $this->l('INPay'),
-                            \Genesis\API\Constants\Transaction\Types::INSTA_DEBIT_PAYIN   => $this->l('InstaDebit'),
-                            \Genesis\API\Constants\Transaction\Types::INTERSOLVE          => $this->l('Intersolve'),
-                            \Genesis\API\Constants\Payment\Methods::BCMC                  => $this->l('Mr.Cash'),
-                            \Genesis\API\Constants\Payment\Methods::MYBANK                => $this->l('MyBank'),
-                            \Genesis\API\Constants\Transaction\Types::NETELLER            => $this->l('Neteller'),
-                            \Genesis\API\Constants\Transaction\Types::P24                 => $this->l('P24'),
-                            \Genesis\API\Constants\Transaction\Types::PAYBYVOUCHER_SALE   => $this->l('PayByVoucher (Sale)'),
-                            \Genesis\API\Constants\Transaction\Types::PAYBYVOUCHER_YEEPAY => $this->l('PayByVoucher (oBeP)'),
-                            \Genesis\API\Constants\Transaction\Types::PAYPAL_EXPRESS      => $this->l('PayPal Express'),
-                            \Genesis\API\Constants\Transaction\Types::PAYSAFECARD         => $this->l('PaySafeCard'),
-                            \Genesis\API\Constants\Transaction\Types::PAYSEC_PAYIN        => $this->l('PaySec'),
-                            \Genesis\API\Constants\Transaction\Types::POLI                => $this->l('POLi'),
-                            \Genesis\API\Constants\Payment\Methods::PRZELEWY24            => $this->l('Przelewy24'),
-                            \Genesis\API\Constants\Payment\Methods::QIWI                  => $this->l('Qiwi'),
-                            \Genesis\API\Constants\Payment\Methods::SAFETY_PAY            => $this->l('SafetyPay'),
-                            \Genesis\API\Constants\Transaction\Types::SALE                => $this->l('Sale'),
-                            \Genesis\API\Constants\Transaction\Types::SALE_3D             => $this->l('Sale 3D'),
-                            \Genesis\API\Constants\Transaction\Types::SDD_SALE            => $this->l('Sepa Direct Debit'),
-                            \Genesis\API\Constants\Transaction\Types::SOFORT              => $this->l('SOFORT'),
-                            \Genesis\API\Constants\Transaction\Types::TCS                 => $this->l('TCS'),
-                            \Genesis\API\Constants\Payment\Methods::TELEINGRESO           => $this->l('Teleingreso'),
-                            \Genesis\API\Constants\Transaction\Types::TRUSTLY_SALE        => $this->l('Trustly'),
-                            \Genesis\API\Constants\Payment\Methods::TRUST_PAY             => $this->l('TrustPay'),
-                            \Genesis\API\Constants\Transaction\Types::WEBMONEY            => $this->l('WebMoney'),
-                            \Genesis\API\Constants\Transaction\Types::WEBMONEY            => $this->l('WeChat'),
-                        ]
-                    ),
+                    'query' => $this->generateOptionsFromArray(self::getSupportedWpfTransactionTypes()),
                     'id'    => 'id',
                     'name'  => 'name',
                 ]
             ],
+            [
+                'type'   => 'switch',
+                'label'  => 'WPF Tokenization',
+                'desc'   => $this->l(
+                    'Enable/Disable tokenization for Web Payment Form. Guest checkout has to be ' .
+                    'disabled when tokenization is enabled'
+                ),
+                'name'   => self::SETTING_ECOMPROCESSING_WPF_TOKENIZATION,
+                'values' => [
+                    [
+                        'value' => '1'
+                    ],
+                    [
+                        'value' => '0'
+                    ]
+                ]
+            ]
         ];
+    }
+
+    public function getSupportedWpfTransactionTypes()
+    {
+        $data = array();
+
+        $transactionTypes = Types::getWPFTransactionTypes();
+        $excludedTypes = [
+            Types::INIT_RECURRING_SALE,
+            Types::INIT_RECURRING_SALE_3D,
+            Types::SDD_INIT_RECURRING_SALE,
+            Types::PPRO,
+            Types::GOOGLE_PAY
+        ];
+
+        $transactionTypes = array_diff($transactionTypes, $excludedTypes);
+
+        // Add PPRO specific Types
+        $pproTypes = array_map(
+            function ($type) {
+                return $type . self::PPRO_TRANSACTION_SUFFIX;
+            },
+            \Genesis\API\Constants\Payment\Methods::getMethods()
+        );
+
+        // Add Google Pay Transaction Methods
+        $googlePayMethods = array_map(
+            function ($type) {
+                return self::GOOGLE_PAY_TRANSACTION_PREFIX . $type;
+            },
+            [
+                self::GOOGLE_PAY_PAYMENT_TYPE_AUTHORIZE,
+                self::GOOGLE_PAY_PAYMENT_TYPE_SALE
+            ]
+        );
+
+        $transactionTypes = array_merge($transactionTypes, $pproTypes, $googlePayMethods);
+        asort($transactionTypes);
+
+        foreach ($transactionTypes as $type) {
+            $name = Names::getName($type);
+            if (!Types::isValidTransactionType($type)) {
+                $name = strtoupper($type);
+            }
+
+            $data[$type] = $this->l($name);
+        }
+
+        return $data;
     }
 
     /**
@@ -1823,7 +2010,7 @@ class EComProcessing extends PaymentModule
         $form_structure = [
             'form' => [
                 'legend' => [
-                    'title' => $this->l('E-Comprocessing Configuration'),
+                    'title' => $this->l('EComprocessing Configuration'),
                     'icon'  => 'icon-cog'
                 ],
                 'input'  => [
@@ -1963,14 +2150,17 @@ class EComProcessing extends PaymentModule
         /* Bootstrap Genesis */
         include_once dirname(__FILE__) . '/lib/genesis/vendor/autoload.php';
 
-        /* EComProcessing Install Helper */
-        include_once dirname(__FILE__) . '/classes/EComProcessingInstall.php';
+        /* ecomprocessing Install Helper */
+        include_once dirname(__FILE__) . '/classes/EComprocessingInstall.php';
 
-        /* EComProcessing Transaction Model */
-        include_once dirname(__FILE__) . '/classes/EComProcessingTransaction.php';
+        /* ecomprocessing Consumer Model */
+        include_once dirname(__FILE__) . '/classes/EComprocessingConsumer.php';
 
-        /* EComProcessing Transaction Processor */
-        include_once dirname(__FILE__) . '/classes/EComProcessingTransactionProcess.php';
+        /* ecomprocessing Transaction Model */
+        include_once dirname(__FILE__) . '/classes/EComprocessingTransaction.php';
+
+        /* ecomprocessing Transaction Processor */
+        include_once dirname(__FILE__) . '/classes/EComprocessingTransactionProcess.php';
 
         /* Check if Genesis Library is initialized */
         if (!class_exists('\Genesis\Genesis')) {
@@ -1980,7 +2170,7 @@ class EComProcessing extends PaymentModule
         /* Catch Block added -> Prestashop 1.6.0 calls Model Constructor even when the Module is not yet installed */
         try {
             /* Check and update database if necessary */
-            EComProcessingInstall::doProcessSchemaUpdate();
+            EComprocessingInstall::doProcessSchemaUpdate();
         } catch (\Exception $e) {
             /* just ignore and log exception - Init Method is called on Upload Module (it should be called after Module is installed) */
             $this->logError($e);
@@ -2000,6 +2190,9 @@ class EComProcessing extends PaymentModule
             $this->warning = $this->l('You need to set your credentials (username, password), in order to use Genesis Payment Gateway!');
 
         }
+
+        // Load Available WPF Languages
+        $this->languages = \Genesis\API\Constants\i18n::getAll();
     }
 
     /**
@@ -2099,15 +2292,16 @@ class EComProcessing extends PaymentModule
             self::SETTING_ECOMPROCESSING_DIRECT                => '0',
             self::SETTING_ECOMPROCESSING_CHECKOUT              => '0',
             self::SETTING_ECOMPROCESSING_DIRECT_TRX_TYPE       =>
-                \Genesis\API\Constants\Transaction\Types::AUTHORIZE,
+                Types::AUTHORIZE,
             self::SETTING_ECOMPROCESSING_CHECKOUT_TRX_TYPES    => [
-                \Genesis\API\Constants\Transaction\Types::AUTHORIZE,
-                \Genesis\API\Constants\Transaction\Types::SALE,
+                Types::AUTHORIZE,
+                Types::SALE,
             ],
             self::SETTING_ECOMPROCESSING_ALLOW_PARTIAL_CAPTURE => '1',
             self::SETTING_ECOMPROCESSING_ALLOW_PARTIAL_REFUND  => '1',
             self::SETTING_ECOMPROCESSING_ALLOW_VOID            => '1',
-            self::SETTING_ECOMPROCESSING_ADD_JQUERY_CHECKOUT   => '1'
+            self::SETTING_ECOMPROCESSING_ADD_JQUERY_CHECKOUT   => '1',
+            self::SETTING_ECOMPROCESSING_WPF_TOKENIZATION      => '0'
         ];
 
         try {

@@ -20,7 +20,7 @@
     <section class="box">
         <h3>
             <img src="{$ecomprocessing['presta']['url']}modules/{$ecomprocessing['name']['module']}/logo.png" alt="" style="width:16px;" />
-            <span>{l s='E-Comprocessing Transactions' mod='ecomprocessing'}</span>
+            <span>{l s='EComprocessing Transactions' mod='ecomprocessing'}</span>
         </h3>
 
         <table class="table table-hover tree">

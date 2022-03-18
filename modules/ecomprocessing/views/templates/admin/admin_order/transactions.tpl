@@ -27,7 +27,7 @@
     <br/>
 
     <fieldset {if isset($ecomprocessing['presta']['version']) && ($ecomprocessing['presta']['version'] < '1.5')}style="width: 400px"{/if}>
-        <legend><img src="{$ecomprocessing['presta']['url']}/modules/{$ecomprocessing['name']['module']}/logo.png" style="width:16px" alt="" />{l s='E-Comprocessing Transactions' mod='ecomprocessing'}</legend>
+        <legend><img src="{$ecomprocessing['presta']['url']}/modules/{$ecomprocessing['name']['module']}/logo.png" style="width:16px" alt="" />{l s='EComprocessing Transactions' mod='ecomprocessing'}</legend>
         {* System errors, impacting the module functionallity *}
         {if $ecomprocessing['warning']}
             <div class="warn">{$ecomprocessing['warning']|escape:html:'UTF-8'}</div>
@@ -185,7 +185,7 @@
             <div class="panel">
                 <div class="panel-heading">
                     <img src="{$ecomprocessing['presta']['url']}modules/{$ecomprocessing['name']['module']}/logo.png" alt="" style="width:16px;" />
-                    <span>{l s='E-Comprocessing Transactions' mod='ecomprocessing'}</span>
+                    <span>{l s='EComprocessing Transactions' mod='ecomprocessing'}</span>
                 </div>
                 <div class="panel-collapse collapse in">
 

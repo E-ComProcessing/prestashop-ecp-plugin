@@ -22,13 +22,13 @@ if (!defined('_PS_VERSION_')) {
 }
 
 /**
- * Class EComProcessingTransactionProcess
+ * Class EComprocessingTransactionProcess
  *
- * Build and execute EComProcessing transactions
+ * Build and execute E-Comprocessing Transactions
  */
-class EComProcessingTransactionProcess
+class EComprocessingTransactionProcess
 {
-    const displayName = 'ecomprocessing Transactions';
+    const displayName = 'E-Comprocessing Transactions';
 
     /**
      * Create a Web-Payment Form instance.
@@ -117,9 +117,63 @@ class EComProcessingTransactionProcess
                     ->setLanguage($data->language);
         }
 
+        if ($data->is_wpf_tokenization_enabled) {
+            $consumerId = EComprocessingConsumer::getConsumerId(
+                \Genesis\Config::getUsername(),
+                $data->customer_email
+            );
+
+            if (empty($consumerId)) {
+                $consumerId = static::retrieveConsumerIdFromEmail($data->customer_email);
+            }
+
+            if (!empty($consumerId)) {
+                $genesis->request()->setConsumerId($consumerId);
+            }
+
+            $genesis->request()->setRememberCard(true);
+        }
+
         $genesis->execute();
 
         return $genesis->response();
+    }
+
+    /**
+     * @param string $email
+     *
+     * @return null|int
+     */
+    protected static function retrieveConsumerIdFromEmail($email)
+    {
+        try {
+            $genesis = new \Genesis\Genesis('NonFinancial\Consumers\Retrieve');
+            $genesis->request()->setEmail($email);
+
+            $genesis->execute();
+
+            $response = $genesis->response()->getResponseObject();
+
+            if (!self::isConsumerEnabled($response)) {
+                return null;
+            }
+
+            return $response->consumer_id;
+        } catch (\Exception $exception) {
+            return null;
+        }
+    }
+
+    /**
+     * @param $response
+     *
+     * @return bool
+     */
+    private static function isConsumerEnabled($response)
+    {
+        $state = new \Genesis\API\Constants\Transaction\States($response->status);
+
+        return $state->isEnabled();
     }
 
     /**
@@ -134,21 +188,9 @@ class EComProcessingTransactionProcess
      */
     public static function pay($data)
     {
-        switch ($data->transaction_type) {
-            default:
-            case \Genesis\API\Constants\Transaction\Types::AUTHORIZE:
-                $genesis = new \Genesis\Genesis('Financial\Cards\Authorize');
-                break;
-            case \Genesis\API\Constants\Transaction\Types::AUTHORIZE_3D:
-                $genesis = new \Genesis\Genesis('Financial\Cards\Authorize3D');
-                break;
-            case \Genesis\API\Constants\Transaction\Types::SALE:
-                $genesis = new \Genesis\Genesis('Financial\Cards\Sale');
-                break;
-            case \Genesis\API\Constants\Transaction\Types::SALE_3D:
-                $genesis = new \Genesis\Genesis('Financial\Cards\Sale3D');
-                break;
-        }
+        $genesis = new \Genesis\Genesis(
+            \Genesis\API\Constants\Transaction\Types::getFinancialRequestClassForTrxType($data->transaction_type)
+        );
 
         $genesis
             ->request()
@@ -215,7 +257,9 @@ class EComProcessingTransactionProcess
      */
     public static function capture($data)
     {
-        $genesis = new \Genesis\Genesis('Financial\Capture');
+        $genesis = new \Genesis\Genesis(
+            \Genesis\API\Constants\Transaction\Types::getCaptureTransactionClass($data['transaction_type'])
+        );
 
         $genesis
             ->request()
@@ -225,6 +269,14 @@ class EComProcessingTransactionProcess
                 ->setReferenceId($data['reference_id'])
                 ->setAmount($data['amount'])
                 ->setCurrency($data['currency']);
+
+        if ($data['transaction_type'] === \Genesis\API\Constants\Transaction\Types::KLARNA_AUTHORIZE &&
+            $data['items'] instanceof \Genesis\API\Request\Financial\Alternatives\Klarna\Items
+        ) {
+            $genesis
+                ->request()
+                ->setItems($data['items']);
+        }
 
         $genesis->execute();
 
@@ -242,7 +294,9 @@ class EComProcessingTransactionProcess
      */
     public static function refund($data)
     {
-        $genesis = new \Genesis\Genesis('Financial\Refund');
+        $genesis = new \Genesis\Genesis(
+            \Genesis\API\Constants\Transaction\Types::getRefundTransactionClass($data['transaction_type'])
+        );
 
         $genesis
             ->request()
@@ -252,6 +306,14 @@ class EComProcessingTransactionProcess
                 ->setReferenceId($data['reference_id'])
                 ->setAmount($data['amount'])
                 ->setCurrency($data['currency']);
+
+        if ($data['transaction_type'] === \Genesis\API\Constants\Transaction\Types::KLARNA_CAPTURE &&
+            $data['items'] instanceof \Genesis\API\Request\Financial\Alternatives\Klarna\Items
+        ) {
+            $genesis
+                ->request()
+                ->setItems($data['items']);
+        }
 
         $genesis->execute();
 

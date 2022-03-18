@@ -22,11 +22,11 @@ if (!defined('_PS_VERSION_')) {
 }
 
 /**
- * Class EComProcessingInstall
+ * Class EComprocessingInstall
  *
  * Perform module installation/un-installation
  */
-class EComProcessingInstall
+class EComprocessingInstall
 {
     private $status = true;
 
@@ -46,9 +46,18 @@ class EComProcessingInstall
     ];
 
     /**
-     * Create the table/tables required by the module
+     * Create the tables required by the module
      */
     public function createSchema()
+    {
+        $this->createTransactionsSchema();
+        $this->createConsumersSchema();
+    }
+
+    /**
+     * Creates transactions table
+     */
+    protected function createTransactionsSchema()
     {
         $schema = '
             CREATE TABLE IF NOT EXISTS `' . _DB_PREFIX_ . 'ecomprocessing_transactions`
@@ -78,10 +87,49 @@ class EComProcessingInstall
     }
 
     /**
+     * Creates consumers table
+     */
+    protected function createConsumersSchema()
+    {
+        if (!Db::getInstance()->execute(static::getCreateConsumersSchemaQuery())) {
+            $this->status = false;
+            throw new PrestaShopException('Module Install: Unable to create MySQL Database');
+        }
+    }
+
+    /**
+     * @return string
+     */
+    protected static function getCreateConsumersSchemaQuery()
+    {
+        return 'CREATE TABLE IF NOT EXISTS `' . _DB_PREFIX_ . 'ecomprocessing_consumers`
+            (
+              `id`                int(10) unsigned NOT NULL AUTO_INCREMENT,
+              `merchant_username` varchar(40) NOT NULL,
+              `customer_email`    varchar(255) NOT NULL,
+              `consumer_id`       int(10) unsigned NOT NULL,
+              `date_add`          DATETIME DEFAULT NULL,
+              `date_upd`          TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+              PRIMARY KEY (`id`),
+              UNIQUE KEY `merchant_consumer` (`merchant_username`, `customer_email`)
+            ) ENGINE=`' . _MYSQL_ENGINE_ . '`
+            DEFAULT charset=utf8;';
+    }
+
+    /**
      * Updates the scheme, if a new version of the module is directly copied in the root folder
      * without uninstalling the old one and installing the new one
      */
     public static function doProcessSchemaUpdate()
+    {
+        static::updateTransactionsSchema();
+        static::updateConsumersSchema();
+    }
+
+    /**
+     * Update transactions table to add transaction_id field
+     */
+    protected static function updateTransactionsSchema()
     {
         if (!Db::getInstance()->Execute('SELECT transaction_id from `' . _DB_PREFIX_ . 'ecomprocessing_transactions`')) {
             $sqlAddTransactionIdField = '
@@ -93,9 +141,19 @@ class EComProcessingInstall
     }
 
     /**
+     * Create consumers table if it doesn't exist
+     */
+    protected static function updateConsumersSchema()
+    {
+        if (!Db::getInstance()->Execute('SELECT consumer_id from `' . _DB_PREFIX_ . 'ecomprocessing_consumers`')) {
+            Db::getInstance()->Execute(static::getCreateConsumersSchemaQuery());
+        }
+    }
+
+    /**
      * Register all Hooks required by the module
      *
-     * @param $instance EComProcessing
+     * @param $instance ecomprocessing
      *
      * @throws PrestaShopException
      */
@@ -114,6 +172,15 @@ class EComProcessingInstall
      */
     public function dropSchema()
     {
+        $this->dropTransactionsSchema();
+        $this->dropConsumersSchema();
+    }
+
+    /**
+     * Drops transactions table
+     */
+    protected function dropTransactionsSchema()
+    {
         $schema = 'DROP TABLE IF EXISTS `' . _DB_PREFIX_ . 'ecomprocessing_transactions`';
 
         if (!Db::getInstance()->execute($schema)) {
@@ -123,9 +190,22 @@ class EComProcessingInstall
     }
 
     /**
+     * Drops transactions table
+     */
+    protected function dropConsumersSchema()
+    {
+        $schema = 'DROP TABLE IF EXISTS `' . _DB_PREFIX_ . 'ecomprocessing_consumers`';
+
+        if (!Db::getInstance()->execute($schema)) {
+            $this->status = false;
+            throw new PrestaShopException('Module Uninstall: Unable to DROP consumers table!');
+        }
+    }
+
+    /**
      * Delete registered hooks
      *
-     * @param $instance EComProcessing
+     * @param $instance ecomprocessing
      *
      * @throws PrestaShopException
      */
@@ -142,7 +222,7 @@ class EComProcessingInstall
     /**
      * Delete module configuration
      *
-     * @param EComProcessing $instance
+     * @param E-Comprocessing $instance
      *
      * @throws PrestaShopException
      */

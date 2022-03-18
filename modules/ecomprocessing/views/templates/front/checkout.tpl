@@ -25,7 +25,7 @@
         <span class="navigation-pipe">
         {$navigationPipe}
     </span>
-        {l s='E-Comprocessing Secure Checkout' mod='ecomprocessing'}
+        {l s='EComprocessing Secure Checkout' mod='ecomprocessing'}
     {/capture}
 
     {include file="$tpl_dir./breadcrumb.tpl"}
@@ -39,7 +39,7 @@
         <p class="warning">{l s='Your shopping cart is empty.' mod='ecomprocessing'}</p>
     {else}
         <style type="text/css">
-            #module-EComProcessing-checkout #center-column {
+            #module-ecomprocessing-checkout #center-column {
                 width: 737px;
             }
         </style>
@@ -53,14 +53,14 @@
             </div>
         {/if}
 
-        <h3>{l s='E-Comprocessing Secure Checkout' mod='ecomprocessing'}</h3>
+        <h3>{l s='EComprocessing Secure Checkout' mod='ecomprocessing'}</h3>
         <form action="{$ecomprocessing['checkout']['links']['confirm']|escape:'html'}" method="POST" name="">
             <input type="hidden" name="checkout" value="confirmed" />
             <input type="hidden" name="submit{$ecomprocessing['name']['module']}Checkout" value="true" />
 
             <p>
-                <img src="{$ecomprocessing['path']}/assets/img/logos/ecomprocessing.png" alt="{l s='E-Comprocessing Checkout' mod='ecomprocessing'}" width="128" style="float:left;margin: 0 10px 5px 0;" />
-                {l s='You have chosen to pay via E-Comprocessing Secure Checkout' mod='ecomprocessing'}
+                <img src="{$ecomprocessing['path']}/assets/img/logos/ecomprocessing.png" alt="{l s='EComprocessing Checkout' mod='ecomprocessing'}" width="128" style="float:left;margin: 0 10px 5px 0;" />
+                {l s='You have chosen to pay via EComprocessing Secure Checkout' mod='ecomprocessing'}
             </p>
             <p style="margin-top:20px;">
                 {l s='Here is a short summary of your order:' mod='ecomprocessing'}
@@ -72,7 +72,7 @@
                 {/if}
             </p>
             <p>
-                {l s="You will be redirected to our EComprocessing's website, where you can safely enter your payment details and complete this order." mod='ecomprocessing'}
+                {l s="You will be redirected to our ecomprocessing's website, where you can safely enter your payment details and complete this order." mod='ecomprocessing'}
                 <br /><br />
                 <b>{l s='Please confirm your order by clicking "I confirm my order".' mod='ecomprocessing'}</b>
             </p>
@@ -87,7 +87,7 @@
 
 {if version_compare($ecomprocessing['presta']['version'], '1.6', '>=') && version_compare($ecomprocessing['presta']['version'], '1.7', '<') }
 
-    {capture name=path}{l s='E-Comprocessing Checkout' mod='ecomprocessing'}{/capture}
+    {capture name=path}{l s='EComprocessing Checkout' mod='ecomprocessing'}{/capture}
 
     <h1 class="page-heading">{l s='Order summary' mod='ecomprocessing'}</h1>
 
@@ -112,10 +112,10 @@
             <input type="hidden" name="submit{$ecomprocessing['name']['module']}Checkout" value="true" />
 
             <div class="box cheque-box">
-                <h3 class="page-subheading">{l s='E-Comprocessing Checkout' mod='ecomprocessing'}</h3>
+                <h3 class="page-subheading">{l s='EComprocessing Checkout' mod='ecomprocessing'}</h3>
                 <p>
                     <strong class="dark">
-                        {l s='You have chosen to pay via E-Comprocessing\'s Secure Checkout.' mod='ecomprocessing'}
+                        {l s='You have chosen to pay via EComprocessing\'s Secure Checkout.' mod='ecomprocessing'}
                         <br/>
                         {l s='Here is a short summary of your order:' mod='ecomprocessing'}
                     </strong>
@@ -128,7 +128,7 @@
                     {/if}
                 </p>
                 <p>
-                    - {l s="You will be redirected to our EComProcessing's website, where you can safely enter your payment details and complete this order." mod='ecomprocessing'}
+                    - {l s="You will be redirected to our ecomprocessing's website, where you can safely enter your payment details and complete this order." mod='ecomprocessing'}
                     <br />
                     - <b>{l s='Please confirm your order by clicking "I confirm my order".' mod='ecomprocessing'}</b>
                 </p>

@@ -101,7 +101,7 @@ class Context
     /**
      * @var Employee
      */
-    public $employee;
+    public $ecployee;
 
     /**
      * @var Controller

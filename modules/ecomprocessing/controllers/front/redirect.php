@@ -22,13 +22,13 @@ if (!defined('_PS_VERSION_')) {
 }
 
 /**
- * Class EComProcessingRedirectModuleFrontController
+ * Class EComprocessingRedirectModuleFrontController
  *
  * Redirection Front-End Controller
  */
-class EComProcessingRedirectModuleFrontController extends ModuleFrontController
+class EComprocessingRedirectModuleFrontController extends ModuleFrontController
 {
-    /** @var  EComProcessing */
+    /** @var  ecomprocessing */
     public $module;
     /** @var  ContextCore */
     protected $context;

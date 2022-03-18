@@ -22,13 +22,13 @@ if (!defined('_PS_VERSION_')) {
 }
 
 /**
- * Class EComProcessingValidationModuleFrontController
+ * Class EComprocessingValidationModuleFrontController
  *
  * Validation Front-End Controller
  */
-class EComProcessingValidationModuleFrontController extends ModuleFrontControllerCore
+class EComprocessingValidationModuleFrontController extends ModuleFrontControllerCore
 {
-    /** @var EComProcessing */
+    /** @var E-Comprocessing */
     public $module;
 
     /**

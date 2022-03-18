@@ -25,7 +25,7 @@
                         <div class="row">
                             <div class="col-xs-12">
                                 <img src="{$ecomprocessing['path']}/assets/img/logos/ecomprocessing_direct.png"
-                                     alt="{l s="E-Comprocessing Logo" mod="ecomprocessing"}" style="width:224px;"/>
+                                     alt="{l s="EComprocessing Logo" mod="ecomprocessing"}" style="width:224px;"/>
                                 <span>&nbsp;{l s="Pay with Credit / Debit Card" mod="ecomprocessing"}</span>
                             </div>
                         </div>
@@ -103,7 +103,7 @@
                                 <div class="row">
                                     <div class="col-xs-12">
                                         <img src="{$ecomprocessing['path']}/assets/img/logos/ecomprocessing_direct.png"
-                                             alt="{l s="E-Comprocessing Logo" mod="ecomprocessing"}" style="width:224px;"/>
+                                             alt="{l s="EComprocessing Logo" mod="ecomprocessing"}" style="width:224px;"/>
                                         <span>&nbsp;{l s="Pay with Credit / Debit Card" mod="ecomprocessing"}</span>
                                     </div>
                                 </div>
@@ -197,7 +197,7 @@
                                 <div class="row">
                                     <div class="col-xs-12">
                                         <img src="{$ecomprocessing['path']}/assets/img/logos/ecomprocessing_direct.png"
-                                             alt="{l s="E-Comprocessing Logo" mod="ecomprocessing"}" style="width:224px;"/>
+                                             alt="{l s="EComprocessing Logo" mod="ecomprocessing"}" style="width:224px;"/>
                                         <span>&nbsp;{l s="Pay with Credit / Debit Card" mod="ecomprocessing"}</span>
                                     </div>
                                 </div>
