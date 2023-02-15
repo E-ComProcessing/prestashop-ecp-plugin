@@ -17,36 +17,36 @@
  *}
 
 {if version_compare($ecomprocessing['presta']['version'], '1.5', '>=') && version_compare($ecomprocessing['presta']['version'], '1.6', '<') }
-    <div class="row" class="payment-method-{$ecomprocessing['name']['module']}">
+    <div class="row" class="payment-method-{$ecomprocessing['name']['module']|escape:'htmlall':'UTF-8'}">
         {if $ecomprocessing['payment']['methods']['checkout']}
-            <div id="payment-method-{$ecomprocessing['name']['module']}-checkout" class="payment_module">
-                <a class="payment_module_link" href="{$ecomprocessing['payment']['urls']['checkout']}">
-                    <img src="{$ecomprocessing['path']}/assets/img/logos/ecomprocessing_checkout.png"
-                         alt="{l s="E-Comprocessing Logo" mod="ecomprocessing"}" style="width:224px;"/>
-                    {l s="Pay safely with E-Comprocessing" mod="ecomprocessing"}
+            <div id="payment-method-{$ecomprocessing['name']['module']|escape:'htmlall':'UTF-8'}-checkout" class="payment_module">
+                <a class="payment_module_link" href="{$ecomprocessing['payment']['urls']['checkout']|escape:'htmlall':'UTF-8'}">
+                    <img src="{$ecomprocessing['path']|escape:'htmlall':'UTF-8'}/views/img/logos/ecomprocessing_checkout.png"
+                         alt="{l s='E-Comprocessing Logo' mod='ecomprocessing'}" style="width:224px;"/>
+                    {l s='Pay safely with E-Comprocessing' mod='ecomprocessing'}
                 </a>
             </div>
         {/if}
     </div>
 
     <style type="text/css">
-        .payment-method-{$ecomprocessing['name']['module']} {
+        .payment-method-{$ecomprocessing['name']['module']|escape:'htmlall':'UTF-8'} {
             margin-bottom: 16px;
         }
     </style>
 {/if}
 
 {if version_compare($ecomprocessing['presta']['version'], '1.6', '>=') && version_compare($ecomprocessing['presta']['version'], '1.7', '<') }
-    <div class="payment-method-{$ecomprocessing['name']['module']}">
+    <div class="payment-method-{$ecomprocessing['name']['module']|escape:'htmlall':'UTF-8'}">
         {if $ecomprocessing['payment']['methods']['checkout']}
-            <div id="payment-method-{$ecomprocessing['name']['module']}-checkout">
+            <div id="payment-method-{$ecomprocessing['name']['module']|escape:'htmlall':'UTF-8'}-checkout">
                 <div class="row">
                     <div class="col-xs-12 col-md-6">
                         <p class="payment_module">
-                            <a class="payment_module_link" href="{$ecomprocessing['payment']['urls']['checkout']}">
-                                <img src="{$ecomprocessing['path']}/assets/img/logos/ecomprocessing_checkout.png"
-                                     alt="{l s="E-Comprocessing Logo" mod="ecomprocessing"}"/>
-                                <span>{l s="Pay safely with E-Comprocessing" mod="ecomprocessing"}</span>
+                            <a class="payment_module_link" href="{$ecomprocessing['payment']['urls']['checkout']|escape:'htmlall':'UTF-8'}">
+                                <img src="{$ecomprocessing['path']|escape:'htmlall':'UTF-8'}/views/img/logos/ecomprocessing_checkout.png"
+                                     alt="{l s='E-Comprocessing Logo' mod='ecomprocessing'}"/>
+                                <span>{l s='Pay safely with E-Comprocessing' mod='ecomprocessing'}</span>
                             </a>
                         </p>
                     </div>
@@ -55,19 +55,19 @@
         {/if}
     </div>
     <style type="text/css">
-        .payment-method-{$ecomprocessing['name']['module']} {
+        .payment-method-{$ecomprocessing['name']['module']|escape:'htmlall':'UTF-8'} {
             margin-bottom: 16px;
         }
 
-        #payment-method-{$ecomprocessing['name']['module']}-checkout a.payment_module_link {
+        #payment-method-{$ecomprocessing['name']['module']|escape:'htmlall':'UTF-8'}-checkout a.payment_module_link {
             padding-left: 33px;
         }
 
-        #payment-method-{$ecomprocessing['name']['module']}-checkout a.payment_module_link span {
+        #payment-method-{$ecomprocessing['name']['module']|escape:'htmlall':'UTF-8'}-checkout a.payment_module_link span {
             padding-left: 8px;
         }
 
-        #payment-method-{$ecomprocessing['name']['module']}-checkout a.payment_module_link::after {
+        #payment-method-{$ecomprocessing['name']['module']|escape:'htmlall':'UTF-8'}-checkout a.payment_module_link::after {
             line-height: 0;
             top: 50% !important;
         }
@@ -75,27 +75,27 @@
 {/if}
 
 {if version_compare($ecomprocessing['presta']['version'], '1.7', '>=') && version_compare($ecomprocessing['presta']['version'], '1.8', '<') }
-    <div class="payment-method-{$ecomprocessing['name']['module']}">
+    <div class="payment-method-{$ecomprocessing['name']['module']|escape:'htmlall':'UTF-8'}">
         {if $ecomprocessing['payment']['methods']['checkout']}
             {if $ecomprocessing['payment']['errors']['checkout']}
                 <div class="row row-spacer" style="margin-bottom: 10pt;">
                     <div class="alert alert-warning alert-dismissable error-wrapper">
                         <button type="button" class="close" data-dismiss="alert">&times;</button>
-                        {$ecomprocessing['payment']['errors']['checkout']|escape:html:'UTF-8'}
+                        {$ecomprocessing['payment']['errors']['checkout']|escape:'htmlall':'UTF-8'}
                     </div>
                 </div>
             {/if}
 
-            <div id="payment-method-{$ecomprocessing['name']['module']}-checkout">
+            <div id="payment-method-{$ecomprocessing['name']['module']|escape:'htmlall':'UTF-8'}-checkout">
                 <div class="payment-method-container">
                     <div class="row">
-                        <img src="{$ecomprocessing['path']}/assets/img/logos/ecomprocessing_checkout.png"
-                             alt="{l s="E-Comprocessing Logo" mod="ecomprocessing"}"/>
-                        <span>{l s="Pay safely with E-Comprocessing" mod="ecomprocessing"}</span>
+                        <img src="{$ecomprocessing['path']|escape:'htmlall':'UTF-8'}/views/img/logos/ecomprocessing_checkout.png"
+                             alt="{l s='E-Comprocessing Logo' mod='ecomprocessing'}"/>
+                        <span>{l s='Pay safely with E-Comprocessing' mod='ecomprocessing'}</span>
                     </div>
                     <div class="row">
                         <p>
-                            {l s="You will be redirected to E-Comprocessing, where you can safely enter your payment details and complete this order." mod='ecomprocessing'}
+                            {l s='You will be redirected to E-Comprocessing, where you can safely enter your payment details and complete this order.' mod='ecomprocessing'}
                         </p>
                     </div>
                 </div>
@@ -106,15 +106,15 @@
 {/if}
 
 <style type="text/css">
-    #payment-method-{$ecomprocessing['name']['module']}-checkout {
+    #payment-method-{$ecomprocessing['name']['module']|escape:'htmlall':'UTF-8'}-checkout {
         position: relative;
     }
 
-    #payment-method-{$ecomprocessing['name']['module']}-checkout.payment_module {
+    #payment-method-{$ecomprocessing['name']['module']|escape:'htmlall':'UTF-8'}-checkout.payment_module {
         padding-bottom: 20px;
     }
 
-    #payment-method-{$ecomprocessing['name']['module']}-checkout .center-wrapper {
+    #payment-method-{$ecomprocessing['name']['module']|escape:'htmlall':'UTF-8'}-checkout .center-wrapper {
         position: relative;
         display: block;
         top: 50%;
@@ -124,21 +124,21 @@
         line-height: 2000px;
     }
 
-    #payment-method-{$ecomprocessing['name']['module']}-checkout .center-wrapper .wrap {
+    #payment-method-{$ecomprocessing['name']['module']|escape:'htmlall':'UTF-8'}-checkout .center-wrapper .wrap {
         line-height: 0;
     }
 
-    #payment-method-{$ecomprocessing['name']['module']}-checkout .center-wrapper .wrap img {
+    #payment-method-{$ecomprocessing['name']['module']|escape:'htmlall':'UTF-8'}-checkout .center-wrapper .wrap img {
         width: 85%;
         max-width: 350px;
         vertical-align: middle;
     }
 
-    #payment-method-{$ecomprocessing['name']['module']}-checkout a.payment_module_link {
+    #payment-method-{$ecomprocessing['name']['module']|escape:'htmlall':'UTF-8'}-checkout a.payment_module_link {
         line-height: 50px;
     }
 
-    #payment-method-{$ecomprocessing['name']['module']}-checkout a.payment_module_link:after {
+    #payment-method-{$ecomprocessing['name']['module']|escape:'htmlall':'UTF-8'}-checkout a.payment_module_link:after {
         display: block;
         content: "\f054";
         position: absolute;

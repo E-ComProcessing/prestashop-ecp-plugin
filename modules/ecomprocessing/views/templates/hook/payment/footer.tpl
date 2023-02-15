@@ -21,14 +21,14 @@
         {if $ecomprocessing['payment']['option']['selected_id'] != ''}
             $(document).ready(function() {
                 setTimeout(function() {
-                    var paymentOptionAdditionalInfoContainer = $('#{$ecomprocessing['payment']['option']['selected_id']}-additional-information');
+                    var paymentOptionAdditionalInfoContainer = $('#{$ecomprocessing['payment']['option']['selected_id']|escape:'javascript':'UTF-8'}-additional-information');
                     if (!paymentOptionAdditionalInfoContainer.is(':visible')) {
                         paymentOptionAdditionalInfoContainer.slideDown('slow');
                     }
                 }, 3000);
             });
         {/if}
-        function doBeforeSubmitEComprocessingCheckoutPaymentForm(sender) {
+        function doBeforeSubmitEcomprocessingCheckoutPaymentForm(sender) {
             var submitBtnIdPrefix = 'pay-with-';
             var submitBtnId = $(sender).find('button[type="submit"]').attr('id');
             var paymentOptionId = submitBtnId.substr(submitBtnId.indexOf(submitBtnIdPrefix) + submitBtnIdPrefix.length);
@@ -42,8 +42,8 @@
 
             return true;
         }
-        function doBeforeSubmitEComprocessingDirectPaymentForm(sender) {
-            doBeforeSubmitEComprocessingCheckoutPaymentForm(sender);
+        function doBeforeSubmitEcomprocessingDirectPaymentForm(sender) {
+            doBeforeSubmitEcomprocessingCheckoutPaymentForm(sender);
 
             $('#payment-method-ecomprocessing-direct').find('form.payment-form').find('input').each(function(index) {
                 $('<input>').attr(
@@ -59,11 +59,11 @@
     </script>
 
     <style type="text/css">
-        .payment-method-{$ecomprocessing['name']['module']} {
+        .payment-method-{$ecomprocessing['name']['module']|escape:'htmlall':'UTF-8'} {
             margin-bottom: 16px;
         }
 
-        .payment-method-{$ecomprocessing['name']['module']} div.alert {
+        .payment-method-{$ecomprocessing['name']['module']|escape:'htmlall':'UTF-8'} div.alert {
             width: 95%;
             margin: 0 auto;
         }

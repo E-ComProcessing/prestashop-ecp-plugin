@@ -1,5 +1,5 @@
 <?php
-/*
+/**
  * Copyright (C) 2018 E-Comprocessing Ltd.
  *
  * This program is free software; you can redistribute it and/or
@@ -22,11 +22,11 @@ if (!defined('_PS_VERSION_')) {
 }
 
 /**
- * Class EComprocessingInstall
+ * Class EcomprocessingInstall
  *
  * Perform module installation/un-installation
  */
-class EComprocessingInstall
+class EcomprocessingInstall
 {
     private $status = true;
 
@@ -36,13 +36,22 @@ class EComprocessingInstall
         'paymentTop',
         'orderConfirmation',
         'adminOrder',
-        'BackOfficeHeader',
         /*
          * Hooks for 1.7.x
          */
         'displayAdminOrder',
         'displayOrderDetail',
-        'paymentOptions'
+        'paymentOptions',
+        'backOfficeHeader',
+    ];
+
+    /**
+     * Skip registration of the following hook for PS >=1.7
+     *
+     * @var string[]
+     */
+    private $skippable17Hooks = [
+        'payment'
     ];
 
     /**
@@ -160,6 +169,12 @@ class EComprocessingInstall
     public function registerHooks($instance)
     {
         foreach ($this->hooks as $hook) {
+            if (version_compare(_PS_VERSION_, '1.7', '>=') &&
+                in_array($hook, $this->skippable17Hooks)
+            ) {
+                continue;
+            }
+
             if (!$instance->registerHook($hook)) {
                 $this->status = false;
                 throw new PrestaShopException('Module Install: Hook (' . $hook . ') can\'t be registered!');

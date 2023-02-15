@@ -1,0 +1,19 @@
+{
+    "name": "ecomprocessing/prestashop-ecp-plugin",
+    "description": "E-Comprocessing Payment Gateway for Prestashop",
+    "type": "prestashop-module",
+    "version": "1.8.2",
+    "require-dev": {
+        "prestashop/autoindex": "^2.0"
+    },
+    "license": "GPL-2.0",
+    "authors": [
+        {
+            "name": "ecomprocessing",
+            "email": "shopping_carts@e-comprocessing.com",
+            "homepage":"https://e-comprocessing.com"
+        }
+    ],
+    "minimum-stability": "stable",
+    "require": {}
+}

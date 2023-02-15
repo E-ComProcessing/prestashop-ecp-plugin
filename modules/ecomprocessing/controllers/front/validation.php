@@ -1,5 +1,5 @@
 <?php
-/*
+/**
  * Copyright (C) 2018 E-Comprocessing Ltd.
  *
  * This program is free software; you can redistribute it and/or
@@ -22,11 +22,11 @@ if (!defined('_PS_VERSION_')) {
 }
 
 /**
- * Class EComprocessingValidationModuleFrontController
+ * Class EcomprocessingValidationModuleFrontController
  *
  * Validation Front-End Controller
  */
-class EComprocessingValidationModuleFrontController extends ModuleFrontControllerCore
+class EcomprocessingValidationModuleFrontController extends ModuleFrontControllerCore
 {
     /** @var E-Comprocessing */
     public $module;

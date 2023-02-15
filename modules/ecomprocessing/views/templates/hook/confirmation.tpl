@@ -26,18 +26,18 @@
     <p>
         {l s='Your payment on' mod='ecomprocessing'} <span class="bold">{$ecomprocessing['name']['store']|escape:'htmlall':'UTF-8'}</span> {l s='is complete.' mod='ecomprocessing'}
         <br /><br /><span class="bold">{l s='Your order will be sent very soon.' mod='ecomprocessing'}</span>
-        <br /><br />{l s='For any questions or for further information, please contact our' mod='ecomprocessing'} <a href="{$link->getPageLink('contact', true)}" target="_blank">{l s='customer support' mod='ecomprocessing'}</a>.
+        <br /><br />{l s='For any questions or for further information, please contact our' mod='ecomprocessing'} <a href="{$link->getPageLink('contact', true)|escape:'htmlall':'UTF-8'}" target="_blank">{l s='customer support' mod='ecomprocessing'}</a>.
     </p>
 {elseif $ecomprocessing['confirmation']['status'] == 'pending'}
     <p>
         {l s='Your payment on' mod='ecomprocessing'} <span class="bold">{$ecomprocessing['name']['store']|escape:'htmlall':'UTF-8'}</span> {l s='is pending processing.' mod='ecomprocessing'}
         <br /><br /><span class="bold">{l s='Your order will be sent as soon as we cler your payment.' mod='ecomprocessing'}</span>
-        <br /><br />{l s='For any questions or for further information, please contact our' mod='ecomprocessing'} <a href="{$link->getPageLink('contact', true)}" target="_blank">{l s='customer support' mod='ecomprocessing'}</a>.
+        <br /><br />{l s='For any questions or for further information, please contact our' mod='ecomprocessing'} <a href="{$link->getPageLink('contact', true)|escape:'htmlall':'UTF-8'}" target="_blank">{l s='customer support' mod='ecomprocessing'}</a>.
     </p>
 {else}
     <p>
         {l s='Your payment on' mod='ecomprocessing'} <span class="bold">{$ecomprocessing['name']['store']|escape:'htmlall':'UTF-8'}</span> {l s='was unsuccessful.' mod='ecomprocessing'}
         <br /><br /><span class="bold">{l s='Please check your input and try again or contact us, if the problem persists.' mod='ecomprocessing'}</span>
-        <br /><br />{l s='For any questions or for further information, please contact our' mod='ecomprocessing'} <a href="{$link->getPageLink('contact', true)}" target="_blank">{l s='customer support' mod='ecomprocessing'}</a>.
+        <br /><br />{l s='For any questions or for further information, please contact our' mod='ecomprocessing'} <a href="{$link->getPageLink('contact', true)|escape:'htmlall':'UTF-8'}" target="_blank">{l s='customer support' mod='ecomprocessing'}</a>.
     </p>
 {/if}

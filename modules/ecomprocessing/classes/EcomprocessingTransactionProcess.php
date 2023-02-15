@@ -1,5 +1,5 @@
 <?php
-/*
+/**
  * Copyright (C) 2018 E-Comprocessing Ltd.
  *
  * This program is free software; you can redistribute it and/or
@@ -22,14 +22,12 @@ if (!defined('_PS_VERSION_')) {
 }
 
 /**
- * Class EComprocessingTransactionProcess
+ * Class EcomprocessingTransactionProcess
  *
  * Build and execute E-Comprocessing Transactions
  */
-class EComprocessingTransactionProcess
+class EcomprocessingTransactionProcess
 {
-    const displayName = 'E-Comprocessing Transactions';
-
     /**
      * Create a Web-Payment Form instance.
      *
@@ -93,6 +91,7 @@ class EComprocessingTransactionProcess
                 ->request()
                     ->setNotificationUrl($data->url->notification)
                     ->setReturnSuccessUrl($data->url->return_success)
+                    ->setReturnPendingUrl($data->url->return_success)
                     ->setReturnFailureUrl($data->url->return_failure)
                     ->setReturnCancelUrl($data->url->return_cancel);
         }
@@ -118,7 +117,7 @@ class EComprocessingTransactionProcess
         }
 
         if ($data->is_wpf_tokenization_enabled) {
-            $consumerId = EComprocessingConsumer::getConsumerId(
+            $consumerId = EcomprocessingConsumer::getConsumerId(
                 \Genesis\Config::getUsername(),
                 $data->customer_email
             );

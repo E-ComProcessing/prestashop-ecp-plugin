@@ -1,5 +1,5 @@
 <?php
-/*
+/**
  * Copyright (C) 2018 E-Comprocessing Ltd.
  *
  * This program is free software; you can redistribute it and/or
@@ -22,11 +22,11 @@ if (!defined('_PS_VERSION_')) {
 }
 
 /**
- * Class EComprocessingCheckoutModuleFrontController
+ * Class EcomprocessingCheckoutModuleFrontController
  *
  * Checkout Front-End Controller
  */
-class EComprocessingCheckoutModuleFrontController extends ModuleFrontController
+class EcomprocessingCheckoutModuleFrontController extends ModuleFrontController
 {
     /** @var E-Comprocessing */
     public $module;
@@ -41,7 +41,7 @@ class EComprocessingCheckoutModuleFrontController extends ModuleFrontController
     {
         parent::initContent();
 
-        $this->page_name = $this->module->l('EComprocessing Checkout');
+        $this->page_name = $this->module->l('E-Comprocessing Checkout');
 
         $this->initCheckout();
     }
@@ -66,18 +66,18 @@ class EComprocessingCheckoutModuleFrontController extends ModuleFrontController
 
             if (version_compare(_PS_VERSION_, '1.6', '<')) {
                 $this->context->controller->addCSS(
-                    $this->module->getPathUri() . 'assets/css/bootstrap-custom.min.css', 'all'
+                    $this->module->getPathUri() . 'views/css/bootstrap-custom.min.css', 'all'
                 );
                 $this->context->controller->addJS(
-                    $this->module->getPathUri() . 'assets/js/bootstrap/bootstrap.min.js'
+                    $this->module->getPathUri() . 'views/js/bootstrap/bootstrap.min.js'
                 );
             }
 
             $this->context->controller->addCSS(
-                $this->module->getPathUri() . 'assets/css/card.min.css', 'all'
+                $this->module->getPathUri() . 'views/css/card.min.css', 'all'
             );
             $this->context->controller->addJS(
-                $this->module->getPathUri() . 'assets/js/card/card.min.js'
+                $this->module->getPathUri() . 'views/js/card/card.min.js'
             );
 
             $this->context->smarty->append(

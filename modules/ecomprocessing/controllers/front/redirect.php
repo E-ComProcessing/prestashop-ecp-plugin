@@ -1,5 +1,5 @@
 <?php
-/*
+/**
  * Copyright (C) 2018 E-Comprocessing Ltd.
  *
  * This program is free software; you can redistribute it and/or
@@ -22,11 +22,11 @@ if (!defined('_PS_VERSION_')) {
 }
 
 /**
- * Class EComprocessingRedirectModuleFrontController
+ * Class EcomprocessingRedirectModuleFrontController
  *
  * Redirection Front-End Controller
  */
-class EComprocessingRedirectModuleFrontController extends ModuleFrontController
+class EcomprocessingRedirectModuleFrontController extends ModuleFrontController
 {
     /** @var  ecomprocessing */
     public $module;
@@ -73,7 +73,7 @@ class EComprocessingRedirectModuleFrontController extends ModuleFrontController
                         'support' => $this->context->link->getPageLink('contact.php'),
                     ]
                 ],
-                'cart'     => new Cart(intval(Tools::getValue('id_cart')))
+                'cart'     => new Cart((int)Tools::getValue('id_cart'))
             ],
             true
         );

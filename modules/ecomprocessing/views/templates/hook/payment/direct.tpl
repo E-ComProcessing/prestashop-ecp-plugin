@@ -17,16 +17,16 @@
  *}
 
 {if version_compare($ecomprocessing['presta']['version'], '1.5', '>=') && version_compare($ecomprocessing['presta']['version'], '1.6', '<') }
-    <div class="row" class="payment-method-{$ecomprocessing['name']['module']}">
+    <div class="row" class="payment-method-{$ecomprocessing['name']['module']|escape:'htmlall':'UTF-8'}">
         {if ($ecomprocessing['payment']['methods']['direct'] && $ecomprocessing['ssl']['enabled'])}
-            <div id="payment-method-{$ecomprocessing['name']['module']}-direct" class="payment_module">
+            <div id="payment-method-{$ecomprocessing['name']['module']|escape:'htmlall':'UTF-8'}-direct" class="payment_module">
                 <div class="payment-method-container" style="margin-top:-15px;">
                     <div class="payment-method-header">
                         <div class="row">
                             <div class="col-xs-12">
-                                <img src="{$ecomprocessing['path']}/assets/img/logos/ecomprocessing_direct.png"
-                                     alt="{l s="EComprocessing Logo" mod="ecomprocessing"}" style="width:224px;"/>
-                                <span>&nbsp;{l s="Pay with Credit / Debit Card" mod="ecomprocessing"}</span>
+                                <img src="{$ecomprocessing['path']|escape:'htmlall':'UTF-8'}/views/img/logos/ecomprocessing_direct.png"
+                                     alt="{l s='E-Comprocessing Logo' mod='ecomprocessing'}" style="width:224px;"/>
+                                <span>&nbsp;{l s='Pay with Credit / Debit Card' mod='ecomprocessing'}</span>
                             </div>
                         </div>
                     </div>
@@ -36,7 +36,7 @@
                             <div class="row row-spacer">
                                 <div class="alert alert-warning alert-dismissable error-wrapper">
                                     <button type="button" class="close" data-dismiss="alert">&times;</button>
-                                    {$ecomprocessing['payment']['errors']['direct']|escape:html:'UTF-8'}
+                                    {$ecomprocessing['payment']['errors']['direct']|escape:'htmlall':'UTF-8'}
                                 </div>
                             </div>
                         </div>
@@ -51,27 +51,27 @@
 
                                     <div class="form-wrapper">
                                         <div class="form-group active">
-                                            <form action="{$ecomprocessing['payment']['urls']['direct']}"
+                                            <form action="{$ecomprocessing['payment']['urls']['direct']|escape:'htmlall':'UTF-8'}"
                                                   autocomplete="off" class="payment-form" method="post">
                                                 <input autocomplete="off"
-                                                       placeholder="{l s="Card Number"  mod="ecomprocessing"}"
+                                                       placeholder="{l s='Card Number'  mod='ecomprocessing'}"
                                                        class="form-control" type="text"
-                                                       name="{$ecomprocessing['name']['module']}-number">
+                                                       name="{$ecomprocessing['name']['module']|escape:'htmlall':'UTF-8'}-number">
                                                 <input autocomplete="off"
-                                                       placeholder="{l s="Card Holder"  mod="ecomprocessing"}"
+                                                       placeholder="{l s='Card Holder'  mod='ecomprocessing'}"
                                                        class="form-control" type="text"
-                                                       name="{$ecomprocessing['name']['module']}-name">
+                                                       name="{$ecomprocessing['name']['module']|escape:'htmlall':'UTF-8'}-name">
                                                 <input autocomplete="off"
-                                                       placeholder="{l s="Month / Year" mod="ecomprocessing"}"
+                                                       placeholder="{l s='Month / Year' mod='ecomprocessing'}"
                                                        class="form-control" type="text"
-                                                       name="{$ecomprocessing['name']['module']}-expiry">
+                                                       name="{$ecomprocessing['name']['module']|escape:'htmlall':'UTF-8'}-expiry">
                                                 <input autocomplete="off"
-                                                       placeholder="{l s="CVV/CVV2/CSC" mod="ecomprocessing"}"
+                                                       placeholder="{l s='CVV/CVV2/CSC' mod='ecomprocessing'}"
                                                        class="form-control" type="text"
-                                                       name="{$ecomprocessing['name']['module']}-cvc">
+                                                       name="{$ecomprocessing['name']['module']|escape:'htmlall':'UTF-8'}-cvc">
                                                 <input class="form-control submit" type="submit"
-                                                       name="submit{$ecomprocessing['name']['module']}Direct"
-                                                       value="{l s="Pay" mod="ecomprocessing"}"/>
+                                                       name="submit{$ecomprocessing['name']['module']|escape:'htmlall':'UTF-8'}Direct"
+                                                       value="{l s='Pay' mod='ecomprocessing'}"/>
                                             </form>
                                         </div>
                                     </div>
@@ -86,25 +86,25 @@
     </div>
 
     <style type="text/css">
-        .payment-method-{$ecomprocessing['name']['module']} {
+        .payment-method-{$ecomprocessing['name']['module']|escape:'htmlall':'UTF-8'} {
             margin-bottom: 16px;
         }
     </style>
 {/if}
 
 {if version_compare($ecomprocessing['presta']['version'], '1.6', '>=') && version_compare($ecomprocessing['presta']['version'], '1.7', '<') }
-    <div class="payment-method-{$ecomprocessing['name']['module']}">
+    <div class="payment-method-{$ecomprocessing['name']['module']|escape:'htmlall':'UTF-8'}">
         {if ($ecomprocessing['payment']['methods']['direct'] && $ecomprocessing['ssl']['enabled'])}
-            <div id="payment-method-{$ecomprocessing['name']['module']}-direct">
+            <div id="payment-method-{$ecomprocessing['name']['module']|escape:'htmlall':'UTF-8'}-direct">
                 <div class="row">
                     <div class="col-xs-12">
                         <div class="payment-method-container">
                             <div class="payment-method-header">
                                 <div class="row">
                                     <div class="col-xs-12">
-                                        <img src="{$ecomprocessing['path']}/assets/img/logos/ecomprocessing_direct.png"
-                                             alt="{l s="EComprocessing Logo" mod="ecomprocessing"}" style="width:224px;"/>
-                                        <span>&nbsp;{l s="Pay with Credit / Debit Card" mod="ecomprocessing"}</span>
+                                        <img src="{$ecomprocessing['path']|escape:'htmlall':'UTF-8'}/views/img/logos/ecomprocessing_direct.png"
+                                             alt="{l s='E-Comprocessing Logo' mod='ecomprocessing'}" style="width:224px;"/>
+                                        <span>&nbsp;{l s='Pay with Credit / Debit Card' mod='ecomprocessing'}</span>
                                     </div>
                                 </div>
                             </div>
@@ -114,7 +114,7 @@
                                     <div class="row row-spacer">
                                         <div class="alert alert-warning alert-dismissable error-wrapper">
                                             <button type="button" class="close" data-dismiss="alert">&times;</button>
-                                            {$ecomprocessing['payment']['errors']['direct']|escape:html:'UTF-8'}
+                                            {$ecomprocessing['payment']['errors']['direct']|escape:'htmlall':'UTF-8'}
                                         </div>
                                     </div>
                                 </div>
@@ -130,28 +130,28 @@
                                     <div class="col-xs-12 col-sm-6 col-md-5 col-lg-4 no-gutter">
                                         <div class="form-wrapper">
                                             <div class="form-group active">
-                                                <form action="{$ecomprocessing['payment']['urls']['direct']}"
+                                                <form action="{$ecomprocessing['payment']['urls']['direct']|escape:'htmlall':'UTF-8'}"
                                                       autocomplete="off" class="payment-form" method="post"
                                                       enctype="multipart/form-data">
                                                     <input autocomplete="off"
-                                                           placeholder="{l s="Card number"  mod="ecomprocessing"}"
+                                                           placeholder="{l s='Card number'  mod='ecomprocessing'}"
                                                            class="form-control" type="text"
-                                                           name="{$ecomprocessing['name']['module']}-number">
+                                                           name="{$ecomprocessing['name']['module']|escape:'htmlall':'UTF-8'}-number">
                                                     <input autocomplete="off"
-                                                           placeholder="{l s="Card holder"  mod="ecomprocessing"}"
+                                                           placeholder="{l s='Card holder'  mod='ecomprocessing'}"
                                                            class="form-control" type="text"
-                                                           name="{$ecomprocessing['name']['module']}-name">
+                                                           name="{$ecomprocessing['name']['module']|escape:'htmlall':'UTF-8'}-name">
                                                     <input autocomplete="off"
-                                                           placeholder="{l s="Expiration date (month / year)" mod="ecomprocessing"}"
+                                                           placeholder="{l s='Expiration date (month / year)' mod='ecomprocessing'}"
                                                            class="form-control" type="text"
-                                                           name="{$ecomprocessing['name']['module']}-expiry">
+                                                           name="{$ecomprocessing['name']['module']|escape:'htmlall':'UTF-8'}-expiry">
                                                     <input autocomplete="off"
-                                                           placeholder="{l s="CVV / CVV2 / CSC" mod="ecomprocessing"}"
+                                                           placeholder="{l s='CVV / CVV2 / CSC' mod='ecomprocessing'}"
                                                            class="form-control"
-                                                           name="{$ecomprocessing['name']['module']}-cvc">
+                                                           name="{$ecomprocessing['name']['module']|escape:'htmlall':'UTF-8'}-cvc">
                                                     <input class="form-control submit" type="submit"
-                                                           name="submit{$ecomprocessing['name']['module']}Direct"
-                                                           value="{l s="Pay" mod="ecomprocessing"}"/>
+                                                           name="submit{$ecomprocessing['name']['module']|escape:'htmlall':'UTF-8'}Direct"
+                                                           value="{l s='Pay' mod='ecomprocessing'}"/>
                                                 </form>
                                             </div>
                                         </div>
@@ -167,19 +167,19 @@
         {/if}
     </div>
     <style type="text/css">
-        .payment-method-{$ecomprocessing['name']['module']} {
+        .payment-method-{$ecomprocessing['name']['module']|escape:'htmlall':'UTF-8'} {
             margin-bottom: 16px;
         }
 
-        #payment-method-{$ecomprocessing['name']['module']}-checkout a.payment_module_link {
+        #payment-method-{$ecomprocessing['name']['module']|escape:'htmlall':'UTF-8'}-checkout a.payment_module_link {
             padding-left: 33px;
         }
 
-        #payment-method-{$ecomprocessing['name']['module']}-checkout a.payment_module_link span {
+        #payment-method-{$ecomprocessing['name']['module']|escape:'htmlall':'UTF-8'}-checkout a.payment_module_link span {
             padding-left: 8px;
         }
 
-        #payment-method-{$ecomprocessing['name']['module']}-checkout a.payment_module_link::after {
+        #payment-method-{$ecomprocessing['name']['module']|escape:'htmlall':'UTF-8'}-checkout a.payment_module_link::after {
             line-height: 0;
             top: 50% !important;
         }
@@ -187,18 +187,18 @@
 {/if}
 
 {if version_compare($ecomprocessing['presta']['version'], '1.7', '>=') && version_compare($ecomprocessing['presta']['version'], '1.8', '<') }
-    <div class="payment-method-{$ecomprocessing['name']['module']}">
+    <div class="payment-method-{$ecomprocessing['name']['module']|escape:'htmlall':'UTF-8'}">
         {if ($ecomprocessing['payment']['methods']['direct'] && $ecomprocessing['ssl']['enabled'])}
-            <div id="payment-method-{$ecomprocessing['name']['module']}-direct">
+            <div id="payment-method-{$ecomprocessing['name']['module']|escape:'htmlall':'UTF-8'}-direct">
                 <div class="row">
                     <div class="col-xs-12">
                         <div class="payment-method-container">
                             <div class="payment-method-header">
                                 <div class="row">
                                     <div class="col-xs-12">
-                                        <img src="{$ecomprocessing['path']}/assets/img/logos/ecomprocessing_direct.png"
-                                             alt="{l s="EComprocessing Logo" mod="ecomprocessing"}" style="width:224px;"/>
-                                        <span>&nbsp;{l s="Pay with Credit / Debit Card" mod="ecomprocessing"}</span>
+                                        <img src="{$ecomprocessing['path']|escape:'htmlall':'UTF-8'}/views/img/logos/ecomprocessing_direct.png"
+                                             alt="{l s='E-Comprocessing Logo' mod='ecomprocessing'}" style="width:224px;"/>
+                                        <span>&nbsp;{l s='Pay with Credit / Debit Card' mod='ecomprocessing'}</span>
                                     </div>
                                 </div>
                             </div>
@@ -208,7 +208,7 @@
                                     <div class="row row-spacer">
                                         <div class="alert alert-warning alert-dismissable error-wrapper">
                                             <button type="button" class="close" data-dismiss="alert">&times;</button>
-                                            {$ecomprocessing['payment']['errors']['direct']|escape:html:'UTF-8'}
+                                            {$ecomprocessing['payment']['errors']['direct']|escape:'htmlall':'UTF-8'}
                                         </div>
                                     </div>
                                 </div>
@@ -225,21 +225,21 @@
                                         <div class="form-group active" style="margin: auto; width: 350px;">
                                             <form autocomplete="off" class="payment-form" method="post">
                                                 <input autocomplete="off"
-                                                       placeholder="{l s="Card number"  mod="ecomprocessing"}"
+                                                       placeholder="{l s='Card number'  mod='ecomprocessing'}"
                                                        class="form-control" type="text" required
-                                                       name="{$ecomprocessing['name']['module']}-number">
+                                                       name="{$ecomprocessing['name']['module']|escape:'htmlall':'UTF-8'}-number">
                                                 <input autocomplete="off"
-                                                       placeholder="{l s="Card holder"  mod="ecomprocessing"}"
+                                                       placeholder="{l s='Card holder'  mod='ecomprocessing'}"
                                                        class="form-control" type="text" required
-                                                       name="{$ecomprocessing['name']['module']}-name">
+                                                       name="{$ecomprocessing['name']['module']|escape:'htmlall':'UTF-8'}-name">
                                                 <input autocomplete="off"
-                                                       placeholder="{l s="Expiration date (month / year)" mod="ecomprocessing"}"
+                                                       placeholder="{l s='Expiration date (month / year)' mod='ecomprocessing'}"
                                                        class="form-control" type="text" required
-                                                       name="{$ecomprocessing['name']['module']}-expiry">
+                                                       name="{$ecomprocessing['name']['module']|escape:'htmlall':'UTF-8'}-expiry">
                                                 <input autocomplete="off"
-                                                       placeholder="{l s="CVV / CVV2 / CSC" mod="ecomprocessing"}"
+                                                       placeholder="{l s='CVV / CVV2 / CSC' mod='ecomprocessing'}"
                                                        class="form-control" type="text" required
-                                                       name="{$ecomprocessing['name']['module']}-cvc">
+                                                       name="{$ecomprocessing['name']['module']|escape:'htmlall':'UTF-8'}-cvc">
                                             </form>
                                         </div>
                                     </div>
@@ -259,34 +259,34 @@
     {/if}
 
     <style type="text/css">
-        #payment-method-{$ecomprocessing['name']['module']}-direct .payment-method-container input {
+        #payment-method-{$ecomprocessing['name']['module']|escape:'htmlall':'UTF-8'}-direct .payment-method-container input {
             margin: 5pt 0;
         }
     </style>
 {/if}
 
 <style type="text/css">
-    #payment-method-{$ecomprocessing['name']['module']}-direct {
+    #payment-method-{$ecomprocessing['name']['module']|escape:'htmlall':'UTF-8'}-direct {
         padding-top: 16px !important;
     }
 
-    #payment-method-{$ecomprocessing['name']['module']}-direct .payment-method-container {
+    #payment-method-{$ecomprocessing['name']['module']|escape:'htmlall':'UTF-8'}-direct .payment-method-container {
         /*width:100%;*/
         background: #FFF;
         padding: 22px 12px;
         overflow: hidden;
     }
 
-    #payment-method-{$ecomprocessing['name']['module']}-direct .payment-method-container .no-gutter {
+    #payment-method-{$ecomprocessing['name']['module']|escape:'htmlall':'UTF-8'}-direct .payment-method-container .no-gutter {
         margin: 0;
         padding: 0;
     }
 
-    #payment-method-{$ecomprocessing['name']['module']}-direct .payment-method-container .payment-method-status .row-spacer {
+    #payment-method-{$ecomprocessing['name']['module']|escape:'htmlall':'UTF-8'}-direct .payment-method-container .payment-method-status .row-spacer {
         margin-bottom: 16px;
     }
 
-    #payment-method-{$ecomprocessing['name']['module']}-direct .payment-method-container input {
+    #payment-method-{$ecomprocessing['name']['module']|escape:'htmlall':'UTF-8'}-direct .payment-method-container input {
         border: 1px solid #ccc;
         max-width: 350px !important;
         background-color: #fff;
@@ -299,24 +299,24 @@
         border-radius: 5pt;
     }
 
-    #payment-method-{$ecomprocessing['name']['module']}-direct .payment-method-container .payment-method-content .card-wrapper {
+    #payment-method-{$ecomprocessing['name']['module']|escape:'htmlall':'UTF-8'}-direct .payment-method-container .payment-method-content .card-wrapper {
         display: block;
         padding-top: 16px;
         margin-bottom: 16px;
     }
 
-    #payment-method-{$ecomprocessing['name']['module']}-direct .payment-method-container .payment-method-content .form-wrapper .form-group {
+    #payment-method-{$ecomprocessing['name']['module']|escape:'htmlall':'UTF-8'}-direct .payment-method-container .payment-method-content .form-wrapper .form-group {
         margin: 16px auto 0 auto;
     }
 
-    #payment-method-{$ecomprocessing['name']['module']}-direct .payment-method-container .payment-method-content .form-wrapper .form-group input {
+    #payment-method-{$ecomprocessing['name']['module']|escape:'htmlall':'UTF-8'}-direct .payment-method-container .payment-method-content .form-wrapper .form-group input {
         width: 98%;
         margin: 0 auto 16px auto;
         height: 36px;
         padding: 0 8px;
     }
 
-    #payment-method-{$ecomprocessing['name']['module']}-direct .payment-method-container .payment-method-content .form-wrapper .form-group input.submit {
+    #payment-method-{$ecomprocessing['name']['module']|escape:'htmlall':'UTF-8'}-direct .payment-method-container .payment-method-content .form-wrapper .form-group input.submit {
         box-shadow: none;
         border-radius: 6px !important;
         background: #5F604B;
@@ -326,8 +326,8 @@
         margin: 0 auto;
     }
 
-    #payment-method-{$ecomprocessing['name']['module']}-direct .payment-method-container .jp-card-container,
-    #payment-method-{$ecomprocessing['name']['module']}-direct .payment-method-container .payment-method-content .form-group {
+    #payment-method-{$ecomprocessing['name']['module']|escape:'htmlall':'UTF-8'}-direct .payment-method-container .jp-card-container,
+    #payment-method-{$ecomprocessing['name']['module']|escape:'htmlall':'UTF-8'}-direct .payment-method-container .payment-method-content .form-group {
         margin: 0 0 0 15px !important;
     }
 </style>
@@ -336,16 +336,16 @@
 {if ($ecomprocessing['payment']['methods']['direct'] && $ecomprocessing['ssl']['enabled'])}
     <script type="text/javascript">
         new Card({
-            form: '#payment-method-{$ecomprocessing['name']['module']}-direct .payment-form',
-            container: '#payment-method-{$ecomprocessing['name']['module']}-direct .card-wrapper',
+            form: '#payment-method-{$ecomprocessing['name']['module']|escape:'javascript':'UTF-8'}-direct .payment-form',
+            container: '#payment-method-{$ecomprocessing['name']['module']|escape:'javascript':'UTF-8'}-direct .card-wrapper',
             formSelectors: {
-                nameInput: 'input[name="{$ecomprocessing['name']['module']}-name"]',
-                numberInput: 'input[name="{$ecomprocessing['name']['module']}-number"]',
-                cvcInput: 'input[name="{$ecomprocessing['name']['module']}-cvc"]',
-                expiryInput: 'input[name="{$ecomprocessing['name']['module']}-expiry"]'
+                nameInput: 'input[name="{$ecomprocessing['name']['module']|escape:'javascript':'UTF-8'}-name"]',
+                numberInput: 'input[name="{$ecomprocessing['name']['module']|escape:'javascript':'UTF-8'}-number"]',
+                cvcInput: 'input[name="{$ecomprocessing['name']['module']|escape:'javascript':'UTF-8'}-cvc"]',
+                expiryInput: 'input[name="{$ecomprocessing['name']['module']|escape:'javascript':'UTF-8'}-expiry"]'
             },
             messages: {
-                legalText: '&copy;{$smarty.now|date_format: '%Y'} {$ecomprocessing['name']['display']}<br/><br/>{$ecomprocessing['name']['store']}'
+                legalText: '&copy;{$ecomprocessing['legal']['year']|escape:'javascript':'UTF-8'} {$ecomprocessing['name']['display']|escape:'javascript':'UTF-8'}<br/><br/>{$ecomprocessing['name']['store']|escape:'javascript':'UTF-8'}'
             }
         });
     </script>

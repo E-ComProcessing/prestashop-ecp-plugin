@@ -27,21 +27,21 @@
     <br/>
 
     <fieldset {if isset($ecomprocessing['presta']['version']) && ($ecomprocessing['presta']['version'] < '1.5')}style="width: 400px"{/if}>
-        <legend><img src="{$ecomprocessing['presta']['url']}/modules/{$ecomprocessing['name']['module']}/logo.png" style="width:16px" alt="" />{l s='EComprocessing Transactions' mod='ecomprocessing'}</legend>
+        <legend><img src="{$ecomprocessing['presta']['url']|escape:'htmlall':'UTF-8'}/modules/{$ecomprocessing['name']['module']|escape:'htmlall':'UTF-8'}/logo.png" style="width:16px" alt="" />{l s='E-Comprocessing Transactions' mod='ecomprocessing'}</legend>
         {* System errors, impacting the module functionallity *}
         {if $ecomprocessing['warning']}
-            <div class="warn">{$ecomprocessing['warning']|escape:html:'UTF-8'}</div>
+            <div class="warn">{$ecomprocessing['warning']|escape:'htmlall':'UTF-8'}</div>
         {else}
             {* Transaction errors *}
             {if $ecomprocessing['transactions']['error']}
-                <div class="error">{$ecomprocessing['transactions']['error']}</div>
+                <div class="error">{$ecomprocessing['transactions']['error']|escape:'htmlall':'UTF-8'}</div>
             {/if}
 
             <div class="row">
                 <div class="col-xs-3"></div>
                 <div class="col-xs-6">
                     <div class="warn">
-                        {l s="Full/Partial refunds through Prestashop's UI are local and WILL NOT REFUND the original transaction." mod="ecomprocessing"}
+                        {l s='Full/Partial refunds through Prestashop\'s UI are local and WILL NOT REFUND the original transaction.' mod='ecomprocessing'}
                     </div>
                 </div>
                 <div class="col-xs-3"></div>
@@ -62,28 +62,28 @@
                     </colgroup>
                     <thead>
                     <tr>
-                        <th>{l s="Id"       mod="ecomprocessing"}</th>
-                        <th>{l s="Type"     mod="ecomprocessing"}</th>
-                        <th>{l s="Date"     mod="ecomprocessing"}</th>
-                        <th>{l s="Amount"   mod="ecomprocessing"}</th>
-                        <th>{l s="Status"   mod="ecomprocessing"}</th>
-                        <th>{l s="Message"  mod="ecomprocessing"}</th>
-                        <th colspan="3" style="text-align: center;">{l s="Action" mod="ecomprocessing"}</th>
+                        <th>{l s='Id'       mod='ecomprocessing'}</th>
+                        <th>{l s='Type'     mod='ecomprocessing'}</th>
+                        <th>{l s='Date'     mod='ecomprocessing'}</th>
+                        <th>{l s='Amount'   mod='ecomprocessing'}</th>
+                        <th>{l s='Status'   mod='ecomprocessing'}</th>
+                        <th>{l s='Message'  mod='ecomprocessing'}</th>
+                        <th colspan="3" style="text-align: center;">{l s='Action' mod='ecomprocessing'}</th>
                     </tr>
                     </thead>
                     <tbody>
                     {foreach from=$ecomprocessing['transactions']['tree'] item=transaction}
-                        <tr class="treegrid-{$transaction['id_unique']} {if $transaction['id_parent']}treegrid-parent-{$transaction['id_parent']}{/if}">
-                            <td class="text-left">{$transaction['id_unique']}</td>
-                            <td class="text-left">{$transaction['type']}</td>
-                            <td class="text-center">{$transaction['date_add']}</td>
-                            <td class="text-center">{$transaction['amount']}</td>
-                            <td class="text-center">{$transaction['status']}</td>
-                            <td class="text-center">{$transaction['message']}</td>
+                        <tr class="treegrid-{$transaction['id_unique']|escape:'htmlall':'UTF-8'} {if $transaction['id_parent']}treegrid-parent-{$transaction['id_parent']|escape:'htmlall':'UTF-8'}{/if}">
+                            <td class="text-left">{$transaction['id_unique']|escape:'htmlall':'UTF-8'}</td>
+                            <td class="text-left">{$transaction['type']|escape:'htmlall':'UTF-8'}</td>
+                            <td class="text-center">{$transaction['date_add']|escape:'htmlall':'UTF-8'}</td>
+                            <td class="text-center">{$transaction['amount']|escape:'htmlall':'UTF-8'}</td>
+                            <td class="text-center">{$transaction['status']|escape:'htmlall':'UTF-8'}</td>
+                            <td class="text-center">{$transaction['message']|escape:'htmlall':'UTF-8'}</td>
                             <td class="text-center">
                                 {if $transaction['can_capture']}
                                     <div class="transaction-action-button">
-                                        <a class="btn btn-transaction btn-success button-capture button" role="button" data-type="capture" data-id-unique="{$transaction['id_unique']}" data-amount="{$transaction['amount']}" >
+                                        <a class="btn btn-transaction btn-success button-capture button" role="button" data-type="capture" data-id-unique="{$transaction['id_unique']|escape:'htmlall':'UTF-8'}" data-amount="{$transaction['amount']|escape:'htmlall':'UTF-8'}" >
                                             <i class="fa fa-check fa-large"></i>
                                         </a>
                                     </div>
@@ -92,7 +92,7 @@
                             <td class="text-center">
                                 {if $transaction['can_refund']}
                                     <div class="transaction-action-button">
-                                        <a class="btn btn-transaction btn-warning button-refund button" role="button" data-type="refund" data-id-unique="{$transaction['id_unique']}" data-amount="{$transaction['amount']}">
+                                        <a class="btn btn-transaction btn-warning button-refund button" role="button" data-type="refund" data-id-unique="{$transaction['id_unique']|escape:'htmlall':'UTF-8'}" data-amount="{$transaction['amount']|escape:'htmlall':'UTF-8'}">
                                             <i class="fa fa-reply fa-large"></i>
                                         </a>
                                     </div>
@@ -101,7 +101,7 @@
                             <td class="text-center">
                                 {if $transaction['can_void']}
                                     <div class="transaction-action-button">
-                                        <a class="btn btn-transaction btn-danger button-void button" role="button" data-type="void" data-id-unique="{$transaction['id_unique']}">
+                                        <a class="btn btn-transaction btn-danger button-void button" role="button" data-type="void" data-id-unique="{$transaction['id_unique']|escape:'htmlall':'UTF-8'}">
                                             <i class="fa fa-remove fa-large"></i>
                                         </a>
                                     </div>
@@ -109,21 +109,21 @@
                             </td>
                         </tr>
                     {/foreach}
-                    <tr id="{$ecomprocessing['name']['module']}_action_bar" class="current-edit" style="display:none;">
-                        <td colspan="1" id="{$ecomprocessing['name']['module']}_transaction_amount_placeholder" style="vertical-align:middle">
-                            <label for="{$ecomprocessing['name']['module']}_transaction_amount" style="width:20%;">{l s="Amount:" mod="ecomprocessing"}</label>
-                            <input type="text" id="{$ecomprocessing['name']['module']}_transaction_amount" name="{$ecomprocessing['name']['module']}_transaction_amount" placeholder="{l s="Amount..." mod="ecomprocessing"}" value="{{$ecomprocessing['transactions']['order']['amount']}}" style="width:70%;" />
+                    <tr id="{$ecomprocessing['name']['module']|escape:'htmlall':'UTF-8'}_action_bar" class="current-edit" style="display:none;">
+                        <td colspan="1" id="{$ecomprocessing['name']['module']|escape:'htmlall':'UTF-8'}_transaction_amount_placeholder" style="vertical-align:middle">
+                            <label for="{$ecomprocessing['name']['module']|escape:'htmlall':'UTF-8'}_transaction_amount" style="width:20%;">{l s='Amount:' mod='ecomprocessing'}</label>
+                            <input type="text" id="{$ecomprocessing['name']['module']|escape:'htmlall':'UTF-8'}_transaction_amount" name="{$ecomprocessing['name']['module']|escape:'htmlall':'UTF-8'}_transaction_amount" placeholder="{l s='Amount...' mod='ecomprocessing'}" value="{$ecomprocessing['transactions']['order']['amount']|escape:'htmlall':'UTF-8'}" style="width:70%;" />
                         </td>
-                        <td colspan="5" id="{$ecomprocessing['name']['module']}_transaction_usage_placeholder" style="vertical-align:middle">
-                            <label for="{$ecomprocessing['name']['module']}_transaction_usage" style="width:20%;">{l s="Usage:" mod="ecomprocessing"}</label>
-                            <input type="text" id="{$ecomprocessing['name']['module']}_transaction_usage" name="{$ecomprocessing['name']['module']}_transaction_usage" placeholder="{l s="Usage..." mod="ecomprocessing"}" style="width:70%;" />
+                        <td colspan="5" id="{$ecomprocessing['name']['module']|escape:'htmlall':'UTF-8'}_transaction_usage_placeholder" style="vertical-align:middle">
+                            <label for="{$ecomprocessing['name']['module']|escape:'htmlall':'UTF-8'}_transaction_usage" style="width:20%;">{l s='Usage:' mod='ecomprocessing'}</label>
+                            <input type="text" id="{$ecomprocessing['name']['module']|escape:'htmlall':'UTF-8'}_transaction_usage" name="{$ecomprocessing['name']['module']|escape:'htmlall':'UTF-8'}_transaction_usage" placeholder="{l s='Usage...' mod='ecomprocessing'}" style="width:70%;" />
                         </td>
                         <td colspan="3" style="text-align:center;vertical-align:middle">
-                            <input type="hidden" id="{$ecomprocessing['name']['module']}_transaction_id" name="{$ecomprocessing['name']['module']}_transaction_id" value="" />
-                            <input type="hidden" id="{$ecomprocessing['name']['module']}_transaction_type" name="{$ecomprocessing['name']['module']}_transaction_type" value="" />
+                            <input type="hidden" id="{$ecomprocessing['name']['module']|escape:'htmlall':'UTF-8'}_transaction_id" name="{$ecomprocessing['name']['module']|escape:'htmlall':'UTF-8'}_transaction_id" value="" />
+                            <input type="hidden" id="{$ecomprocessing['name']['module']|escape:'htmlall':'UTF-8'}_transaction_type" name="{$ecomprocessing['name']['module']|escape:'htmlall':'UTF-8'}_transaction_type" value="" />
                             <button type="submit" class="btn btn-success">
                                 <i class="fa fa-arrow-right fa-large"></i>
-                                {l s="Submit" mod="ecomprocessing"}
+                                {l s='Submit' mod='ecomprocessing'}
                             </button>
                         </td>
                     </tr>
@@ -131,7 +131,7 @@
                 </table>
             </form>
             <p class="text-right">
-                <b>{l s='Information:' mod='ecomprocessing'}</b> {l s="For more complex workflows/functionallity, please visit our Merchant Portal!" mod="ecomprocessing"}
+                <b>{l s='Information:' mod='ecomprocessing'}</b> {l s='For more complex workflows/functionallity, please visit our Merchant Portal!' mod='ecomprocessing'}
             </p>
         {/if}
     </fieldset>
@@ -147,28 +147,28 @@
         });
 
         function transactionBar(type, id_unique, amount) {
-            modalObj = $('#{$ecomprocessing['name']['module']}_action_bar');
+            modalObj = $('#{$ecomprocessing['name']['module']|escape:'javascript':'UTF-8'}_action_bar');
 
             modalObj.fadeOut(300, function() {
                 switch(type) {
                     case 'capture':
-                        modalObj.find('#{$ecomprocessing['name']['module']}_transaction_amount_placeholder').css('visibility', 'visible');
+                        modalObj.find('#{$ecomprocessing['name']['module']|escape:'javascript':'UTF-8'}_transaction_amount_placeholder').css('visibility', 'visible');
                         break;
                     case 'refund':
-                        modalObj.find('#{$ecomprocessing['name']['module']}_transaction_amount_placeholder').css('visibility', 'visible');
+                        modalObj.find('#{$ecomprocessing['name']['module']|escape:'javascript':'UTF-8'}_transaction_amount_placeholder').css('visibility', 'visible');
                         break;
                     case 'void':
-                        modalObj.find('#{$ecomprocessing['name']['module']}_transaction_amount_placeholder').css('visibility', 'hidden');
+                        modalObj.find('#{$ecomprocessing['name']['module']|escape:'javascript':'UTF-8'}_transaction_amount_placeholder').css('visibility', 'hidden');
                         break;
                     default:
                         return;
                 }
 
-                modalObj.find('#{$ecomprocessing['name']['module']}_transaction_type').attr('value', type);
+                modalObj.find('#{$ecomprocessing['name']['module']|escape:'javascript':'UTF-8'}_transaction_type').attr('value', type);
 
-                modalObj.find('#{$ecomprocessing['name']['module']}_transaction_id').attr('value', id_unique);
+                modalObj.find('#{$ecomprocessing['name']['module']|escape:'javascript':'UTF-8'}_transaction_id').attr('value', id_unique);
 
-                modalObj.find('#{$ecomprocessing['name']['module']}_transaction_amount').attr('value', amount);
+                modalObj.find('#{$ecomprocessing['name']['module']|escape:'javascript':'UTF-8'}_transaction_amount').attr('value', amount);
             });
 
             modalObj.fadeIn(300, function() {
@@ -184,8 +184,8 @@
         <div class="col-lg-12">
             <div class="panel">
                 <div class="panel-heading">
-                    <img src="{$ecomprocessing['presta']['url']}modules/{$ecomprocessing['name']['module']}/logo.png" alt="" style="width:16px;" />
-                    <span>{l s='EComprocessing Transactions' mod='ecomprocessing'}</span>
+                    <img src="{$ecomprocessing['presta']['url']|escape:'htmlall':'UTF-8'}modules/{$ecomprocessing['name']['module']|escape:'htmlall':'UTF-8'}/logo.png" alt="" style="width:16px;" />
+                    <span>{l s='E-Comprocessing Transactions' mod='ecomprocessing'}</span>
                 </div>
                 <div class="panel-collapse collapse in">
 
@@ -193,7 +193,7 @@
                     {if $ecomprocessing['warning']}
                         <div class="alert alert-warning alert-dismissable error-wrapper">
                             <button type="button" class="close" data-dismiss="alert">&times;</button>
-                            {$ecomprocessing['warning']|escape:html:'UTF-8'}
+                            {$ecomprocessing['warning']|escape:'htmlall':'UTF-8'}
                         </div>
                     {/if}
 
@@ -201,7 +201,7 @@
                     {if $ecomprocessing['transactions']['error']}
                         <div class="alert alert-danger alert-dismissable error-wrapper">
                             <button type="button" class="close" data-dismiss="alert">&times;</button>
-                            {$ecomprocessing['transactions']['error']|escape:html:'UTF-8'}
+                            {$ecomprocessing['transactions']['error']|escape:'htmlall':'UTF-8'}
                         </div>
                     {/if}
 
@@ -209,9 +209,9 @@
                         <div class="col-xs-3"></div>
                         <div class="col-xs-6">
                             <div class="alert alert-info">
-                                {l s="You must process full/partial refunds only through this panel!" mod="ecomprocessing"}
+                                {l s='You must process full/partial refunds only through this panel!' mod='ecomprocessing'}
                                 <br/>
-                                {l s="Full/Partial refunds through Prestashop's UI are local and WILL NOT REFUND the original transaction." mod="ecomprocessing"}
+                                {l s='Full/Partial refunds through Prestashop\'s UI are local and WILL NOT REFUND the original transaction.' mod='ecomprocessing'}
                             </div>
                         </div>
                         <div class="col-xs-3"></div>
@@ -221,45 +221,45 @@
                         <table class="table table-hover tree">
                             <thead>
                             <tr>
-                                <th>{l s="Id"       mod="ecomprocessing"}</th>
-                                <th>{l s="Type"     mod="ecomprocessing"}</th>
-                                <th>{l s="Date"     mod="ecomprocessing"}</th>
-                                <th>{l s="Amount"   mod="ecomprocessing"}</th>
-                                <th>{l s="Status"   mod="ecomprocessing"}</th>
-                                <th>{l s="Message"  mod="ecomprocessing"}</th>
-                                <th>{l s="Capture"  mod="ecomprocessing"}</th>
-                                <th>{l s="Refund"   mod="ecomprocessing"}</th>
-                                <th>{l s="Cancel"   mod="ecomprocessing"}</th>
+                                <th>{l s='Id'       mod='ecomprocessing'}</th>
+                                <th>{l s='Type'     mod='ecomprocessing'}</th>
+                                <th>{l s='Date'     mod='ecomprocessing'}</th>
+                                <th>{l s='Amount'   mod='ecomprocessing'}</th>
+                                <th>{l s='Status'   mod='ecomprocessing'}</th>
+                                <th>{l s='Message'  mod='ecomprocessing'}</th>
+                                <th>{l s='Capture'  mod='ecomprocessing'}</th>
+                                <th>{l s='Refund'   mod='ecomprocessing'}</th>
+                                <th>{l s='Cancel'   mod='ecomprocessing'}</th>
                             </tr>
                             </thead>
                             <tbody>
                             {foreach from=$ecomprocessing['transactions']['tree'] item=transaction}
-                                <tr class="treegrid-{$transaction['id_unique']} {if $transaction['id_parent']}treegrid-parent-{$transaction['id_parent']}{/if}">
+                                <tr class="treegrid-{$transaction['id_unique']|escape:'htmlall':'UTF-8'} {if $transaction['id_parent']|escape:'htmlall':'UTF-8'}treegrid-parent-{$transaction['id_parent']|escape:'htmlall':'UTF-8'}{/if}">
                                     <td class="text-left">
-                                        {$transaction['id_unique']}
+                                        {$transaction['id_unique']|escape:'htmlall':'UTF-8'}
                                     </td>
                                     <td class="text-left">
-                                        {$transaction['type']}
+                                        {$transaction['type']|escape:'htmlall':'UTF-8'}
                                     </td>
                                     <td class="text-left">
-                                        {$transaction['date_add']}
+                                        {$transaction['date_add']|escape:'htmlall':'UTF-8'}
                                     </td>
                                     <td class="text-right">
-                                        {$transaction['amount']}
+                                        {$transaction['amount']|escape:'htmlall':'UTF-8'}
                                     </td>
                                     <td class="text-left">
-                                        {$transaction['status']}
+                                        {$transaction['status']|escape:'htmlall':'UTF-8'}
                                     </td>
                                     <td class="text-left">
-                                        {$transaction['message']}
+                                        {$transaction['message']|escape:'htmlall':'UTF-8'}
                                     </td>
                                     <td class="text-center">
                                         {if $transaction['can_capture']}
                                             <div class="transaction-action-button">
-                                                <a class="btn btn-transaction btn-success button-capture button" role="button" data-type="capture" data-id-unique="{$transaction['id_unique']}" data-amount="{$transaction['available_amount']}"
+                                                <a class="btn btn-transaction btn-success button-capture button" role="button" data-type="capture" data-id-unique="{$transaction['id_unique']|escape:'htmlall':'UTF-8'}" data-amount="{$transaction['available_amount']|escape:'htmlall':'UTF-8'}"
                                                     {if !$ecomprocessing['transactions']['options']['allow_partial_capture']}
                                                         data-toggle="tooltip" data-placement="bottom"
-                                                        title="{$ecomprocessing['transactions']['text']['denied_partial_capture']|escape:html:'UTF-8'}"
+                                                        title="{$ecomprocessing['transactions']['text']['denied_partial_capture']|escape:'htmlall':'UTF-8'}"
                                                     {/if}
                                                     >
                                                     <i class="icon-check icon-large"></i>
@@ -270,10 +270,10 @@
                                     <td class="text-center">
                                         {if $transaction['can_refund']}
                                             <div class="transaction-action-button">
-                                                <a class="btn btn-transaction btn-warning button-refund button" role="button" data-type="refund" data-id-unique="{$transaction['id_unique']}" data-amount="{$transaction['available_amount']}"
+                                                <a class="btn btn-transaction btn-warning button-refund button" role="button" data-type="refund" data-id-unique="{$transaction['id_unique']|escape:'htmlall':'UTF-8'}" data-amount="{$transaction['available_amount']|escape:'htmlall':'UTF-8'}"
                                                     {if !$ecomprocessing['transactions']['options']['allow_partial_refund']}
                                                         data-toggle="tooltip" data-placement="bottom"
-                                                        title="{$ecomprocessing['transactions']['text']['denied_partial_refund']|escape:html:'UTF-8'}"
+                                                        title="{$ecomprocessing['transactions']['text']['denied_partial_refund']|escape:'htmlall':'UTF-8'}"
                                                     {/if}
                                                     >
                                                     <i class="icon-reply icon-large"></i>
@@ -284,10 +284,10 @@
                                     <td class="text-center">
                                         {if $transaction['can_void']}
                                             <div class="transaction-action-button">
-                                                <a class="btn btn-transaction btn-danger button-void button" role="button" data-type="void" data-id-unique="{$transaction['id_unique']}" data-amount="0"
-                                                    {if !$ecomprocessing['transactions']['options']['allow_void']}
+                                                <a class="btn btn-transaction btn-danger button-void button" role="button" data-type="void" data-id-unique="{$transaction['id_unique']|escape:'htmlall':'UTF-8'}" data-amount="0"
+                                                    {if !$ecomprocessing['transactions']['options']['allow_void']|escape:'htmlall':'UTF-8'}
                                                         data-disabled="disabled" style="cursor: default" data-toggle="tooltip" data-placement="bottom"
-                                                        title="{$ecomprocessing['transactions']['text']['denied_void']|escape:html:'UTF-8'}"
+                                                        title="{$ecomprocessing['transactions']['text']['denied_void']|escape:'htmlall':'UTF-8'}"
                                                     {/if}
                                                     >
                                                     <i class="icon-remove icon-large"></i>
@@ -301,38 +301,38 @@
                         </table>
                     {/if}
                     <div class="disclaimer" style="text-align:right;margin-top:16px;">
-                        {l s="Note: For more complex workflows/functionallity, please visit our Merchant Portal!" mod="ecomprocessing"}
+                        {l s='Note: For more complex workflows/functionallity, please visit our Merchant Portal!' mod='ecomprocessing'}
                     </div>
                 </div>
             </div>
         </div>
     </div>
-    <div id="{$ecomprocessing['name']['module']}-modal" class="modal fade">
+    <div id="{$ecomprocessing['name']['module']|escape:'htmlall':'UTF-8'}-modal" class="modal fade">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
                         <i class="icon-times"></i>
                     </button>
-                    <img src="{$ecomprocessing['presta']['url']}modules/{$ecomprocessing['name']['module']}/logo.png" style="width:16px;" />
-                    <h3 class="{$ecomprocessing['name']['module']}-modal-title" style="margin:0;display:inline-block;"></h3>
+                    <img src="{$ecomprocessing['presta']['url']|escape:'htmlall':'UTF-8'}modules/{$ecomprocessing['name']['module']|escape:'htmlall':'UTF-8'}/logo.png" style="width:16px;" />
+                    <h3 class="{$ecomprocessing['name']['module']|escape:'htmlall':'UTF-8'}-modal-title" style="margin:0;display:inline-block;"></h3>
                 </div>
                 <div class="modal-body">
-                    <form id="{$ecomprocessing['name']['module']}-modal-form" class="form modal-form" action="" method="post">
-                        <input type="hidden" name="{$ecomprocessing['name']['module']}_transaction_id" value="" />
-                        <input type="hidden" name="{$ecomprocessing['name']['module']}_transaction_type" value="" />
+                    <form id="{$ecomprocessing['name']['module']|escape:'htmlall':'UTF-8'}-modal-form" class="form modal-form" action="" method="post">
+                        <input type="hidden" name="{$ecomprocessing['name']['module']|escape:'htmlall':'UTF-8'}_transaction_id" value="" />
+                        <input type="hidden" name="{$ecomprocessing['name']['module']|escape:'htmlall':'UTF-8'}_transaction_type" value="" />
 
-                        <div id="{$ecomprocessing['name']['module']}_capture_trans_info" class="row" style="display: none;">
+                        <div id="{$ecomprocessing['name']['module']|escape:'htmlall':'UTF-8'}_capture_trans_info" class="row" style="display: none;">
                             <div class="col-xs-12">
                                 <div class="alert alert-warning">
-                                    {l s="You are allowed to process only full capture through this panel!" mod="ecomprocessing"}
+                                    {l s='You are allowed to process only full capture through this panel!' mod='ecomprocessing'}
                                     <br/>
-                                    {l s="For further Information please contact your Account Manager." mod="ecomprocessing"}
+                                    {l s='For further Information please contact your Account Manager.' mod='ecomprocessing'}
                                 </div>
                             </div>
                         </div>
 
-                        <div id="{$ecomprocessing['name']['module']}_refund_trans_info" class="row" style="display: none;">
+                        <div id="{$ecomprocessing['name']['module']|escape:'htmlall':'UTF-8'}_refund_trans_info" class="row" style="display: none;">
                             <div class="col-xs-12">
                                 <div class="alert alert-warning">
                                     You are allowed to process only full refund through this panel!
@@ -343,28 +343,28 @@
                             </div>
                         </div>
 
-                        <div id="{$ecomprocessing['name']['module']}_cancel_trans_warning" class="row" style="display: none;">
+                        <div id="{$ecomprocessing['name']['module']|escape:'htmlall':'UTF-8'}_cancel_trans_warning" class="row" style="display: none;">
                             <div class="col-xs-12">
                                 <div class="alert alert-warning">
-                                    {l s="This service is only available for particular acquirers!" mod="ecomprocessing"}
+                                    {l s='This service is only available for particular acquirers!' mod='ecomprocessing'}
                                     <br/>
-                                    {l s="For further Information please contact your Account Manager." mod="ecomprocessing"}
+                                    {l s='For further Information please contact your Account Manager.' mod='ecomprocessing'}
                                 </div>
                             </div>
                         </div>
 
                         <div class="form-group amount-input">
-                            <label for="{$ecomprocessing['name']['module']}_transaction_amount">{l s="Amount:" mod="ecomprocessing"}</label>
+                            <label for="{$ecomprocessing['name']['module']|escape:'htmlall':'UTF-8'}_transaction_amount">{l s='Amount:' mod='ecomprocessing'}</label>
                             <div class="input-group">
-                                <span class="input-group-addon" data-toggle="{$ecomprocessing['name']['module']}-tooltip" data-placement="top" title="{{$ecomprocessing['transactions']['order']['currency']['iso_code']}}">{{$ecomprocessing['transactions']['order']['currency']['sign']}}</span>
-                                <input type="text" class="form-control" id="{$ecomprocessing['name']['module']}_transaction_amount" name="{$ecomprocessing['name']['module']}_transaction_amount" placeholder="{l s="Amount..." mod="ecomprocessing"}" value="{{$ecomprocessing['transactions']['order']['amount']}}" />
+                                <span class="input-group-addon" data-toggle="{$ecomprocessing['name']['module']|escape:'htmlall':'UTF-8'}-tooltip" data-placement="top" title="{$ecomprocessing['transactions']['order']['currency']['iso_code']|escape:'htmlall':'UTF-8'}">{$ecomprocessing['transactions']['order']['currency']['sign']|escape:'htmlall':'UTF-8'}</span>
+                                <input type="text" class="form-control" id="{$ecomprocessing['name']['module']|escape:'htmlall':'UTF-8'}_transaction_amount" name="{$ecomprocessing['name']['module']|escape:'htmlall':'UTF-8'}_transaction_amount" placeholder="{l s='Amount...' mod='ecomprocessing'}" value="{$ecomprocessing['transactions']['order']['amount']|escape:'htmlall':'UTF-8'}" />
                             </div>
-                            <span class="help-block" id="{$ecomprocessing['name']['module']}-amount-error-container"></span>                           
+                            <span class="help-block" id="{$ecomprocessing['name']['module']|escape:'htmlall':'UTF-8'}-amount-error-container"></span>
                         </div>
 
                         <div class="form-group usage-input">
-                            <label for="{$ecomprocessing['name']['module']}_transaction_usage">{l s='Message (optional):' mod='ecomprocessing'}</label>
-                            <textarea class="form-control form-message" rows="3" id="{$ecomprocessing['name']['module']}_transaction_usage" name="{$ecomprocessing['name']['module']}_transaction_usage" placeholder="{l s='Message' mod='ecomprocessing'}"></textarea>
+                            <label for="{$ecomprocessing['name']['module']|escape:'htmlall':'UTF-8'}_transaction_usage">{l s='Message (optional):' mod='ecomprocessing'}</label>
+                            <textarea class="form-control form-message" rows="3" id="{$ecomprocessing['name']['module']|escape:'htmlall':'UTF-8'}_transaction_usage" name="{$ecomprocessing['name']['module']|escape:'htmlall':'UTF-8'}_transaction_usage" placeholder="{l s='Message' mod='ecomprocessing'}"></textarea>
                         </div>
                     </form>
                 </div>
@@ -373,8 +373,8 @@
                         <i class="icon-spinner icon-spin icon-large"></i>
                     </span>
                     <span class="form-buttons">
-                        <button class="btn btn-default" data-dismiss="modal" aria-hidden="true">{l s="Cancel" mod="ecomprocessing"}</button>
-                        <button id="{$ecomprocessing['name']['module']}-modal-submit" class="btn btn-submit btn-primary btn-capture" value="partial">{l s="Submit" mod="ecomprocessing"}</button>
+                        <button class="btn btn-default" data-dismiss="modal" aria-hidden="true">{l s='Cancel' mod='ecomprocessing'}</button>
+                        <button id="{$ecomprocessing['name']['module']|escape:'htmlall':'UTF-8'}-modal-submit" class="btn btn-submit btn-primary btn-capture" value="partial">{l s='Submit' mod='ecomprocessing'}</button>
                     </span>
                 </div>
             </div>
@@ -383,9 +383,9 @@
 		
     <script type="text/javascript">
         var modalPopupDecimalValueFormatConsts = {
-            decimalPlaces       : {$ecomprocessing['transactions']['order']['currency']['decimalPlaces']},
-            decimalSeparator    : "{$ecomprocessing['transactions']['order']['currency']['decimalSeparator']}",
-            thousandSeparator   : "{$ecomprocessing['transactions']['order']['currency']['thousandSeparator']}"
+            decimalPlaces       : {$ecomprocessing['transactions']['order']['currency']['decimalPlaces']|escape:'javascript':'UTF-8'},
+            decimalSeparator    : "{$ecomprocessing['transactions']['order']['currency']['decimalSeparator']|escape:'javascript':'UTF-8'}",
+            thousandSeparator   : "{$ecomprocessing['transactions']['order']['currency']['thousandSeparator']|escape:'javascript':'UTF-8'}"
         };
         
         (function($) {
@@ -437,11 +437,11 @@
 
         function createBootstrapValidator(submitFormId) {
         var submitForm = $(submitFormId),
-            transactionAmount = formatTransactionAmount($('#{$ecomprocessing['name']['module']}_transaction_amount').val());
+            transactionAmount = formatTransactionAmount($('#{$ecomprocessing['name']['module']|escape:'javascript':'UTF-8'}_transaction_amount').val());
 
             destroyBootstrapValidator(submitFormId);
 						
-            var transactionAmountControlSelector = '#{$ecomprocessing['name']['module']}_transaction_amount';
+            var transactionAmountControlSelector = '#{$ecomprocessing['name']['module']|escape:'javascript':'UTF-8'}_transaction_amount';
             
             var shouldCreateValidator = $.exists(transactionAmountControlSelector);
             
@@ -453,7 +453,7 @@
             fields: {
                 fieldAmount: {
                         selector: transactionAmountControlSelector,
-                        container: '#{$ecomprocessing['name']['module']}-amount-error-container',
+                        container: '#{$ecomprocessing['name']['module']|escape:'javascript':'UTF-8'}-amount-error-container',
                         trigger: 'keyup',
                         validators: {
                             notEmpty: {
@@ -478,10 +478,10 @@
                 }
             })
             .on('error.field.bv', function(e, data) {
-                    $('#{$ecomprocessing['name']['module']}-modal-submit').attr('disabled', 'disabled');
+                    $('#{$ecomprocessing['name']['module']|escape:'javascript':'UTF-8'}-modal-submit').attr('disabled', 'disabled');
             })
             .on('success.field.bv', function(e) {
-                    $('#{$ecomprocessing['name']['module']}-modal-submit').removeAttr('disabled');
+                    $('#{$ecomprocessing['name']['module']|escape:'javascript':'UTF-8'}-modal-submit').removeAttr('disabled');
             })
             .on('success.form.bv', function(e) {
                     e.preventDefault(); // Prevent the form from submitting
@@ -502,7 +502,7 @@
 
         $(document).ready(function() {
 
-            $('[data-toggle="{$ecomprocessing['name']['module']}-tooltip"]').tooltip();
+            $('[data-toggle="{$ecomprocessing['name']['module']|escape:'javascript':'UTF-8'}-tooltip"]').tooltip();
 
             $('.tree').treegrid({
                 expanderExpandedClass:  'icon icon-chevron-sign-down',
@@ -517,23 +517,23 @@
                 transactionModal($(this).attr('data-type'), $(this).attr('data-id-unique'), $(this).attr('data-amount'));
             });
 
-            var modalObj = $('#{$ecomprocessing['name']['module']}-modal'),
-                transactionAmountInput = $('#{$ecomprocessing['name']['module']}_transaction_amount', modalObj);
+            var modalObj = $('#{$ecomprocessing['name']['module']|escape:'javascript':'UTF-8'}-modal'),
+                transactionAmountInput = $('#{$ecomprocessing['name']['module']|escape:'javascript':'UTF-8'}_transaction_amount', modalObj);
 
                 $('.btn-submit').click(function() {
-                $('#{$ecomprocessing['name']['module']}-modal-form').submit();
+                $('#{$ecomprocessing['name']['module']|escape:'javascript':'UTF-8'}-modal-form').submit();
             });
 
             modalObj.on('hide.bs.modal', function() {
-                destroyBootstrapValidator('#{$ecomprocessing['name']['module']}-modal-form');
+                destroyBootstrapValidator('#{$ecomprocessing['name']['module']|escape:'javascript':'UTF-8'}-modal-form');
             });
 
             modalObj.on('shown.bs.modal', function() {
                 /* enable the submit button just in case (if the bootstrapValidator is enabled it will disable the button if necessary */
-                $('#{$ecomprocessing['name']['module']}-modal-submit').removeAttr('disabled');
+                $('#{$ecomprocessing['name']['module']|escape:'javascript':'UTF-8'}-modal-submit').removeAttr('disabled');
                 
-                if (createBootstrapValidator('#{$ecomprocessing['name']['module']}-modal-form')) {
-                    executeBootstrapFieldValidator('#{$ecomprocessing['name']['module']}-modal-form', 'fieldAmount');
+                if (createBootstrapValidator('#{$ecomprocessing['name']['module']|escape:'javascript':'UTF-8'}-modal-form')) {
+                    executeBootstrapFieldValidator('#{$ecomprocessing['name']['module']|escape:'javascript':'UTF-8'}-modal-form', 'fieldAmount');
                 }
             });
 
@@ -546,18 +546,18 @@
             if ((typeof amount == 'undefined') || (amount == null))
                 amount = 0;
 
-            modalObj = $('#{$ecomprocessing['name']['module']}-modal');
+            modalObj = $('#{$ecomprocessing['name']['module']|escape:'javascript':'UTF-8'}-modal');
 
-            var modalTitle = modalObj.find('h3.{$ecomprocessing['name']['module']}-modal-title'),
+            var modalTitle = modalObj.find('h3.{$ecomprocessing['name']['module']|escape:'javascript':'UTF-8'}-modal-title'),
                 modalAmountInputContainer = modalObj.find('div.amount-input'),
-                captureTransactionInfoHolder = $('#{$ecomprocessing['name']['module']}_capture_trans_info', modalObj),
-                refundTransactionInfoHolder = $('#{$ecomprocessing['name']['module']}_refund_trans_info', modalObj),
-                cancelTransactionWarningHolder = $('#{$ecomprocessing['name']['module']}_cancel_trans_warning', modalObj),
-                transactionAmountInput = $('#{$ecomprocessing['name']['module']}_transaction_amount', modalObj);
+                captureTransactionInfoHolder = $('#{$ecomprocessing['name']['module']|escape:'javascript':'UTF-8'}_capture_trans_info', modalObj),
+                refundTransactionInfoHolder = $('#{$ecomprocessing['name']['module']|escape:'javascript':'UTF-8'}_refund_trans_info', modalObj),
+                cancelTransactionWarningHolder = $('#{$ecomprocessing['name']['module']|escape:'javascript':'UTF-8'}_cancel_trans_warning', modalObj),
+                transactionAmountInput = $('#{$ecomprocessing['name']['module']|escape:'javascript':'UTF-8'}_transaction_amount', modalObj);
 
             switch(type) {
                 case 'capture':
-                      modalTitle.text('{l s="Capture transaction" mod="ecomprocessing"}');
+                      modalTitle.text('{l s='Capture transaction' mod='ecomprocessing'}');
                       {if !$ecomprocessing['transactions']['options']['allow_partial_capture']}
                           updateTransModalControlState([captureTransactionInfoHolder], true);
                       {else}
@@ -574,7 +574,7 @@
                       break;
 
                 case 'refund':
-                      modalTitle.text('{l s="Refund transaction" mod="ecomprocessing"}');
+                      modalTitle.text('{l s='Refund transaction' mod='ecomprocessing'}');
                       updateTransModalControlState([captureTransactionInfoHolder, cancelTransactionWarningHolder], false);
                       {if !$ecomprocessing['transactions']['options']['allow_partial_refund']}
                           updateTransModalControlState([refundTransactionInfoHolder], true);
@@ -590,7 +590,7 @@
                       break;
 
                 case 'void':
-                      modalTitle.text('{l s="Cancel transaction" mod="ecomprocessing"}');
+                      modalTitle.text('{l s='Cancel transaction' mod='ecomprocessing'}');
                       updateTransModalControlState([captureTransactionInfoHolder, refundTransactionInfoHolder, modalAmountInputContainer], false);
                       updateTransModalControlState([cancelTransactionWarningHolder], true);
                       break;
@@ -598,9 +598,9 @@
                     return;
             }
 
-            modalObj.find('input[name="{$ecomprocessing['name']['module']}_transaction_type"]').val(type);
+            modalObj.find('input[name="{$ecomprocessing['name']['module']|escape:'javascript':'UTF-8'}_transaction_type"]').val(type);
 
-            modalObj.find('input[name="{$ecomprocessing['name']['module']}_transaction_id"]').val(id_unique);
+            modalObj.find('input[name="{$ecomprocessing['name']['module']|escape:'javascript':'UTF-8'}_transaction_id"]').val(id_unique);
 
             transactionAmountInput.val(amount);
 

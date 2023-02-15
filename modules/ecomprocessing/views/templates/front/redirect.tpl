@@ -24,7 +24,7 @@
 
 {if $ecomprocessing['redirect']['status'] == 'failure'}
 
-    {capture name=path}{l s='Payment Status'}{/capture}
+    {capture name=path}{l s='Payment Status' mod='ecomprocessing'}{/capture}
 
     <div id="center_column" class="center_column">
         <h1 class="page-heading bottom-indent">
@@ -37,7 +37,7 @@
                     {l s='Please check your input and try again!' mod='ecomprocessing'}
 
                     <br /><br />{l s='If the problem persists, you can contact our' mod='ecomprocessing'}
-                    <a href="{$ecomprocessing['redirect']['url']['support']}">{l s='customer support' mod='ecomprocessing'}</a>.
+                    <a href="{$ecomprocessing['redirect']['url']['support']|escape:'htmlall':'UTF-8'}">{l s='customer support' mod='ecomprocessing'}</a>.
                 </p>
             </div>
         </div>
@@ -47,7 +47,7 @@
 
 {if $ecomprocessing['redirect']['status'] == 'cancel'}
 
-    {capture name=path}{l s='Payment Status'}{/capture}
+    {capture name=path}{l s='Payment Status' mod='ecomprocessing'}{/capture}
 
     <div id="center_column" class="center_column">
         <h1 class="page-heading bottom-indent">
@@ -60,9 +60,9 @@
                     {l s='You have successfully cancelled your order.' mod='ecomprocessing'}
 
                     <br/><br/>{l s='You can redo your ' mod='ecomprocessing'}
-                    <a href="{$ecomprocessing['redirect']['url']['order']}">{l s='order' mod='ecomprocessing'}</a>
+                    <a href="{$ecomprocessing['redirect']['url']['order']|escape:'htmlall':'UTF-8'}">{l s='order' mod='ecomprocessing'}</a>
                     {l s=' with different details or review your order' mod='ecomprocessing'}
-                    <a href="{$ecomprocessing['redirect']['url']['history']}">{l s='history' mod='ecomprocessing'}</a>.
+                    <a href="{$ecomprocessing['redirect']['url']['history']|escape:'htmlall':'UTF-8'}">{l s='history' mod='ecomprocessing'}</a>.
                 </p>
             </div>
         </div>

@@ -1,5 +1,5 @@
 <?php
-/*
+/**
  * Copyright (C) 2018 E-Comprocessing Ltd.
  *
  * This program is free software; you can redistribute it and/or
@@ -22,9 +22,9 @@ if (!defined('_PS_VERSION_')) {
 }
 
 /**
- * Class EComprocessingConsumer
+ * Class EcomprocessingConsumer
  */
-class EComprocessingConsumer extends ObjectModel
+class EcomprocessingConsumer extends ObjectModel
 {
     public $merchant_username;
     public $customer_email;
@@ -88,7 +88,7 @@ class EComprocessingConsumer extends ObjectModel
     public static function getConsumerId($merchantUsername, $customerEmail)
     {
         /** @var PrestaShopCollectionCore $result */
-        $result = new PrestaShopCollection('EComprocessingConsumer');
+        $result = new PrestaShopCollection('EcomprocessingConsumer');
         $result->where('merchant_username', '=', $merchantUsername);
         $result->where('customer_email', '=', $customerEmail);
 

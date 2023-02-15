@@ -1,5 +1,5 @@
 <?php
-/*
+/**
  * Copyright (C) 2018 E-Comprocessing Ltd.
  *
  * This program is free software; you can redistribute it and/or
@@ -22,11 +22,11 @@ if (!defined('_PS_VERSION_')) {
 }
 
 /**
- * Class EComprocessingTransaction
+ * Class EcomprocessingTransaction
  *
  * ecomprocessing Transaction Model
  */
-class EComprocessingTransaction extends ObjectModel
+class EcomprocessingTransaction extends ObjectModel
 {
     const REFERENCE_ACTION_CAPTURE = 'capture';
     const REFERENCE_ACTION_REFUND  = 'refund';
@@ -134,14 +134,14 @@ class EComprocessingTransaction extends ObjectModel
      *
      * @param $id_unique
      *
-     * @return EComprocessingTransaction
+     * @return EcomprocessingTransaction
      *
      * @throws PrestaShopException
      */
     public static function getByUniqueId($id_unique)
     {
         /** @var PrestaShopCollectionCore $result */
-        $result = new PrestaShopCollection('EComprocessingTransaction');
+        $result = new PrestaShopCollection('EcomprocessingTransaction');
         $result->where('id_unique', '=', $id_unique);
 
         return $result->getFirst();
@@ -159,7 +159,7 @@ class EComprocessingTransaction extends ObjectModel
         $order = new Order((int)$id_order);
 
         /** @var PrestaShopCollectionCore $transactions */
-        $transactions = new PrestaShopCollection('EComprocessingTransaction');
+        $transactions = new PrestaShopCollection('EcomprocessingTransaction');
         $transactions->where('ref_order', '=', $order->reference);
 
         return $transactions;
@@ -175,7 +175,7 @@ class EComprocessingTransaction extends ObjectModel
      */
     public static function getOrderByTransactionId($id_transaction)
     {
-        $transaction = EComprocessingTransaction::getByUniqueId($id_transaction);
+        $transaction = EcomprocessingTransaction::getByUniqueId($id_transaction);
 
         /** @var PrestaShopCollectionCore $orders */
         $orders = new PrestaShopCollection('Order');
@@ -219,17 +219,25 @@ class EComprocessingTransaction extends ObjectModel
      */
     private static function getTransactionsByTypeAndStatus($order_reference, $parent_transaction_id, $types, $status)
     {
+        $table              = _DB_PREFIX_ . 'ecomprocessing_transactions';
+        $order              = pSQL($order_reference);
+        $parent_transaction = !empty($parent_transaction_id) ?
+            ' (`id_parent` = \'' . pSQL($parent_transaction_id) . '\')' : 'true';
+        $types              = '(`type` in (\'' .
+            (is_array($types) ? implode('\',\'', array_map('pSQL', $types)) : pSQL($types)) .
+            '\'))';
+        $status             = pSQL($status);
 
-        return ObjectModel::hydrateCollection('EComprocessingTransaction',
+        return ObjectModel::hydrateCollection(
+            'EcomprocessingTransaction',
             Db::getInstance()->executeS("
 				SELECT *
-				FROM `" . _DB_PREFIX_ . "ecomprocessing_transactions`
-				WHERE (`ref_order` = '" . pSQL($order_reference) . "') and " .
-                                        (!empty($parent_transaction_id) ? " (`id_parent` = '" . $parent_transaction_id . "') and " : "") . "
-						(`type` in ('" . (is_array($types) ? implode("','", $types) : $types) . "')) and
-						(`status` = '" . $status . "')
-
-			")
+				FROM `$table`
+				WHERE (`ref_order` = '$order')
+				 AND $parent_transaction
+				 AND $types
+				 AND (`status` = '$status')
+		    ")
         );
     }
 
@@ -243,7 +251,8 @@ class EComprocessingTransaction extends ObjectModel
      */
     public static function getByOrderReference($order_reference)
     {
-        return ObjectModel::hydrateCollection('EComprocessingTransaction',
+        return ObjectModel::hydrateCollection(
+            'EcomprocessingTransaction',
             Db::getInstance()->executeS("
 				SELECT *
 				FROM `" . _DB_PREFIX_ . "ecomprocessing_transactions`
@@ -287,7 +296,7 @@ class EComprocessingTransaction extends ObjectModel
 
         $transactions = [];
 
-        /** @var EComprocessingTransaction $transaction */
+        /** @var EcomprocessingTransaction $transaction */
         foreach ($result as $transaction) {
             $transactions[] = $transaction->getFields();
         }
@@ -320,7 +329,9 @@ class EComprocessingTransaction extends ObjectModel
                     [
                         \Genesis\API\Constants\Transaction\Types::AUTHORIZE,
                         \Genesis\API\Constants\Transaction\Types::AUTHORIZE_3D,
-                        \Genesis\API\Constants\Transaction\Types::GOOGLE_PAY
+                        \Genesis\API\Constants\Transaction\Types::GOOGLE_PAY,
+                        \Genesis\API\Constants\Transaction\Types::PAY_PAL,
+                        \Genesis\API\Constants\Transaction\Types::APPLE_PAY,
                     ],
                     'approved'
                 );
@@ -375,7 +386,6 @@ class EComprocessingTransaction extends ObjectModel
         $transactions = [];
 
         foreach ($array_asc as $val) {
-
             /*
             if (isset($val['id_parent']) && $val['id_parent']){
                 continue;
@@ -443,7 +453,7 @@ class EComprocessingTransaction extends ObjectModel
     protected static function getCheckoutTypes()
     {
         return json_decode(
-            Configuration::get(EComprocessing::SETTING_ECOMPROCESSING_CHECKOUT_TRX_TYPES),
+            Configuration::get(ecomprocessing::SETTING_ECOMPROCESSING_CHECKOUT_TRX_TYPES),
             true
         );
     }
@@ -466,15 +476,17 @@ class EComprocessingTransaction extends ObjectModel
     }
 
     /**
-     * Determine if Google Pay Method is chosen inside the Payment settings
+     * Determine if Google Pay, PayPal or Apple Pay Method is chosen inside the Payment settings
      *
-     * @param string $transactionType GooglePay Method
+     * @param string $transactionType GooglePay, PayPal or Apple Pay Method
      * @return bool
      */
     protected static function isTransactionWithCustomAttribute($transactionType)
     {
         $transactionTypes = [
-            \Genesis\API\Constants\Transaction\Types::GOOGLE_PAY
+            \Genesis\API\Constants\Transaction\Types::GOOGLE_PAY,
+            \Genesis\API\Constants\Transaction\Types::PAY_PAL,
+            \Genesis\API\Constants\Transaction\Types::APPLE_PAY,
         ];
 
         return in_array($transactionType, $transactionTypes);
@@ -500,15 +512,48 @@ class EComprocessingTransaction extends ObjectModel
             case \Genesis\API\Constants\Transaction\Types::GOOGLE_PAY:
                 if (self::REFERENCE_ACTION_CAPTURE === $action) {
                     return in_array(
-                        EComprocessing::GOOGLE_PAY_TRANSACTION_PREFIX .
-                        EComprocessing::GOOGLE_PAY_PAYMENT_TYPE_AUTHORIZE,
+                        ecomprocessing::GOOGLE_PAY_TRANSACTION_PREFIX .
+                        ecomprocessing::GOOGLE_PAY_PAYMENT_TYPE_AUTHORIZE,
                         $selectedTypes
                     );
                 }
 
                 if (self::REFERENCE_ACTION_REFUND === $action) {
                     return in_array(
-                        EComprocessing::GOOGLE_PAY_TRANSACTION_PREFIX . EComprocessing::GOOGLE_PAY_PAYMENT_TYPE_SALE,
+                        ecomprocessing::GOOGLE_PAY_TRANSACTION_PREFIX . ecomprocessing::GOOGLE_PAY_PAYMENT_TYPE_SALE,
+                        $selectedTypes
+                    );
+                }
+                break;
+            case \Genesis\API\Constants\Transaction\Types::PAY_PAL:
+                if (self::REFERENCE_ACTION_CAPTURE === $action) {
+                    return in_array(
+                        ecomprocessing::PAYPAL_TRANSACTION_PREFIX . ecomprocessing::PAYPAL_PAYMENT_TYPE_AUTHORIZE,
+                        $selectedTypes
+                    );
+                }
+
+                if (self::REFERENCE_ACTION_REFUND === $action) {
+                    $refundableTypes = [
+                        ecomprocessing::PAYPAL_TRANSACTION_PREFIX . ecomprocessing::PAYPAL_PAYMENT_TYPE_SALE,
+                        ecomprocessing::PAYPAL_TRANSACTION_PREFIX . ecomprocessing::PAYPAL_PAYMENT_TYPE_EXPRESS
+                    ];
+
+                    return (count(array_intersect($refundableTypes, $selectedTypes)) > 0);
+                }
+                break;
+            case \Genesis\API\Constants\Transaction\Types::APPLE_PAY:
+                if (self::REFERENCE_ACTION_CAPTURE === $action) {
+                    return in_array(
+                        ecomprocessing::APPLE_PAY_TRANSACTION_PREFIX .
+                        ecomprocessing::APPLE_PAY_PAYMENT_TYPE_AUTHORIZE,
+                        $selectedTypes
+                    );
+                }
+
+                if (self::REFERENCE_ACTION_REFUND === $action) {
+                    return in_array(
+                        ecomprocessing::APPLE_PAY_TRANSACTION_PREFIX . ecomprocessing::APPLE_PAY_PAYMENT_TYPE_SALE,
                         $selectedTypes
                     );
                 }

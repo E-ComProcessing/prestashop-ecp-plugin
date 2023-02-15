@@ -1,5 +1,5 @@
 <?php
-/*
+/**
  * Copyright (C) 2018 E-Comprocessing Ltd.
  *
  * This program is free software; you can redistribute it and/or
@@ -22,11 +22,11 @@ if (!defined('_PS_VERSION_')) {
 }
 
 /**
- * Class EComprocessingNotificationModuleFrontController
+ * Class EcomprocessingNotificationModuleFrontController
  *
  * Notifications Front-End Controller
  */
-class EComprocessingNotificationModuleFrontController extends ModuleFrontController
+class EcomprocessingNotificationModuleFrontController extends ModuleFrontController
 {
     /** @var E-Comprocessing */
     public $module;
@@ -102,7 +102,7 @@ class EComprocessingNotificationModuleFrontController extends ModuleFrontControl
 
                 if (isset($reconcile->unique_id)) {
 
-                    $transaction = EComprocessingTransaction::getByUniqueId($reconcile->unique_id);
+                    $transaction = EcomprocessingTransaction::getByUniqueId($reconcile->unique_id);
 
                     if (isset($transaction->id_unique) && $transaction->id_unique == $reconcile->unique_id) {
                         if (in_array($reconcile->transaction_type, $this->types)) {
@@ -143,7 +143,7 @@ class EComprocessingNotificationModuleFrontController extends ModuleFrontControl
 
                 if (isset($checkout_reconcile->unique_id)) {
 
-                    $checkout_transaction = EComprocessingTransaction::getByUniqueId($checkout_reconcile->unique_id);
+                    $checkout_transaction = EcomprocessingTransaction::getByUniqueId($checkout_reconcile->unique_id);
 
                     if (isset($checkout_transaction->id_unique)) {
 
@@ -198,15 +198,15 @@ class EComprocessingNotificationModuleFrontController extends ModuleFrontControl
     /**
      * @param $payment_reconcile
      *
-     * @return EComprocessingTransaction
+     * @return EcomprocessingTransaction
      */
     protected function getPaymentTransaction($payment_reconcile)
     {
         if ($payment_reconcile instanceof \ArrayObject) {
-            return EComprocessingTransaction::getByUniqueId($payment_reconcile[0]->unique_id);
+            return EcomprocessingTransaction::getByUniqueId($payment_reconcile[0]->unique_id);
         }
 
-        return EComprocessingTransaction::getByUniqueId($payment_reconcile->unique_id);
+        return EcomprocessingTransaction::getByUniqueId($payment_reconcile->unique_id);
     }
 
     /**
@@ -215,7 +215,7 @@ class EComprocessingNotificationModuleFrontController extends ModuleFrontControl
      */
     protected function addPaymentTransaction($checkout_transaction, $payment_reconcile)
     {
-        $payment_transaction = new EComprocessingTransaction();
+        $payment_transaction = new EcomprocessingTransaction();
 
         $payment_transaction->id_parent = $checkout_transaction->id_unique;
         $payment_transaction->ref_order = $checkout_transaction->ref_order;

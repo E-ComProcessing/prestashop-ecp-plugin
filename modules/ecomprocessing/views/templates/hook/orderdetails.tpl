@@ -19,41 +19,41 @@
 
     <section class="box">
         <h3>
-            <img src="{$ecomprocessing['presta']['url']}modules/{$ecomprocessing['name']['module']}/logo.png" alt="" style="width:16px;" />
-            <span>{l s='EComprocessing Transactions' mod='ecomprocessing'}</span>
+            <img src="{$ecomprocessing['presta']['url']|escape:'htmlall':'UTF-8'}modules/{$ecomprocessing['name']['module']|escape:'htmlall':'UTF-8'}/logo.png" alt="" style="width:16px;" />
+            <span>{l s='E-Comprocessing Transactions' mod='ecomprocessing'}</span>
         </h3>
 
         <table class="table table-hover tree">
             <thead class="thead-default">
             <tr>
-                <th>{l s="Id"       mod="ecomprocessing"}</th>
-                <th>{l s="Type"     mod="ecomprocessing"}</th>
-                <th>{l s="Date"     mod="ecomprocessing"}</th>
-                <th>{l s="Amount"   mod="ecomprocessing"}</th>
-                <th>{l s="Status"   mod="ecomprocessing"}</th>
-                <th class="slim-message">{l s="Message"  mod="ecomprocessing"}</th>
+                <th>{l s='Id'       mod='ecomprocessing'}</th>
+                <th>{l s='Type'     mod='ecomprocessing'}</th>
+                <th>{l s='Date'     mod='ecomprocessing'}</th>
+                <th>{l s='Amount'   mod='ecomprocessing'}</th>
+                <th>{l s='Status'   mod='ecomprocessing'}</th>
+                <th class="slim-message">{l s='Message'  mod='ecomprocessing'}</th>
             </tr>
             </thead>
             <tbody>
             {foreach from=$ecomprocessing['transactions']['tree'] item=transaction}
-                <tr class="treegrid-{$transaction['id_unique']} {if $transaction['id_parent']}treegrid-parent-{$transaction['id_parent']}{/if}">
+                <tr class="treegrid-{$transaction['id_unique']|escape:'htmlall':'UTF-8'} {if $transaction['id_parent']}treegrid-parent-{$transaction['id_parent']|escape:'htmlall':'UTF-8'}{/if}">
                     <td class="text-left">
-                        {$transaction['id_unique']}
+                        {$transaction['id_unique']|escape:'htmlall':'UTF-8'}
                     </td>
                     <td class="text-left">
-                        {$transaction['type']}
+                        {$transaction['type']|escape:'htmlall':'UTF-8'}
                     </td>
                     <td class="text-left">
-                        {$transaction['date_add']}
+                        {$transaction['date_add']|escape:'htmlall':'UTF-8'}
                     </td>
                     <td class="text-right">
-                        {$transaction['amount']}
+                        {$transaction['amount']|escape:'htmlall':'UTF-8'}
                     </td>
                     <td class="text-left">
-                        {$transaction['status']}
+                        {$transaction['status']|escape:'htmlall':'UTF-8'}
                     </td>
                     <td class="text-left">
-                        {$transaction['message']}
+                        {$transaction['message']|escape:'htmlall':'UTF-8'}
                     </td>
                 </tr>
             {/foreach}
