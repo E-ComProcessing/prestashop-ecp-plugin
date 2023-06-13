@@ -1,0 +1,21 @@
+#!/bin/bash --login
+
+[ -f ecomprocessing.zip ] && rm ecomprocessing.zip
+composer install --no-dev
+[ ! -L ecomprocessing ] && ln -s "$(pwd)" ecomprocessing
+zip -r ecomprocessing \
+    ecomprocessing/classes \
+    ecomprocessing/controllers \
+    ecomprocessing/translations \
+    ecomprocessing/vendor/composer \
+    ecomprocessing/vendor/genesisgateway \
+    ecomprocessing/vendor/autoload.php \
+    ecomprocessing/vendor/index.php \
+    ecomprocessing/views \
+    ecomprocessing/composer.* \
+    ecomprocessing/ecomprocessing.php \
+    ecomprocessing/logo.png \
+    ecomprocessing/index.php \
+    ecomprocessing/config.xml \
+    -x "*/.*"
+[ -L ecomprocessing ] && rm ecomprocessing
