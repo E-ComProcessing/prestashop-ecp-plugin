@@ -4,7 +4,7 @@
 
 namespace Composer\Autoload;
 
-class ComposerStaticInit296e477427dc4fb7e1c0e48250527be4
+class ComposerStaticInit30217d9ae370a9a1cad8b2a7b70ea5f9
 {
     public static $prefixesPsr0 = array (
         'G' => 
@@ -19,7 +19,7 @@ class ComposerStaticInit296e477427dc4fb7e1c0e48250527be4
     public static function getInitializer(ClassLoader $loader)
     {
         return \Closure::bind(function () use ($loader) {
-            $loader->prefixesPsr0 = ComposerStaticInit296e477427dc4fb7e1c0e48250527be4::$prefixesPsr0;
+            $loader->prefixesPsr0 = ComposerStaticInit30217d9ae370a9a1cad8b2a7b70ea5f9::$prefixesPsr0;
 
         }, null, ClassLoader::class);
     }

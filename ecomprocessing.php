@@ -56,6 +56,7 @@ class Ecomprocessing extends PaymentModule
     public const SETTING_ECOMPROCESSING_THREEDS_CHALLENGE_INDICATOR = 'ECOMPROCESSING_THREEDS_CHALLENGE_INDICATOR';
     public const SETTING_ECOMPROCESSING_SCA_EXEMPTION = 'ECOMPROCESSING_SCA_EXEMPTION';
     public const SETTING_ECOMPROCESSING_SCA_EXEMPTION_AMOUNT = 'ECOMPROCESSING_SCA_EXEMPTION_AMOUNT';
+    public const SETTING_ECOMPROCESSING_IFRAME_ALLOWED = 'SETTING_ECOMPROCESSING_IFRAME_ALLOWED';
 
     /**
      * Transaction Type specifics
@@ -87,7 +88,7 @@ class Ecomprocessing extends PaymentModule
         $this->tab = 'payments_gateways';
         $this->displayName = 'E-Comprocessing Payment Gateway';
         $this->controllers = ['checkout', 'notification', 'redirect', 'validation'];
-        $this->version = '2.0.2';
+        $this->version = '2.0.4';
         $this->author = 'E-Comprocessing Ltd.';
         $this->need_instance = 1;
         $this->ps_versions_compliancy = ['min' => '1.6', 'max' => _PS_VERSION_];
@@ -228,6 +229,16 @@ class Ecomprocessing extends PaymentModule
     public function isThreedsAllowed()
     {
         return $this->getBoolConfigurationValue(self::SETTING_ECOMPROCESSING_THREEDS_ALLOWED);
+    }
+
+    /**
+     * Check if iframe processing enabled
+     *
+     * @return bool
+     */
+    public function isIframeEnabled()
+    {
+        return $this->getBoolConfigurationValue(self::SETTING_ECOMPROCESSING_IFRAME_ALLOWED);
     }
 
     /**
@@ -423,6 +434,7 @@ class Ecomprocessing extends PaymentModule
                 'legal' => [
                     'year' => date('Y'),
                 ],
+                'iframe_enabled' => $this->isIframeEnabled(),
             ],
             true
         );
@@ -454,7 +466,8 @@ class Ecomprocessing extends PaymentModule
                         $this->context->smarty->fetch(
                             "module:{$this->name}/views/templates/hook/payment/{$paymentMethod['name']}.tpl"
                         )
-                    );
+                    )
+                    ->setModuleName("{$this->name}_{$paymentMethod['name']}");
 
                 $paymentOptions[] = $paymentMethodOption;
             }
@@ -495,6 +508,7 @@ class Ecomprocessing extends PaymentModule
                 'legal' => [
                     'year' => date('Y'),
                 ],
+                'iframe_enabled' => $this->isIframeEnabled(),
             ],
             true
         );
@@ -1218,7 +1232,10 @@ class Ecomprocessing extends PaymentModule
      */
     private function getAsyncSuccessURL()
     {
-        return $this->getPageLink('order-confirmation.php');
+        $url = $this->getPageLink('order-confirmation.php');
+        $controllerUrl = $this->getIframeControllerUrl($url);
+
+        return $this->isIframeEnabled() ? $controllerUrl : $url;
     }
 
     /**
@@ -1228,7 +1245,7 @@ class Ecomprocessing extends PaymentModule
      */
     private function getAsyncFailureURL()
     {
-        return $this->context->link->getModuleLink(
+        $url = $this->context->link->getModuleLink(
             $this->name,
             'redirect',
             [
@@ -1236,6 +1253,9 @@ class Ecomprocessing extends PaymentModule
                 'id_cart' => (int) $this->context->cart->id,
             ]
         );
+        $controllerUrl = $this->getIframeControllerUrl($url);
+
+        return $this->isIframeEnabled() ? $controllerUrl : $url;
     }
 
     /**
@@ -1245,12 +1265,33 @@ class Ecomprocessing extends PaymentModule
      */
     private function getAsyncCancelURL()
     {
-        return $this->context->link->getModuleLink(
+        $url = $this->context->link->getModuleLink(
             $this->name,
             'redirect',
             [
                 'action' => 'cancel',
                 'id_cart' => (int) $this->context->cart->id,
+            ]
+        );
+        $controllerUrl = $this->getIframeControllerUrl($url);
+
+        return $this->isIframeEnabled() ? $controllerUrl : $url;
+    }
+
+    /**
+     * Get link to the iframe handling controller
+     *
+     * @param $url string
+     *
+     * @return string
+     */
+    public function getIframeControllerUrl($url)
+    {
+        return $this->context->link->getModuleLink(
+            $this->name,
+            'frame',
+            [
+                'url' => rawurlencode($url),
             ]
         );
     }
@@ -1296,8 +1337,10 @@ class Ecomprocessing extends PaymentModule
         $processedList = [];
         $aliasMap = [];
 
-        $selectedTypes = json_decode(
-            Configuration::get(self::SETTING_ECOMPROCESSING_CHECKOUT_TRX_TYPES)
+        $selectedTypes = $this->orderCardTransactionTypes(
+            json_decode(
+                Configuration::get(self::SETTING_ECOMPROCESSING_CHECKOUT_TRX_TYPES)
+            )
         );
 
         $pproSuffix = self::PPRO_TRANSACTION_SUFFIX;
@@ -1525,6 +1568,7 @@ class Ecomprocessing extends PaymentModule
             self::SETTING_ECOMPROCESSING_USERNAME,
             self::SETTING_ECOMPROCESSING_PASSWORD,
             self::SETTING_ECOMPROCESSING_ENVIRONMENT,
+            self::SETTING_ECOMPROCESSING_IFRAME_ALLOWED,
             self::SETTING_ECOMPROCESSING_CHECKOUT,
             self::SETTING_ECOMPROCESSING_CHECKOUT_TRX_TYPES,
             self::SETTING_ECOMPROCESSING_ALLOW_PARTIAL_CAPTURE,
@@ -1675,6 +1719,36 @@ class Ecomprocessing extends PaymentModule
                     ],
                     'id' => 'id',
                     'name' => 'name',
+                ],
+            ],
+        ];
+    }
+
+    /**
+     * Get form option for iframe processing
+     *
+     * @return array[]
+     */
+    private function getFormIframeOptionFields()
+    {
+        return [
+            [
+                'type' => 'switch',
+                'label' => 'Enable payment processing into an iframe',
+                'desc' => $this->l('Enable payment processing into an iframe by removing the redirects to the') .
+                    $this->l(' Gateway Web Payment Form Page. The iFrame processing requires a specific') .
+                    $this->l(' setting inside Merchant Console. For more info ask:') .
+                    $this->l(' tech-support@e-comprocessing.com'),
+                'name' => self::SETTING_ECOMPROCESSING_IFRAME_ALLOWED,
+                'values' => [
+                    [
+                        'id' => 'active_on',
+                        'value' => '1',
+                    ],
+                    [
+                        'id' => 'active_off',
+                        'value' => '0',
+                    ],
                 ],
             ],
         ];
@@ -2026,6 +2100,7 @@ class Ecomprocessing extends PaymentModule
         /* Add form fields */
         $form_structure['form']['input'] = array_merge(
             $this->getFormCredentialsFields(),
+            $this->getFormIframeOptionFields(),
             $this->getFormTransactionFields(),
             $this->getFormThreedsFields(),
             $this->getFormScaFields(),
@@ -2253,6 +2328,7 @@ class Ecomprocessing extends PaymentModule
             self::SETTING_ECOMPROCESSING_THREEDS_ALLOWED => '1',
             self::SETTING_ECOMPROCESSING_SCA_EXEMPTION => 'low_risk',
             self::SETTING_ECOMPROCESSING_SCA_EXEMPTION_AMOUNT => '100',
+            self::SETTING_ECOMPROCESSING_IFRAME_ALLOWED => '0',
         ];
 
         try {
@@ -2416,5 +2492,26 @@ class Ecomprocessing extends PaymentModule
             Genesis\API\Constants\Transaction\Parameters\ScaExemptions::EXEMPTION_LOW_RISK => 'Low risk',
             Genesis\API\Constants\Transaction\Parameters\ScaExemptions::EXEMPTION_LOW_VALUE => 'Low value',
         ];
+    }
+
+    /**
+     * Order transaction types with Card Transaction types in front
+     *
+     * @param array $selectedTypes Selected transaction types
+     *
+     * @return array
+     */
+    protected function orderCardTransactionTypes($selectedTypes)
+    {
+        $creditCardTypes = \Genesis\API\Constants\Transaction\Types::getCardTransactionTypes();
+
+        asort($selectedTypes);
+
+        $sortedArray = array_intersect($creditCardTypes, $selectedTypes);
+
+        return array_merge(
+            $sortedArray,
+            array_diff($selectedTypes, $sortedArray)
+        );
     }
 }

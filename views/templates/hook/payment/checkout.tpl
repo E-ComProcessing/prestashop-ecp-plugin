@@ -43,6 +43,10 @@
         </div>
     {/if}
 </div>
+
+{if array_key_exists('iframe_enabled', $ecomprocessing) && $ecomprocessing['iframe_enabled']}
+    {include file="module:ecomprocessing/views/templates/front/iframe-checkout-helper.tpl"}
+{/if}
 {include file='module:ecomprocessing/views/templates/hook/payment/footer.tpl'}
 
 <style>
