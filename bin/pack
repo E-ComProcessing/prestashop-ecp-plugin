@@ -4,7 +4,7 @@
 composer install --no-dev
 [ ! -L ecomprocessing ] && ln -s "$(pwd)" ecomprocessing
 zip -r ecomprocessing \
-    ecomprocessing/classes \
+    ecomprocessing/src \
     ecomprocessing/controllers \
     ecomprocessing/translations \
     ecomprocessing/vendor/composer \
@@ -17,5 +17,5 @@ zip -r ecomprocessing \
     ecomprocessing/logo.png \
     ecomprocessing/index.php \
     ecomprocessing/config.xml \
-    -x "*/.*"
+    ecomprocessing/.htaccess
 [ -L ecomprocessing ] && rm ecomprocessing

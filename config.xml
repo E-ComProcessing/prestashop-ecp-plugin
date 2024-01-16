@@ -2,7 +2,7 @@
 <module>
 	<name>ecomprocessing</name>
 	<displayName><![CDATA[E-Comprocessing Payment Gateway]]></displayName>
-	<version><![CDATA[2.0.4]]></version>
+	<version><![CDATA[2.1.1]]></version>
 	<description><![CDATA[Accept payments through E-Comprocessing Payment Gateway - Genesis]]></description>
 	<author><![CDATA[E-Comprocessing Ltd.]]></author>
 	<tab><![CDATA[payments_gateways]]></tab>

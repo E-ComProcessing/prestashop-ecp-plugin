@@ -4,8 +4,22 @@
 
 namespace Composer\Autoload;
 
-class ComposerStaticInit30217d9ae370a9a1cad8b2a7b70ea5f9
+class ComposerStaticInitd7d097da16f74e0a4afc65becb9572a4
 {
+    public static $prefixLengthsPsr4 = array (
+        'E' => 
+        array (
+            'Ecomprocessing\\Genesis\\' => 23,
+        ),
+    );
+
+    public static $prefixDirsPsr4 = array (
+        'Ecomprocessing\\Genesis\\' => 
+        array (
+            0 => __DIR__ . '/../..' . '/src',
+        ),
+    );
+
     public static $prefixesPsr0 = array (
         'G' => 
         array (
@@ -16,10 +30,21 @@ class ComposerStaticInit30217d9ae370a9a1cad8b2a7b70ea5f9
         ),
     );
 
+    public static $classMap = array (
+        'EcomprocessingCheckoutModuleFrontController' => __DIR__ . '/../..' . '/controllers/front/checkout.php',
+        'EcomprocessingFrameModuleFrontController' => __DIR__ . '/../..' . '/controllers/front/frame.php',
+        'EcomprocessingNotificationModuleFrontController' => __DIR__ . '/../..' . '/controllers/front/notification.php',
+        'EcomprocessingRedirectModuleFrontController' => __DIR__ . '/../..' . '/controllers/front/redirect.php',
+        'EcomprocessingValidationModuleFrontController' => __DIR__ . '/../..' . '/controllers/front/validation.php',
+    );
+
     public static function getInitializer(ClassLoader $loader)
     {
         return \Closure::bind(function () use ($loader) {
-            $loader->prefixesPsr0 = ComposerStaticInit30217d9ae370a9a1cad8b2a7b70ea5f9::$prefixesPsr0;
+            $loader->prefixLengthsPsr4 = ComposerStaticInitd7d097da16f74e0a4afc65becb9572a4::$prefixLengthsPsr4;
+            $loader->prefixDirsPsr4 = ComposerStaticInitd7d097da16f74e0a4afc65becb9572a4::$prefixDirsPsr4;
+            $loader->prefixesPsr0 = ComposerStaticInitd7d097da16f74e0a4afc65becb9572a4::$prefixesPsr0;
+            $loader->classMap = ComposerStaticInitd7d097da16f74e0a4afc65becb9572a4::$classMap;
 
         }, null, ClassLoader::class);
     }

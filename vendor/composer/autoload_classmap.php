@@ -6,5 +6,9 @@ $vendorDir = dirname(dirname(__FILE__));
 $baseDir = dirname($vendorDir);
 
 return array(
-	'Composer\\InstalledVersions' => $vendorDir . '/composer/InstalledVersions.php',
+    'EcomprocessingCheckoutModuleFrontController' => $baseDir . '/controllers/front/checkout.php',
+    'EcomprocessingFrameModuleFrontController' => $baseDir . '/controllers/front/frame.php',
+    'EcomprocessingNotificationModuleFrontController' => $baseDir . '/controllers/front/notification.php',
+    'EcomprocessingRedirectModuleFrontController' => $baseDir . '/controllers/front/redirect.php',
+    'EcomprocessingValidationModuleFrontController' => $baseDir . '/controllers/front/validation.php',
 );

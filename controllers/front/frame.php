@@ -45,7 +45,7 @@ class EcomprocessingFrameModuleFrontController extends ModuleFrontController
     /**
      * Check for malicious redirects
      *
-     * @return bool
+     * @return string
      */
     private function sanitizeRedirectUrl($url)
     {
