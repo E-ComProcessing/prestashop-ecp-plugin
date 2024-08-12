@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (C) 2018-2023 E-Comprocessing Ltd.
+ * Copyright (C) 2015-2024 E-Comprocessing Ltd.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -13,7 +13,7 @@
  * GNU General Public License for more details.
  *
  * @author      E-Comprocessing
- * @copyright   2018-2023 E-Comprocessing Ltd.
+ * @copyright   2015-2024 E-Comprocessing Ltd.
  * @license     http://opensource.org/licenses/gpl-2.0.php GNU General Public License, version 2 (GPL-2.0)
  */
 require_once __DIR__ . '/vendor/autoload.php';
@@ -23,22 +23,20 @@ use Ecomprocessing\Genesis\EcomprocessingInstall;
 use Ecomprocessing\Genesis\EcomprocessingThreeds;
 use Ecomprocessing\Genesis\EcomprocessingTransaction;
 use Ecomprocessing\Genesis\EcomprocessingTransactionProcess;
+use Ecomprocessing\Genesis\Exceptions\ErrorState;
 use Ecomprocessing\Genesis\Helpers\Constants\ConfigurationKeys;
 use Ecomprocessing\Genesis\Settings\Checkout\CheckoutSettings;
-use Genesis\API\Constants\Endpoints;
-use Genesis\API\Constants\i18n;
-use Genesis\API\Constants\Payment\Methods;
-use Genesis\API\Constants\Transaction\Parameters\PayByVouchers\CardTypes;
-use Genesis\API\Constants\Transaction\Parameters\PayByVouchers\RedeemTypes;
-use Genesis\API\Constants\Transaction\Parameters\Threeds\V2\CardHolderAccount\RegistrationIndicators;
-use Genesis\API\Constants\Transaction\Parameters\Threeds\V2\MerchantRisk\DeliveryTimeframes;
-use Genesis\API\Constants\Transaction\Parameters\Threeds\V2\Purchase\Categories;
-use Genesis\API\Constants\Transaction\States;
-use Genesis\API\Constants\Transaction\Types;
-use Genesis\API\Request\Financial\Alternatives\Klarna\Item;
-use Genesis\API\Request\Financial\Alternatives\Klarna\Items;
+use Genesis\Api\Constants\Endpoints;
+use Genesis\Api\Constants\i18n;
+use Genesis\Api\Constants\Payment\Methods;
+use Genesis\Api\Constants\Transaction\Parameters\Threeds\V2\CardHolderAccount\RegistrationIndicators;
+use Genesis\Api\Constants\Transaction\Parameters\Threeds\V2\MerchantRisk\DeliveryTimeframes;
+use Genesis\Api\Constants\Transaction\Parameters\Threeds\V2\Purchase\Categories;
+use Genesis\Api\Constants\Transaction\States;
+use Genesis\Api\Constants\Transaction\Types;
+use Genesis\Api\Request\Financial\Alternatives\Klarna\Item;
+use Genesis\Api\Request\Financial\Alternatives\Klarna\Items;
 use Genesis\Config;
-use Genesis\Exceptions\ErrorAPI;
 use Genesis\Exceptions\ErrorParameter;
 use Genesis\Exceptions\InvalidArgument;
 use Genesis\Utils\Common;
@@ -87,7 +85,7 @@ class Ecomprocessing extends PaymentModule
         $this->tab = 'payments_gateways';
         $this->displayName = 'E-Comprocessing Payment Gateway';
         $this->controllers = ['frame', 'notification', 'redirect', 'validation'];
-        $this->version = '2.1.1';
+        $this->version = '2.1.5';
         $this->author = 'E-Comprocessing Ltd.';
         $this->need_instance = 1;
         $this->ps_versions_compliancy = ['min' => '1.7', 'max' => _PS_VERSION_];
@@ -311,9 +309,7 @@ class Ecomprocessing extends PaymentModule
                         'denied_partial_refund' => $this->l(
                             'Partial Refund is currently disabled! You can enable this option in the Module Settings.'
                         ),
-                        'denied_void' => $this->l(
-                            'Cancel Transaction are currently disabled! You can enable this option in the Module Settings.'
-                        ),
+                        'denied_void' => $this->l('Cancel Transaction are currently disabled! You can enable this option in the Module Settings.'), // phpcs:ignore Generic.Files.LineLength.TooLong
                     ],
                     'error' => $this->getSessVar('error_transaction'),
                     'tree' => EcomprocessingTransaction::getTransactionTree(
@@ -761,7 +757,7 @@ class Ecomprocessing extends PaymentModule
             $response = $responseObj->getResponseObject();
 
             $message = 'Unique Id: ' . $response->unique_id . PHP_EOL .
-                       'Transaction Id: ' . $this->transaction_data->id . PHP_EOL;
+                'Transaction Id: ' . $this->transaction_data->id . PHP_EOL;
 
             $this->validateOrder(
                 (int) $this->context->cart->id,
@@ -796,16 +792,17 @@ class Ecomprocessing extends PaymentModule
             }
 
             return $response->redirect_url;
-        } catch (ErrorAPI $api) {
-            $this->logError($api);
+        } catch (ErrorState $error) {
+            $this->logError($error);
 
-            $this->setSessVar('error_checkout', $api->getMessage());
+            $this->setSessVar('error_checkout', $error->getMessage());
         } catch (Exception $e) {
             $this->logError($e);
 
             $this->setSessVar(
                 'error_checkout',
-                'Please, make sure you\'ve entered correct credentials for accessing the gateway and all of the required data, e.g. Email, Phone, Billing/Shipping Address.'
+                'Please, make sure you\'ve entered correct credentials for accessing the gateway and all of the ' .
+                ' required data, e.g. Email, Phone, Billing/Shipping Address.'
             );
         }
 
@@ -869,6 +866,10 @@ class Ecomprocessing extends PaymentModule
                 true
             );
             $transaction_response->add();
+        } catch (ErrorState $error) {
+            $this->logError($error);
+
+            $this->setSessVar('error_transaction', $error->getMessage());
         } catch (Exception $e) {
             $this->logError($e);
 
@@ -933,6 +934,10 @@ class Ecomprocessing extends PaymentModule
             $transaction_response->add();
 
             $transaction_response->changeParentStatus();
+        } catch (ErrorState $error) {
+            $this->logError($error);
+
+            $this->setSessVar('error_transaction', $error->getMessage());
         } catch (Exception $e) {
             $this->logError($e);
 
@@ -986,6 +991,10 @@ class Ecomprocessing extends PaymentModule
             $transaction_response->add();
 
             $transaction_response->changeParentStatus();
+        } catch (ErrorState $error) {
+            $this->logError($error);
+
+            $this->setSessVar('error_transaction', $error->getMessage());
         } catch (Exception $e) {
             $this->logError($e);
 
@@ -1277,14 +1286,7 @@ class Ecomprocessing extends PaymentModule
             )
         );
 
-        $pproSuffix = CheckoutSettings::PPRO_TRANSACTION_SUFFIX;
-        $methods = Methods::getMethods();
-
-        foreach ($methods as $method) {
-            $aliasMap[$method . $pproSuffix] = Genesis\API\Constants\Transaction\Types::PPRO;
-        }
-
-        $aliasMap = array_merge($aliasMap, [
+        $aliasMap = [
             CheckoutSettings::GOOGLE_PAY_TRANSACTION_PREFIX .
             CheckoutSettings::GOOGLE_PAY_PAYMENT_TYPE_AUTHORIZE => Types::GOOGLE_PAY,
             CheckoutSettings::GOOGLE_PAY_TRANSACTION_PREFIX .
@@ -1299,7 +1301,7 @@ class Ecomprocessing extends PaymentModule
             CheckoutSettings::APPLE_PAY_PAYMENT_TYPE_AUTHORIZE => Types::APPLE_PAY,
             CheckoutSettings::APPLE_PAY_TRANSACTION_PREFIX .
             CheckoutSettings::APPLE_PAY_PAYMENT_TYPE_SALE => Types::APPLE_PAY,
-        ]);
+        ];
 
         foreach ($selectedTypes as $selectedType) {
             if (array_key_exists($selectedType, $aliasMap)) {
@@ -1312,7 +1314,6 @@ class Ecomprocessing extends PaymentModule
                 $processedList[$transactionType]['parameters'][] = [
                     $key => str_replace(
                         [
-                            $pproSuffix,
                             CheckoutSettings::GOOGLE_PAY_TRANSACTION_PREFIX,
                             CheckoutSettings::PAYPAL_TRANSACTION_PREFIX,
                             CheckoutSettings::APPLE_PAY_TRANSACTION_PREFIX,
@@ -1343,12 +1344,6 @@ class Ecomprocessing extends PaymentModule
         $userIdHash = $this->getCurrentUserIdHash();
 
         switch ($transactionType) {
-            case Types::PAYBYVOUCHER_SALE:
-                $attributes = [
-                    'card_type' => CardTypes::VIRTUAL,
-                    'redeem_type' => RedeemTypes::INSTANT,
-                ];
-                break;
             case Types::IDEBIT_PAYIN:
             case Types::INSTA_DEBIT_PAYOUT:
                 $attributes = [
@@ -1537,7 +1532,8 @@ class Ecomprocessing extends PaymentModule
             /* Check and update database if necessary */
             EcomprocessingInstall::doProcessSchemaUpdate();
         } catch (Exception $e) {
-            /* just ignore and log exception - Init Method is called on Upload Module (it should be called after Module is installed) */
+            // just ignore and log exception - Init Method is called on Upload Module
+            // (it should be called after Module is installed)
             $this->logError($e);
         }
 
@@ -1545,14 +1541,14 @@ class Ecomprocessing extends PaymentModule
         try {
             Requirements::verify();
         } catch (Exception $e) {
-            $this->warning = $this->l('Your server does not meet the minimum system requirements! Contact your hosting provider for assistance!');
+            $this->warning = $this->l('Your server does not meet the minimum system requirements! Contact your hosting provider for assistance!'); // phpcs:ignore Generic.Files.LineLength.TooLong
         }
 
         /* Check if the module is configured */
         if (Configuration::get('ECOMPROCESSING_USERNAME') && Configuration::get('ECOMPROCESSING_PASSWORD')) {
             $this->applyGenesisConfig();
         } else {
-            $this->warning = $this->l('You need to set your credentials (username, password), in order to use Genesis Payment Gateway!');
+            $this->warning = $this->l('You need to set your credentials (username, password), in order to use Genesis Payment Gateway!'); // phpcs:ignore Generic.Files.LineLength.TooLong
         }
 
         // Load Available WPF Languages
@@ -1719,9 +1715,6 @@ class Ecomprocessing extends PaymentModule
     private function getCustomParameterKey($transactionType)
     {
         switch ($transactionType) {
-            case Types::PPRO:
-                $result = 'payment_method';
-                break;
             case Types::PAY_PAL:
                 $result = 'payment_type';
                 break;

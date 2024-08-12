@@ -1,9 +1,18 @@
 #!/bin/bash --login
 
-[ -f ecomprocessing.zip ] && rm ecomprocessing.zip
-composer install --no-dev
-[ ! -L ecomprocessing ] && ln -s "$(pwd)" ecomprocessing
-zip -r ecomprocessing \
+folder_name="ecomprocessing"
+
+# Remove existing archive
+[ -f "${folder_name}.zip" ] && rm "${folder_name}.zip"
+
+# Install without development dependencies
+composer install -q --no-dev
+
+# Add folder
+[ ! -L "${folder_name}" ] && ln -s "$(pwd)" "${folder_name}"
+
+# Pack
+zip -rq "${folder_name}" \
     ecomprocessing/src \
     ecomprocessing/controllers \
     ecomprocessing/translations \
@@ -18,4 +27,8 @@ zip -r ecomprocessing \
     ecomprocessing/index.php \
     ecomprocessing/config.xml \
     ecomprocessing/.htaccess
-[ -L ecomprocessing ] && rm ecomprocessing
+
+# Remove folder
+[ -L "${folder_name}" ] && rm "${folder_name}"
+
+[ -f "${folder_name}.zip" ] && echo "The installation package (${folder_name}.zip) was packed!"

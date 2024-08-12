@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (C) 2018 E-Comprocessing Ltd.
+ * Copyright (C) 2015-2024 E-Comprocessing Ltd.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -13,13 +13,14 @@
  * GNU General Public License for more details.
  *
  * @author      E-Comprocessing
- * @copyright   2018 E-Comprocessing Ltd.
+ * @copyright   2015-2024 E-Comprocessing Ltd.
  * @license     http://opensource.org/licenses/gpl-2.0.php GNU General Public License, version 2 (GPL-2.0)
  */
 require_once __DIR__ . '/../../vendor/autoload.php';
 
 use Ecomprocessing\Genesis\EcomprocessingTransaction;
-use Genesis\API\Constants\Transaction\Types;
+use Genesis\Api\Constants\Transaction\Types;
+use Genesis\Api\Notification;
 use PrestaShopLogger as Logger;
 
 if (!defined('_PS_VERSION_')) {
@@ -48,7 +49,6 @@ class EcomprocessingNotificationModuleFrontController extends ModuleFrontControl
         Types::FASHIONCHEQUE,
         Types::NETELLER,
         Types::PAYSAFECARD,
-        Types::PPRO,
         Types::SALE,
         Types::SALE_3D,
         Types::SOFORT,
@@ -92,8 +92,7 @@ class EcomprocessingNotificationModuleFrontController extends ModuleFrontControl
     private function processDirectIPN()
     {
         try {
-            /** @var \Genesis\API\Notification $notification */
-            $notification = new Genesis\API\Notification($_POST);
+            $notification = new Notification($_POST);
 
             if ($notification->isAuthentic()) {
                 $notification->initReconciliation();
@@ -118,7 +117,7 @@ class EcomprocessingNotificationModuleFrontController extends ModuleFrontControl
                     $notification->renderResponse();
                 }
             }
-        } catch (\Exception $exception) {
+        } catch (Exception $exception) {
             if (class_exists('PrestaShopLogger')) {
                 Logger::addLog(
                     $exception->getMessage(),
@@ -138,8 +137,7 @@ class EcomprocessingNotificationModuleFrontController extends ModuleFrontControl
     private function processCheckoutIPN()
     {
         try {
-            /** @var \Genesis\API\Notification $notification */
-            $notification = new Genesis\API\Notification($_POST);
+            $notification = new Notification($_POST);
 
             if ($notification->isAuthentic()) {
                 $notification->initReconciliation();
@@ -170,7 +168,7 @@ class EcomprocessingNotificationModuleFrontController extends ModuleFrontControl
                     }
                 }
             }
-        } catch (\Exception $exception) {
+        } catch (Exception $exception) {
             if (class_exists('PrestaShopLogger')) {
                 Logger::addLog(
                     $exception->getMessage(),
@@ -197,7 +195,7 @@ class EcomprocessingNotificationModuleFrontController extends ModuleFrontControl
         if ($payment_transaction) {
             $payment_transaction->importResponse($payment_reconcile);
             $payment_transaction->save();
-        } elseif ($payment_reconcile instanceof \ArrayObject) {
+        } elseif ($payment_reconcile instanceof ArrayObject) {
             foreach ($payment_reconcile as $trx) {
                 $this->addPaymentTransaction($checkout_transaction, $trx);
             }
@@ -213,7 +211,7 @@ class EcomprocessingNotificationModuleFrontController extends ModuleFrontControl
      */
     protected function getPaymentTransaction($payment_reconcile)
     {
-        if ($payment_reconcile instanceof \ArrayObject) {
+        if ($payment_reconcile instanceof ArrayObject) {
             return EcomprocessingTransaction::getByUniqueId($payment_reconcile[0]->unique_id);
         }
 

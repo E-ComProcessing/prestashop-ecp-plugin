@@ -1,9 +1,9 @@
 <?php return array(
     'root' => array(
         'name' => 'ecomprocessing/prestashop-ecp-plugin',
-        'pretty_version' => '2.1.1',
-        'version' => '2.1.1.0',
-        'reference' => NULL,
+        'pretty_version' => '2.1.5',
+        'version' => '2.1.5.0',
+        'reference' => null,
         'type' => 'prestashop-module',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
@@ -11,18 +11,18 @@
     ),
     'versions' => array(
         'ecomprocessing/prestashop-ecp-plugin' => array(
-            'pretty_version' => '2.1.1',
-            'version' => '2.1.1.0',
-            'reference' => NULL,
+            'pretty_version' => '2.1.5',
+            'version' => '2.1.5.0',
+            'reference' => null,
             'type' => 'prestashop-module',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),
             'dev_requirement' => false,
         ),
         'genesisgateway/genesis_php' => array(
-            'pretty_version' => '1.24.1',
-            'version' => '1.24.1.0',
-            'reference' => '02e28ee44f0f3f92e569ec96f6100c91a65f0936',
+            'pretty_version' => '2.0.1',
+            'version' => '2.0.1.0',
+            'reference' => '6b03c8bfa2ab3154b79de11c86e5aaf62e124b1b',
             'type' => 'library',
             'install_path' => __DIR__ . '/../genesisgateway/genesis_php',
             'aliases' => array(),

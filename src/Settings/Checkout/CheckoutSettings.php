@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (C) 2018-2023 E-Comprocessing Ltd.
+ * Copyright (C) 2015-2024 E-Comprocessing Ltd.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -13,7 +13,7 @@
  * GNU General Public License for more details.
  *
  * @author      E-Comprocessing
- * @copyright   2018-2023 E-Comprocessing Ltd.
+ * @copyright   2015-2024 E-Comprocessing Ltd.
  * @license     http://opensource.org/licenses/gpl-2.0.php GNU General Public License, version 2 (GPL-2.0)
  */
 
@@ -22,9 +22,9 @@ namespace Ecomprocessing\Genesis\Settings\Checkout;
 use Ecomprocessing\Genesis\EcomprocessingThreeds;
 use Ecomprocessing\Genesis\Helpers\Constants\ConfigurationKeys;
 use Ecomprocessing\Genesis\Settings\Base\Settings;
-use Genesis\API\Constants\Payment\Methods;
-use Genesis\API\Constants\Transaction\Names;
-use Genesis\API\Constants\Transaction\Types;
+use Genesis\Api\Constants\Payment\Methods;
+use Genesis\Api\Constants\Transaction\Names;
+use Genesis\Api\Constants\Transaction\Types;
 
 if (!defined('_PS_VERSION_')) {
     exit;
@@ -38,7 +38,6 @@ class CheckoutSettings extends Settings
     /**
      * Transaction Type specifics
      */
-    const PPRO_TRANSACTION_SUFFIX = '_ppro';
     const GOOGLE_PAY_TRANSACTION_PREFIX = 'google_pay_';
     const GOOGLE_PAY_PAYMENT_TYPE_AUTHORIZE = 'authorize';
     const GOOGLE_PAY_PAYMENT_TYPE_SALE = 'sale';
@@ -131,14 +130,6 @@ class CheckoutSettings extends Settings
 
         $transactionTypes = array_diff($transactionTypes, $excludedTypes);
 
-        // Add PPRO specific Types
-        $pproTypes = array_map(
-            function ($type) {
-                return $type . self::PPRO_TRANSACTION_SUFFIX;
-            },
-            Methods::getMethods()
-        );
-
         // Add Google Pay Transaction Methods
         $googlePayMethods = array_map(
             function ($type) {
@@ -175,7 +166,6 @@ class CheckoutSettings extends Settings
 
         $transactionTypes = array_merge(
             $transactionTypes,
-            $pproTypes,
             $googlePayMethods,
             $payPalMethods,
             $applePayMethods

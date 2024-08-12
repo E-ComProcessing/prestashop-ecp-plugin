@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (C) 2018 E-Comprocessing Ltd.
+ * Copyright (C) 2015-2024 E-Comprocessing Ltd.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -13,12 +13,13 @@
  * GNU General Public License for more details.
  *
  * @author      E-Comprocessing
- * @copyright   2018 E-Comprocessing Ltd.
+ * @copyright   2015-2024 E-Comprocessing Ltd.
  * @license     http://opensource.org/licenses/gpl-2.0.php GNU General Public License, version 2 (GPL-2.0)
  */
 
 namespace Ecomprocessing\Genesis;
 
+use Ecomprocessing\Genesis\Helpers\DbHelper;
 use Ecomprocessing\Genesis\Settings\Base\Settings;
 
 if (!defined('_PS_VERSION_')) {
@@ -136,12 +137,16 @@ class EcomprocessingInstall
      */
     protected static function updateTransactionsSchema()
     {
-        if (!\Db::getInstance()->Execute('SELECT transaction_id from `' . _DB_PREFIX_ . 'ecomprocessing_transactions`')) {
-            $sqlAddTransactionIdField = '
-              ALTER TABLE `' . _DB_PREFIX_ . 'ecomprocessing_transactions`
-                ADD `transaction_id` VARCHAR(255) NOT NULL AFTER `ref_order`';
+        $table = _DB_PREFIX_ . 'ecomprocessing_transactions';
 
-            \Db::getInstance()->Execute($sqlAddTransactionIdField);
+        if (!DbHelper::isTableExists($table)) {
+            return;
+        }
+
+        if (!DbHelper::isColumnExists($table, 'transaction_id')) {
+            \Db::getInstance()->execute(
+                'ALTER TABLE `' . $table . '` ADD `transaction_id` VARCHAR(255) NOT NULL AFTER `ref_order`'
+            );
         }
     }
 
@@ -150,7 +155,9 @@ class EcomprocessingInstall
      */
     protected static function updateConsumersSchema()
     {
-        if (!\Db::getInstance()->Execute('SELECT consumer_id from `' . _DB_PREFIX_ . 'ecomprocessing_consumers`')) {
+        $table = _DB_PREFIX_ . 'ecomprocessing_consumers';
+
+        if (!DbHelper::isTableExists($table)) {
             \Db::getInstance()->Execute(static::getCreateConsumersSchemaQuery());
         }
     }

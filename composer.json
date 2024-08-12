@@ -2,10 +2,13 @@
     "name": "ecomprocessing/prestashop-ecp-plugin",
     "description": "E-Comprocessing Payment Gateway for Prestashop",
     "type": "prestashop-module",
-    "version": "2.1.1",
+    "version": "2.1.5",
     "license": "GPL-2.0",
     "config": {
-        "prepend-autoloader": false
+        "prepend-autoloader": false,
+        "allow-plugins": {
+            "dealerdirect/phpcodesniffer-composer-installer": true
+        }
     },
     "authors": [
         {
@@ -16,17 +19,40 @@
     ],
     "minimum-stability": "stable",
     "require": {
-        "genesisgateway/genesis_php": "1.24.1"
+        "genesisgateway/genesis_php": "2.0.1"
     },
     "require-dev": {
         "prestashop/php-dev-tools": "^4.3",
-        "squizlabs/php_codesniffer": "^3.7",
-        "phpmd/phpmd": "^2.13",
-        "prestashop/autoindex": "^2.1"
+        "squizlabs/php_codesniffer": "^3.9",
+        "phpmd/phpmd": "^2.15",
+        "prestashop/autoindex": "^2.1",
+        "slevomat/coding-standard": "^8.14"
     },
     "scripts": {
         "pack": [
             "bin/pack"
+        ],
+        "php-cs": [
+            "vendor/bin/phpcs --standard=./.phpcs.xml --report=full --colors ./"
+        ],
+        "php-cs-jenkins": [
+            "vendor/bin/phpcs --standard=./.phpcs.xml --report=checkstyle --report-file=phpcs_report.xml ./"
+        ],
+        "php-md": [
+            "vendor/bin/phpmd --color ./ ansi ./.phpmd.xml --not-strict"
+        ],
+        "php-md-jenkins": [
+            "vendor/bin/phpmd ./ xml ./.phpmd.xml --reportfile=phpmd_report.xml --not-strict --ignore-violations-on-exit"
+        ],
+        "styles": [
+            "@php-cs",
+            "@php-md"
+        ],
+        "autoindex": [
+            "vendor/bin/autoindex prestashop:add:index"
+        ],
+        "header-stamp": [
+            "vendor/bin/header-stamp --license=header_stamp.txt --exclude=vendor,translations --extensions=php"
         ]
     },
     "autoload": {

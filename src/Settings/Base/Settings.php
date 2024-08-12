@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (C) 2018-2023 E-Comprocessing Ltd.
+ * Copyright (C) 2015-2024 E-Comprocessing Ltd.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -13,7 +13,7 @@
  * GNU General Public License for more details.
  *
  * @author      E-Comprocessing
- * @copyright   2018-2023 E-Comprocessing Ltd.
+ * @copyright   2015-2024 E-Comprocessing Ltd.
  * @license     http://opensource.org/licenses/gpl-2.0.php GNU General Public License, version 2 (GPL-2.0)
  */
 
@@ -22,8 +22,8 @@ namespace Ecomprocessing\Genesis\Settings\Base;
 use Ecomprocessing\Genesis\Helpers\Constants\ConfigurationKeys;
 use Ecomprocessing\Genesis\Helpers\Forms\FormGenerator;
 use Ecomprocessing\Genesis\Helpers\Forms\SettingsService;
-use Genesis\API\Constants\Banks;
-use Genesis\API\Constants\Transaction\Parameters\ScaExemptions;
+use Genesis\Api\Constants\Banks;
+use Genesis\Api\Constants\Transaction\Parameters\ScaExemptions;
 
 if (!defined('_PS_VERSION_')) {
     exit;
