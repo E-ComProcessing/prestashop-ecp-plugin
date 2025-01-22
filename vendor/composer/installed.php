@@ -1,9 +1,9 @@
 <?php return array(
     'root' => array(
         'name' => 'ecomprocessing/prestashop-ecp-plugin',
-        'pretty_version' => '2.1.5',
-        'version' => '2.1.5.0',
-        'reference' => null,
+        'pretty_version' => '2.2.0',
+        'version' => '2.2.0.0',
+        'reference' => NULL,
         'type' => 'prestashop-module',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
@@ -11,9 +11,9 @@
     ),
     'versions' => array(
         'ecomprocessing/prestashop-ecp-plugin' => array(
-            'pretty_version' => '2.1.5',
-            'version' => '2.1.5.0',
-            'reference' => null,
+            'pretty_version' => '2.2.0',
+            'version' => '2.2.0.0',
+            'reference' => NULL,
             'type' => 'prestashop-module',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),

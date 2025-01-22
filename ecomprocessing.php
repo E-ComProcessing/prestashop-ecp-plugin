@@ -85,7 +85,7 @@ class Ecomprocessing extends PaymentModule
         $this->tab = 'payments_gateways';
         $this->displayName = 'E-Comprocessing Payment Gateway';
         $this->controllers = ['frame', 'notification', 'redirect', 'validation'];
-        $this->version = '2.1.5';
+        $this->version = '2.2.0';
         $this->author = 'E-Comprocessing Ltd.';
         $this->need_instance = 1;
         $this->ps_versions_compliancy = ['min' => '1.7', 'max' => _PS_VERSION_];

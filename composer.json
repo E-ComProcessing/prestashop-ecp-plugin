@@ -2,7 +2,7 @@
     "name": "ecomprocessing/prestashop-ecp-plugin",
     "description": "E-Comprocessing Payment Gateway for Prestashop",
     "type": "prestashop-module",
-    "version": "2.1.5",
+    "version": "2.2.0",
     "license": "GPL-2.0",
     "config": {
         "prepend-autoloader": false,
